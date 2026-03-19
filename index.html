@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Inked">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#F8F6F2">
+<title>Inked</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Geist:wght@300;400;500;600;700;900&display=swap');
+
+/*
+  FONT NOTE: --font-body is designed for Rotis Serif (Monotype).
+  If you own a license:
+    @font-face { font-family: 'Rotis'; src: url('RotisSerif.woff2') format('woff2'); }
+  Replace 'Noto Serif' with 'Rotis' in --font-body below.
+*/
+
+:root {
+  --ink:        #0e0e0c;
+  --ink-mid:    #555550;
+  --ink-light:  #999990;
+  --paper:      #F8F6F2;
+  --paper-dim:  #F0EDE8;
+  --rule:       #E0DDD8;
+  --rule-heavy: #aaaaaa;
+
+  --font-body: 'Noto Serif', Georgia, serif;
+  --font-ui:   'Geist', 'Helvetica Neue', Arial, sans-serif;
+
+  --pad: 28px;
+  --safe-top:    env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+  overscroll-behavior: none;
+}
+
+/* ── HEADER ── */
+#header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  padding: calc(var(--safe-top) + 20px) var(--pad) 0;
+}
+
+#header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 16px;
+}
+
+#sort-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#sort-label {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  user-select: none;
+}
+
+.sort-btn {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border: 1px solid var(--rule-heavy);
+  background: transparent;
+  color: var(--ink-mid);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.1s, color 0.1s;
+}
+.sort-btn.active {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+.sort-btn:active { opacity: 0.7; }
+
+#wordmark-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+#wordmark {
+  font-family: var(--font-ui);
+  font-size: 26px;
+  font-weight: 400;
+  font-style: normal;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--ink);
+  user-select: none;
+}
+
+#wordmark-datetime {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: var(--ink-light);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  min-width: 180px;
+  line-height: 1.5;
+}
+
+#source-bar {
+  display: flex;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  gap: 6px;
+  padding-bottom: 12px;
+}
+#source-bar::-webkit-scrollbar { display: none; }
+
+.src-tag {
+  flex-shrink: 0;
+  font-family: var(--font-ui);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border: 1px solid var(--rule);
+  background: transparent;
+  color: var(--ink-light);
+  cursor: pointer;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.1s;
+}
+.src-tag.active {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+/* ── FEED ── */
+#main {
+  padding: 0 var(--pad) calc(var(--safe-bottom) + 80px);
+}
+
+#status {
+  padding: 60px 0;
+  font-family: var(--font-ui);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+}
+
+.loading-dots {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 14px;
+}
+.loading-dot {
+  width: 4px; height: 4px;
+  background: var(--ink-light);
+  border-radius: 50%;
+  animation: blink 1.2s ease-in-out infinite;
+}
+.loading-dot:nth-child(2) { animation-delay: 0.2s; }
+.loading-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes blink { 0%,100%{opacity:0.2} 50%{opacity:1} }
+
+.article {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  padding: 22px 0 18px;
+  border-bottom: 1px solid var(--rule);
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+}
+.article:active { opacity: 0.55; }
+
+.article-headline {
+  font-family: var(--font-body);
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.article-meta {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--ink-mid);
+}
+
+.date-divider {
+  padding: 20px 0 8px;
+  font-family: var(--font-ui);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  border-bottom: 1px solid var(--rule);
+}
+
+.source-section { }
+
+.source-header {
+  padding: 16px 0 8px;
+  border-bottom: 1px solid var(--rule-heavy);
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  position: sticky;
+  top: 112px;
+  background: var(--paper);
+  z-index: 10;
+}
+
+.source-name {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.source-tally {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  font-weight: 400;
+  color: var(--ink-light);
+}
+
+/* ── BOTTOM BAR (shared) ── */
+#bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0; right: 0;
+  background: var(--paper);
+  z-index: 150;
+  display: none;
+}
+
+#info-overlay .bottom-bar-inner {
+  position: fixed;
+  bottom: 0;
+  left: 0; right: 0;
+  background: var(--paper);
+  z-index: 250;
+}
+
+.bottom-bar-inner {
+  padding: 0 var(--pad) calc(var(--safe-bottom) + 14px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.bottom-bar-inner::before,
+.bottom-bar-inner::after {
+  content: '';
+  position: absolute;
+  left: var(--pad); right: var(--pad);
+}
+.bottom-bar-inner::before { top: 0; height: 1px; background: var(--ink); }
+.bottom-bar-inner::after  { top: 3px; height: 1px; background: var(--ink); }
+
+#rss-label {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-mid);
+  padding-top: 14px;
+}
+
+#bottom-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 14px;
+}
+
+.bar-btn {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border: 1px solid var(--rule-heavy);
+  background: transparent;
+  color: var(--ink-mid);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.1s;
+}
+.bar-btn:active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.bar-btn.spinning { opacity: 0.3; pointer-events: none; }
+
+.bar-btn.bar-btn-fill {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+.bar-btn.bar-btn-fill:active { opacity: 0.7; }
+
+#info-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: var(--paper);
+  z-index: 200;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: calc(var(--safe-top) + 24px) var(--pad) calc(var(--safe-bottom) + 80px);
+}
+#info-overlay.open { display: block; }
+
+#info-header {
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 12px;
+  margin-bottom: 24px;
+}
+#info-title {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+#sources-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 1px solid var(--rule);
+  border-left: 1px solid var(--rule);
+}
+.source-entry {
+  padding: 12px 14px;
+  border-right: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+.source-entry-name {
+  display: block;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink);
+  margin-bottom: 2px;
+}
+.source-entry-count {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--ink-light);
+}
+#info-description {
+  margin-top: 24px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--ink-mid);
+  border-top: 1px solid var(--rule);
+  padding-top: 20px;
+}
+
+#info-updated {
+  margin-top: 20px;
+  font-family: var(--font-ui);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+}
+
+/* ── RESPONSIVE ── */
+@media (min-width: 640px) {
+  :root { --pad: 40px; }
+  #wordmark { font-size: 30px; }
+  .article-headline { font-size: 30px; }
+  #sources-grid { grid-template-columns: 1fr 1fr 1fr; }
+}
+@media (min-width: 1000px) {
+  :root { --pad: 56px; }
+  #wordmark { font-size: 34px; }
+  .article-headline { font-size: 32px; }
+}
+</style>
+</head>
+<body>
+
+<header id="header">
+  <div id="header-row">
+    <div id="sort-group">
+      <span id="sort-label">Sort</span>
+      <button class="sort-btn active" id="sort-time" onclick="setSort('time')">Time</button>
+      <button class="sort-btn" id="sort-source" onclick="setSort('source')">Source</button>
+    </div>
+    <div id="wordmark-group">
+      <div id="wordmark">inked</div>
+      <div id="wordmark-datetime"></div>
+    </div>
+  </div>
+  <div id="source-bar"></div>
+</header>
+
+<main id="main">
+  <div id="status">
+    <div class="loading-dots">
+      <div class="loading-dot"></div>
+      <div class="loading-dot"></div>
+      <div class="loading-dot"></div>
+    </div>
+    Fetching feeds
+  </div>
+  <div id="feed-list"></div>
+</main>
+
+<div id="bottom-bar">
+  <div class="bottom-bar-inner">
+    <span id="rss-label">RSS Feeds</span>
+    <div id="bottom-right">
+      <button class="bar-btn" id="refresh-btn" onclick="loadFeeds()">↻ Refresh</button>
+      <button class="bar-btn bar-btn-fill" onclick="openInfo()">Info</button>
+    </div>
+  </div>
+</div>
+
+<div id="info-overlay">
+  <div id="info-header">
+    <span id="info-title">Sources</span>
+  </div>
+  <div id="sources-grid"></div>
+  <div id="info-description">A clean, fast, ad-free headline reader that pulls live RSS feeds from wire services, international broadcasters, investigative outlets, policy journals, and science publications into a single chronological stream — sorted by time or source, filterable by outlet.</div>
+  <div id="info-updated"></div>
+
+  <div class="bottom-bar-inner">
+    <span id="rss-label">RSS Feeds</span>
+    <div id="bottom-right">
+      <button class="bar-btn" onclick="loadFeeds()">↻ Refresh</button>
+      <button class="bar-btn bar-btn-fill" onclick="closeInfo()">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const FEEDS = [
+  { id: 'ap',          name: 'AP',             url: 'https://feeds.apnews.com/rss/apf-topnews' },
+  { id: 'reuters',     name: 'Reuters',        url: 'https://feeds.reuters.com/reuters/topNews' },
+  { id: 'bbc',         name: 'BBC',            url: 'https://feeds.bbci.co.uk/news/rss.xml' },
+  { id: 'guardian',    name: 'Guardian',       url: 'https://www.theguardian.com/world/rss' },
+  { id: 'aljazeera',   name: 'Al Jazeera',     url: 'https://www.aljazeera.com/xml/rss/all.xml' },
+  { id: 'dw',          name: 'DW',             url: 'https://rss.dw.com/rdf/rss-en-all' },
+  { id: 'bbc_sci',     name: 'BBC Science',    url: 'https://feeds.bbci.co.uk/news/science_and_environment/rss.xml' },
+  { id: 'dropsite',    name: 'Drop Site',      url: 'https://dropsiteinfo.substack.com/feed' },
+  { id: 'intercept',   name: 'Intercept',      url: 'https://theintercept.com/feed/?lang=en' },
+  { id: 'propublica',  name: 'ProPublica',     url: 'https://feeds.propublica.org/propublica/main' },
+  { id: 'nation',      name: 'The Nation',     url: 'https://www.thenation.com/feed/?post_type=article' },
+  { id: 'politico',    name: 'Politico',       url: 'https://www.politico.com/rss/politicopicks.xml' },
+  { id: 'wsj',         name: 'WSJ',            url: 'https://feeds.a.dj.com/rss/RSSWorldNews.xml' },
+  { id: 'arst',        name: 'Ars Technica',   url: 'https://feeds.arstechnica.com/arstechnica/index' },
+  { id: 'newscientist',name: 'New Scientist',  url: 'https://www.newscientist.com/feed/home' },
+  { id: 'economist',   name: 'Economist',      url: 'https://www.economist.com/the-world-this-week/rss.xml' },
+  { id: 'foreignaff',  name: 'Foreign Affairs',url: 'https://www.foreignaffairs.com/rss.xml' },
+  { id: 'cnn',         name: 'CNN',            url: 'http://rss.cnn.com/rss/edition.rss' },
+];
+
+const API = 'https://api.rss2json.com/v1/api.json?count=20&rss_url=';
+
+let articles = [];
+let currentSort = 'time';
+let activeSources = new Set(FEEDS.map(f => f.id));
+let lastUpdated = null;
+
+async function fetchFeed(feed) {
+  try {
+    const res = await fetch(API + encodeURIComponent(feed.url));
+    const data = await res.json();
+    if (data.status !== 'ok') return [];
+    return (data.items || []).map(item => ({
+      id: feed.id + '_' + btoa(encodeURIComponent(item.link || item.title || '')).slice(0, 20),
+      sourceId: feed.id,
+      sourceName: feed.name,
+      title: (item.title || '').trim(),
+      link: item.link || '#',
+      pubDate: new Date(item.pubDate || item.published || Date.now()),
+    }));
+  } catch { return []; }
+}
+
+async function loadFeeds() {
+  const btn = document.getElementById('refresh-btn');
+  btn.classList.add('spinning');
+  document.getElementById('status').style.display = 'block';
+  document.getElementById('feed-list').innerHTML = '';
+
+  const results = await Promise.allSettled(FEEDS.map(fetchFeed));
+  const raw = results.flatMap(r => r.status === 'fulfilled' ? r.value : []);
+
+  const seen = new Set();
+  articles = raw
+    .filter(a => { if (seen.has(a.id)) return false; seen.add(a.id); return true; })
+    .sort((a, b) => b.pubDate - a.pubDate);
+
+  lastUpdated = new Date();
+  buildSourceBar();
+  buildInfoPanel();
+  render();
+
+  document.getElementById('status').style.display = 'none';
+  document.getElementById('bottom-bar').style.display = 'block';
+  btn.classList.remove('spinning');
+}
+
+function setSort(s) {
+  currentSort = s;
+  document.getElementById('sort-time').classList.toggle('active', s === 'time');
+  document.getElementById('sort-source').classList.toggle('active', s === 'source');
+  render();
+}
+
+function buildSourceBar() {
+  const bar = document.getElementById('source-bar');
+  bar.innerHTML = '';
+
+  FEEDS.forEach(feed => {
+    if (!articles.some(a => a.sourceId === feed.id)) return;
+    const btn = document.createElement('button');
+    btn.className = 'src-tag active';
+    btn.id = `src-${feed.id}`;
+    btn.textContent = feed.name;
+    btn.onclick = () => {
+      if (activeSources.has(feed.id) && activeSources.size === 1) return;
+      if (activeSources.has(feed.id)) {
+        activeSources.delete(feed.id);
+        btn.classList.remove('active');
+      } else {
+        activeSources.add(feed.id);
+        btn.classList.add('active');
+      }
+      render();
+    };
+    bar.appendChild(btn);
+  });
+}
+
+function buildInfoPanel() {
+  const grid = document.getElementById('sources-grid');
+  grid.innerHTML = '';
+  FEEDS.forEach(feed => {
+    const count = articles.filter(a => a.sourceId === feed.id).length;
+    if (!count) return;
+    const el = document.createElement('div');
+    el.className = 'source-entry';
+    el.innerHTML = `<span class="source-entry-name">${esc(feed.name)}</span><span class="source-entry-count">${count} articles</span>`;
+    grid.appendChild(el);
+  });
+  if (lastUpdated) {
+    document.getElementById('info-updated').textContent =
+      'Last fetched ' + lastUpdated.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+  }
+}
+
+function openInfo()  { document.getElementById('info-overlay').classList.add('open'); }
+function closeInfo() { document.getElementById('info-overlay').classList.remove('open'); }
+
+function getVisible() {
+  return articles.filter(a => activeSources.has(a.sourceId));
+}
+
+function formatAge(date) {
+  const s = (Date.now() - date) / 1000;
+  if (s < 60)    return 'just now';
+  if (s < 3600)  return Math.floor(s / 60) + ' min ago';
+  if (s < 86400) {
+    const h = Math.floor(s / 3600);
+    return h + (h === 1 ? ' hour ago' : ' hours ago');
+  }
+  const d = Math.floor(s / 86400);
+  return d + (d === 1 ? ' day ago' : ' days ago');
+}
+
+function esc(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function makeCard(a, showSource) {
+  const el = document.createElement('a');
+  el.className = 'article';
+  el.href = a.link;
+  el.target = '_blank';
+  el.rel = 'noopener noreferrer';
+  const meta = showSource
+    ? `${formatAge(a.pubDate)} – ${esc(a.sourceName)}`
+    : formatAge(a.pubDate);
+  el.innerHTML = `
+    <div class="article-headline">${esc(a.title)}</div>
+    <div class="article-meta">${meta}</div>
+  `;
+  return el;
+}
+
+function render() {
+  const visible = getVisible();
+  const list = document.getElementById('feed-list');
+  list.innerHTML = '';
+
+  if (!visible.length) {
+    list.innerHTML = '<div style="padding:40px 0;font-family:var(--font-ui);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-light)">No articles</div>';
+    return;
+  }
+
+  if (currentSort === 'time') {
+    let lastDay = null;
+    visible.forEach(a => {
+      const day = a.pubDate.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long' }).toUpperCase();
+      if (day !== lastDay) {
+        const div = document.createElement('div');
+        div.className = 'date-divider';
+        div.textContent = day;
+        list.appendChild(div);
+        lastDay = day;
+      }
+      list.appendChild(makeCard(a, true));
+    });
+  } else {
+    FEEDS.forEach(feed => {
+      if (!activeSources.has(feed.id)) return;
+      const items = visible.filter(a => a.sourceId === feed.id);
+      if (!items.length) return;
+      const section = document.createElement('div');
+      section.className = 'source-section';
+      const hdr = document.createElement('div');
+      hdr.className = 'source-header';
+      hdr.innerHTML = `<span class="source-name">${esc(feed.name)}</span><span class="source-tally">${items.length}</span>`;
+      section.appendChild(hdr);
+      items.forEach(a => section.appendChild(makeCard(a, false)));
+      list.appendChild(section);
+    });
+  }
+}
+
+loadFeeds();
+setInterval(loadFeeds, 15 * 60 * 1000);
+
+// Live clock
+function updateClock() {
+  const now = new Date();
+  const date = now.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric', year:'numeric' });
+  const time = now.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+  document.getElementById('wordmark-datetime').innerHTML = `${date}<br>${time}`;
+}
+updateClock();
+setInterval(updateClock, 1000);
+</script>
+</body>
+</html>
