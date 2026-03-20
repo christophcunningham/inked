@@ -7,6 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Inked">
 <meta name="mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="icon.png" />
 <meta name="theme-color" content="#F8F6F2">
 <title>Inked</title>
 <style>
@@ -268,24 +269,14 @@ html, body {
 
 .full-text-dot {
   display: inline-block;
-  margin-left: 6px;
-  font-size: 20px;
-  line-height: 0;
-  vertical-align: middle;
-  color: var(--ink-light);
-  position: relative;
-  top: -1px;
-}
-
-.article-body {
-  font-family: var(--font-body);
+  margin-left: 8px;
   font-size: 14px;
-  font-weight: 400;
-  line-height: 1.65;
+  line-height: 1;
+  vertical-align: middle;
   color: var(--ink-mid);
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid var(--rule);
+  position: relative;
+  top: -2px;
+  letter-spacing: 2px;
 }
 
 .article-expand {
@@ -304,10 +295,23 @@ html, body {
   -webkit-tap-highlight-color: transparent;
 }
 .article-expand:active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+.article-meta {
   font-family: var(--font-ui);
   font-size: 13px;
   font-weight: 400;
   color: var(--ink-mid);
+}
+
+.article-body {
+  font-family: 'Noto Serif', Georgia, serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.7;
+  color: var(--ink);
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--rule);
 }
 
 .date-divider {
@@ -662,7 +666,7 @@ const FEEDS = [
 const WORKER_URL = 'https://inked-worker.ccunninghamr.workers.dev';
 // ─────────────────────────────────────────────────────────────────────────────
 
-const API = WORKER_URL + '?url=';
+const API = WORKER_URL + '?count=50&url=';
 
 let articles = [];
 let currentSort = 'time';
@@ -679,7 +683,7 @@ async function fetchFeed(feed) {
     if (data.status !== 'ok') return [];
     const now = Date.now();
     const sixMonthsAgo = now - (180 * 24 * 60 * 60 * 1000);
-    return (data.items || []).slice(0, 50).map(item => {
+    return (data.items || []).map(item => {
       // Validate date — reject anything in the future or clearly epoch/invalid
       const raw = new Date(item.pubDate || '');
       const pubDate = (!isNaN(raw) && raw > sixMonthsAgo && raw <= now + 86400000)
@@ -698,7 +702,7 @@ async function fetchFeed(feed) {
         pubDate,
         hasFullText: FULL_TEXT_FEEDS.has(feed.id),
         fullText: FULL_TEXT_FEEDS.has(feed.id)
-          ? (item.content || item.description || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
+          ? (item.content || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
           : null,
       };
     }).filter(a => a && a.title && a.pubDate);
@@ -740,12 +744,19 @@ function buildSourceBar() {
   const bar = document.getElementById('source-bar');
   bar.innerHTML = '';
 
+  const availableIds = FEEDS.filter(f => articles.some(a => a.sourceId === f.id)).map(f => f.id);
+
   const allBtn = document.createElement('button');
-  allBtn.className = 'src-tag active';
   allBtn.id = 'src-all';
   allBtn.textContent = 'All';
+
+  const updateAllBtn = () => {
+    const allActive = availableIds.every(id => activeSources.has(id));
+    allBtn.className = 'src-tag' + (allActive ? ' active' : '');
+  };
+
   allBtn.onclick = () => {
-    const allActive = activeSources.size === FEEDS.filter(f => articles.some(a => a.sourceId === f.id)).length;
+    const allActive = availableIds.every(id => activeSources.has(id));
     if (allActive) {
       // Deselect all
       activeSources.clear();
@@ -753,17 +764,20 @@ function buildSourceBar() {
       allBtn.classList.remove('active');
     } else {
       // Select all
-      FEEDS.forEach(f => activeSources.add(f.id));
-      bar.querySelectorAll('.src-tag').forEach(t => t.classList.add('active'));
+      availableIds.forEach(id => activeSources.add(id));
+      bar.querySelectorAll('.src-tag:not(#src-all)').forEach(t => t.classList.add('active'));
+      allBtn.classList.add('active');
     }
     render();
   };
+
+  updateAllBtn();
   bar.appendChild(allBtn);
 
   FEEDS.forEach(feed => {
-    if (!articles.some(a => a.sourceId === feed.id)) return;
+    if (!availableIds.includes(feed.id)) return;
     const btn = document.createElement('button');
-    btn.className = 'src-tag active';
+    btn.className = 'src-tag' + (activeSources.has(feed.id) ? ' active' : '');
     btn.id = `src-${feed.id}`;
     btn.textContent = feed.name;
     btn.onclick = () => {
@@ -774,9 +788,7 @@ function buildSourceBar() {
         activeSources.add(feed.id);
         btn.classList.add('active');
       }
-      const availableFeeds = FEEDS.filter(f => articles.some(a => a.sourceId === f.id));
-      const allActive = availableFeeds.every(f => activeSources.has(f.id));
-      document.getElementById('src-all')?.classList.toggle('active', allActive);
+      updateAllBtn();
       render();
     };
     bar.appendChild(btn);
@@ -832,7 +844,7 @@ function makeCard(a, showSource) {
     ? `${formatAge(a.pubDate)} – ${esc(a.sourceName)}`
     : formatAge(a.pubDate);
 
-  const indicator = a.hasFullText ? '<span class="full-text-dot" title="Full text available">·</span>' : '';
+  const indicator = a.hasFullText ? '<span class="full-text-dot">••</span>' : '';
 
   el.innerHTML = `
     <a class="article-link" href="${a.link}" target="_blank" rel="noopener noreferrer">
