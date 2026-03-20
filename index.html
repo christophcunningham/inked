@@ -162,8 +162,8 @@ html, body {
 
 #wordmark {
   font-family: var(--font-ui);
-  font-size: 17px;
-  font-weight: 400;
+  font-size: 16px;
+  font-weight: 900;
   font-style: normal;
   letter-spacing: -0.03em;
   line-height: 1;
@@ -317,8 +317,8 @@ html, body {
 .date-divider {
   padding: 20px 0 8px;
   font-family: var(--font-ui);
-  font-size: 9px;
-  font-weight: 400;
+  font-size: 11px;
+  font-weight: 900;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--ink-light);
@@ -526,12 +526,12 @@ html, body {
 /* ── RESPONSIVE ── */
 @media (min-width: 640px) {
   :root { --pad: 40px; }
-  #wordmark { font-size: 21px; }
+  #wordmark { font-size: 20px; }
   .article-headline { font-size: 26px; }
 }
 @media (min-width: 1000px) {
   :root { --pad: 56px; }
-  #wordmark { font-size: 25px; }
+  #wordmark { font-size: 24px; }
   .article-headline { font-size: 28px; }
 
   #header, #main, #bottom-bar, #info-overlay {
@@ -695,8 +695,8 @@ async function fetchFeed(feed) {
     return (data.items || []).map(item => {
       // Validate date — reject anything in the future or clearly epoch/invalid
       const raw = new Date(item.pubDate || '');
-      const pubDate = (!isNaN(raw) && raw > sixMonthsAgo && raw <= now + 86400000)
-        ? raw : null;
+      // Accept any valid date — only reject completely unparseable dates
+      const pubDate = !isNaN(raw) ? raw : new Date();
 
       const title = (item.title || '').trim();
       // Filter Economist non-article entries (charts, cartoons, etc.)
@@ -714,7 +714,7 @@ async function fetchFeed(feed) {
           ? decodeEntities((item.content || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()).slice(0, 2000)
           : null,
       };
-    }).filter(a => a && a.title && a.pubDate);
+    }).filter(a => a && a.title);
   } catch { return []; }
 }
 
