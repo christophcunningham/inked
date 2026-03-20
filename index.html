@@ -630,7 +630,8 @@ html, body {
   </div>
   <div id="sources-list"></div>
   <div id="info-description">When a story is set, it gets <span style="text-decoration:underline">inked</span> — committed to type, sent to press. No frills, ad-free headline reader pulling RSS feeds from wire services, international broadcasters, investigative outlets, policy journals, science publications, and local press. Selected to provide a center to left broad overview of the current state of the world. No algorithm. No feed. Just the news.</div>
-  <div id="info-description" style="margin-top:16px">Designed and built by C. Cunningham, 2026. <a href="https://github.com/christophcunningham/inked" target="_blank" rel="noopener noreferrer" style="color:var(--ink);text-decoration:underline">GitHub</a></div>
+  <div id="info-description" style="margin-top:16px">To add Inked to your home screen on iOS, open this page in Safari, tap the Share button, and select Add to Home Screen. On Android, tap the browser menu and select Add to Home Screen or Install App.</div>
+  <div id="info-description" style="margin-top:16px">Designed and built by <a href="https://github.com/christophcunningham" target="_blank" rel="noopener noreferrer" style="color:var(--ink);text-decoration:underline">C. Cunningham</a>, 2026. <a href="https://github.com/christophcunningham/inked" target="_blank" rel="noopener noreferrer" style="color:var(--ink);text-decoration:underline">GitHub</a></div>
   <div id="info-updated"></div>
 </div>
 
@@ -686,7 +687,7 @@ let lastUpdated = null;
 articles = loadCache();
 
 // Feeds that include full article text in RSS
-const FULL_TEXT_FEEDS = new Set(['propublica','intercept','dropsite','nation','occrp','arst','savageminds','mee']);
+const FULL_TEXT_FEEDS = new Set(['propublica','intercept','dropsite','nation','occrp','arst','savageminds']);
 
 async function fetchFeed(feed) {
   try {
