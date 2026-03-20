@@ -492,7 +492,9 @@ html, body {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   padding: calc(var(--safe-top) + 24px) var(--pad) calc(var(--safe-bottom) + 40px);
+  scrollbar-width: none;
 }
+#info-overlay::-webkit-scrollbar { display: none; }
 #info-overlay.open { display: block; }
 
 #info-header {
