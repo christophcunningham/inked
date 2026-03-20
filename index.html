@@ -587,7 +587,7 @@ html, body {
           <span class="clock-label">TYO</span>
         </div>
       </div>
-      <div id="sort-group">
+      <div id="sort-group" style="display:none">
         <span id="sort-label">Sort</span>
         <button class="sort-btn active" id="sort-time" onclick="setSort('time')">Time</button>
         <button class="sort-btn" id="sort-source" onclick="setSort('source')">Source</button>
@@ -666,11 +666,9 @@ const FEEDS = [
 const WORKER_URL = 'https://inked-worker.ccunninghamr.workers.dev';
 // ─────────────────────────────────────────────────────────────────────────────
 
-const API = WORKER_URL + '?count=75&url=';
+const API = WORKER_URL + '?url=';
 
 let articles = [];
-let currentSort = 'time';
-let activeSources = new Set(FEEDS.map(f => f.id));
 let lastUpdated = null;
 
 // Feeds that include full article text in RSS
@@ -733,67 +731,53 @@ async function loadFeeds() {
   btn.classList.remove('spinning');
 }
 
-function setSort(s) {
-  currentSort = s;
-  document.getElementById('sort-time').classList.toggle('active', s === 'time');
-  document.getElementById('sort-source').classList.toggle('active', s === 'source');
-  render();
-}
+let activeFilter = null; // null = all, string = isolated source id
 
 function buildSourceBar() {
   const bar = document.getElementById('source-bar');
   bar.innerHTML = '';
 
-  const availableIds = FEEDS.filter(f => articles.some(a => a.sourceId === f.id)).map(f => f.id);
-  const sortedFeeds = FEEDS.filter(f => availableIds.includes(f.id)).sort((a, b) => a.name.localeCompare(b.name));
+  const availableFeeds = FEEDS
+    .filter(f => articles.some(a => a.sourceId === f.id))
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   const allBtn = document.createElement('button');
   allBtn.id = 'src-all';
+  allBtn.className = 'src-tag' + (activeFilter === null ? ' active' : '');
   allBtn.textContent = 'All';
-
-  const updateAllBtn = () => {
-    const allActive = availableIds.every(id => activeSources.has(id));
-    allBtn.className = 'src-tag' + (allActive ? ' active' : '');
-  };
-
   allBtn.onclick = () => {
-    const allActive = availableIds.every(id => activeSources.has(id));
-    if (allActive) {
-      // Deselect all
-      activeSources.clear();
-      bar.querySelectorAll('.src-tag:not(#src-all)').forEach(t => t.classList.remove('active'));
-      allBtn.classList.remove('active');
-    } else {
-      // Select all
-      availableIds.forEach(id => activeSources.add(id));
-      bar.querySelectorAll('.src-tag:not(#src-all)').forEach(t => t.classList.add('active'));
-      allBtn.classList.add('active');
-    }
+    activeFilter = null;
+    updateSourceBar();
     render();
   };
-
-  updateAllBtn();
   bar.appendChild(allBtn);
 
-  sortedFeeds.forEach(feed => {
-    if (!availableIds.includes(feed.id)) return;
+  availableFeeds.forEach(feed => {
     const btn = document.createElement('button');
-    btn.className = 'src-tag' + (activeSources.has(feed.id) ? ' active' : '');
+    btn.className = 'src-tag' + (activeFilter === feed.id ? ' active' : '');
     btn.id = `src-${feed.id}`;
     btn.textContent = feed.name;
     btn.onclick = () => {
-      if (activeSources.has(feed.id)) {
-        activeSources.delete(feed.id);
-        btn.classList.remove('active');
+      if (activeFilter === feed.id) {
+        // Tap again — return to all
+        activeFilter = null;
       } else {
-        activeSources.add(feed.id);
-        btn.classList.add('active');
+        activeFilter = feed.id;
       }
-      updateAllBtn();
+      updateSourceBar();
       render();
     };
     bar.appendChild(btn);
   });
+}
+
+function updateSourceBar() {
+  document.querySelectorAll('.src-tag').forEach(btn => btn.classList.remove('active'));
+  if (activeFilter === null) {
+    document.getElementById('src-all')?.classList.add('active');
+  } else {
+    document.getElementById(`src-${activeFilter}`)?.classList.add('active');
+  }
 }
 
 function buildInfoPanel() {
@@ -817,8 +801,8 @@ function openInfo()  { document.getElementById('info-overlay').classList.add('op
 function closeInfo() { document.getElementById('info-overlay').classList.remove('open'); }
 
 function getVisible() {
-  if (activeSources.size === 0) return [];
-  return articles.filter(a => activeSources.has(a.sourceId));
+  if (activeFilter === null) return articles;
+  return articles.filter(a => a.sourceId === activeFilter);
 }
 
 function formatAge(date) {
@@ -869,43 +853,84 @@ function makeCard(a, showSource) {
   return el;
 }
 
+// ── Lazy rendering ───────────────────────────────────────────────────────────
+const BATCH = 20; // articles rendered per batch
+let renderQueue = [];
+let sentinel = null;
+let observer = null;
+
+function lazyRender(list, articles, makeItem) {
+  // Clear previous observer
+  if (observer) { observer.disconnect(); observer = null; }
+  if (sentinel) { sentinel.remove(); sentinel = null; }
+
+  let rendered = 0;
+
+  function renderBatch() {
+    const batch = articles.slice(rendered, rendered + BATCH);
+    batch.forEach(a => list.appendChild(makeItem(a)));
+    rendered += batch.length;
+
+    if (rendered >= articles.length) return; // all done
+
+    // Place sentinel after last rendered item
+    if (sentinel) sentinel.remove();
+    sentinel = document.createElement('div');
+    sentinel.style.height = '1px';
+    list.appendChild(sentinel);
+
+    observer = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) {
+        observer.disconnect();
+        observer = null;
+        renderBatch();
+      }
+    }, { rootMargin: '200px' });
+
+    observer.observe(sentinel);
+  }
+
+  renderBatch();
+}
+
 function render() {
   const visible = getVisible();
   const list = document.getElementById('feed-list');
   list.innerHTML = '';
+
+  // Clean up previous lazy state
+  if (observer) { observer.disconnect(); observer = null; }
+  sentinel = null;
 
   if (!visible.length) {
     list.innerHTML = '<div style="padding:40px 0;font-family:var(--font-ui);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-light)">No articles</div>';
     return;
   }
 
-  if (currentSort === 'time') {
+  if (activeFilter === null) {
+    // All sources — chronological river with date dividers
     let lastDay = null;
+    const items = [];
     visible.forEach(a => {
       const day = a.pubDate.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long' }).toUpperCase();
       if (day !== lastDay) {
-        const div = document.createElement('div');
-        div.className = 'date-divider';
-        div.textContent = day;
-        list.appendChild(div);
+        items.push({ type: 'divider', day });
         lastDay = day;
       }
-      list.appendChild(makeCard(a, true));
+      items.push({ type: 'article', data: a });
+    });
+    lazyRender(list, items, item => {
+      if (item.type === 'divider') {
+        const div = document.createElement('div');
+        div.className = 'date-divider';
+        div.textContent = item.day;
+        return div;
+      }
+      return makeCard(item.data, true);
     });
   } else {
-    const sortedSources = FEEDS.filter(f => activeSources.has(f.id)).sort((a, b) => a.name.localeCompare(b.name));
-    sortedSources.forEach(feed => {
-      const items = visible.filter(a => a.sourceId === feed.id);
-      if (!items.length) return;
-      const section = document.createElement('div');
-      section.className = 'source-section';
-      const hdr = document.createElement('div');
-      hdr.className = 'source-header';
-      hdr.innerHTML = `<span class="source-name">${esc(feed.name)}</span><span class="source-tally">${items.length}</span>`;
-      section.appendChild(hdr);
-      items.forEach(a => section.appendChild(makeCard(a, false)));
-      list.appendChild(section);
-    });
+    // Single source — just articles, no source label needed
+    lazyRender(list, visible, a => makeCard(a, false));
   }
 }
 
