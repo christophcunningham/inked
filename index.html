@@ -64,6 +64,57 @@ html, body {
   padding-bottom: 16px;
 }
 
+#header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#clocks-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.clock-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.clock-face {
+  width: 28px;
+  height: 28px;
+}
+
+.clock-circle {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1;
+}
+
+.clock-hand {
+  stroke: var(--ink);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  transform-origin: 14px 14px;
+}
+
+.clock-center {
+  fill: var(--ink);
+}
+
+.clock-label {
+  font-family: var(--font-ui);
+  font-size: 7px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  text-align: center;
+}
+
 #sort-group {
   display: flex;
   align-items: center;
@@ -110,7 +161,7 @@ html, body {
 
 #wordmark {
   font-family: var(--font-ui);
-  font-size: 26px;
+  font-size: 22px;
   font-weight: 400;
   font-style: normal;
   letter-spacing: -0.03em;
@@ -122,9 +173,9 @@ html, body {
 #wordmark-datetime {
   font-family: var(--font-ui);
   font-size: 9px;
-  font-weight: 400;
+  font-weight: 600;
   letter-spacing: 0.01em;
-  color: var(--ink-light);
+  color: var(--ink-mid);
   text-align: right;
   font-variant-numeric: tabular-nums;
   min-width: 180px;
@@ -345,11 +396,14 @@ html, body {
   z-index: 200;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding: calc(var(--safe-top) + 24px) var(--pad) calc(var(--safe-bottom) + 80px);
+  padding: calc(var(--safe-top) + 24px) var(--pad) calc(var(--safe-bottom) + 40px);
 }
 #info-overlay.open { display: block; }
 
 #info-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
   border-bottom: 2px solid var(--ink);
   padding-bottom: 12px;
   margin-bottom: 24px;
@@ -363,25 +417,43 @@ html, body {
   color: var(--ink);
 }
 
-#sources-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  border-top: 1px solid var(--rule);
-  border-left: 1px solid var(--rule);
+#info-close {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border: 1px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
+#info-close:active { background: var(--ink); color: var(--paper); }
+
+#sources-list {
+  display: flex;
+  flex-direction: column;
+}
+
 .source-entry {
-  padding: 12px 14px;
-  border-right: 1px solid var(--rule);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 7px 0;
   border-bottom: 1px solid var(--rule);
 }
+
 .source-entry-name {
-  display: block;
   font-family: var(--font-ui);
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 400;
   color: var(--ink);
-  margin-bottom: 2px;
+  text-decoration: none;
 }
+.source-entry-name:active { opacity: 0.5; }
+
 .source-entry-count {
   font-family: var(--font-ui);
   font-size: 10px;
@@ -411,14 +483,25 @@ html, body {
 /* ── RESPONSIVE ── */
 @media (min-width: 640px) {
   :root { --pad: 40px; }
-  #wordmark { font-size: 30px; }
+  #wordmark { font-size: 26px; }
   .article-headline { font-size: 30px; }
-  #sources-grid { grid-template-columns: 1fr 1fr 1fr; }
 }
 @media (min-width: 1000px) {
   :root { --pad: 56px; }
-  #wordmark { font-size: 34px; }
+  #wordmark { font-size: 30px; }
   .article-headline { font-size: 32px; }
+
+  #header, #main, #bottom-bar, #info-overlay {
+    max-width: 75%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  #bottom-bar {
+    left: 50%;
+    transform: translateX(-50%);
+    width: 75%;
+  }
 }
 </style>
 </head>
@@ -426,10 +509,46 @@ html, body {
 
 <header id="header">
   <div id="header-row">
-    <div id="sort-group">
-      <span id="sort-label">Sort</span>
-      <button class="sort-btn active" id="sort-time" onclick="setSort('time')">Time</button>
-      <button class="sort-btn" id="sort-source" onclick="setSort('source')">Source</button>
+    <div id="header-left">
+      <div id="clocks-group">
+        <div class="clock-item">
+          <svg class="clock-face" id="clock-nyc" viewBox="0 0 28 28">
+            <circle class="clock-circle" cx="14" cy="14" r="12"/>
+            <line class="clock-hand" id="hand-nyc" x1="14" y1="14" x2="14" y2="4"/>
+            <circle class="clock-center" cx="14" cy="14" r="1.5"/>
+          </svg>
+          <span class="clock-label">NYC</span>
+        </div>
+        <div class="clock-item">
+          <svg class="clock-face" id="clock-lon" viewBox="0 0 28 28">
+            <circle class="clock-circle" cx="14" cy="14" r="12"/>
+            <line class="clock-hand" id="hand-lon" x1="14" y1="14" x2="14" y2="4"/>
+            <circle class="clock-center" cx="14" cy="14" r="1.5"/>
+          </svg>
+          <span class="clock-label">LON</span>
+        </div>
+        <div class="clock-item">
+          <svg class="clock-face" id="clock-fra" viewBox="0 0 28 28">
+            <circle class="clock-circle" cx="14" cy="14" r="12"/>
+            <line class="clock-hand" id="hand-fra" x1="14" y1="14" x2="14" y2="4"/>
+            <circle class="clock-center" cx="14" cy="14" r="1.5"/>
+          </svg>
+          <span class="clock-label">FRA</span>
+        </div>
+        <div class="clock-item">
+          <svg class="clock-face" id="clock-tyo" viewBox="0 0 28 28">
+            <circle class="clock-circle" cx="14" cy="14" r="12"/>
+            <line class="clock-hand" id="hand-tyo" x1="14" y1="14" x2="14" y2="4"/>
+            <circle class="clock-center" cx="14" cy="14" r="1.5"/>
+          </svg>
+          <span class="clock-label">TYO</span>
+        </div>
+      </div>
+      <div id="sort-group">
+        <span id="sort-label">Sort</span>
+        <button class="sort-btn active" id="sort-time" onclick="setSort('time')">Time</button>
+        <button class="sort-btn" id="sort-source" onclick="setSort('source')">Source</button>
+      </div>
     </div>
     <div id="wordmark-group">
       <div id="wordmark">inked</div>
@@ -464,43 +583,48 @@ html, body {
 <div id="info-overlay">
   <div id="info-header">
     <span id="info-title">Sources</span>
+    <button id="info-close" onclick="closeInfo()">Close</button>
   </div>
-  <div id="sources-grid"></div>
-  <div id="info-description">A clean, fast, ad-free headline reader that pulls live RSS feeds from wire services, international broadcasters, investigative outlets, policy journals, and science publications into a single chronological stream — sorted by time or source, filterable by outlet.</div>
+  <div id="sources-list"></div>
+  <div id="info-description">Inked is a clean, fast, ad-free headline reader that pulls live RSS feeds from wire services, international broadcasters, investigative outlets, policy journals, science publications, and foreign press into a single chronological stream — sorted by time or source, filterable by outlet.</div>
   <div id="info-updated"></div>
-
-  <div class="bottom-bar-inner">
-    <span id="rss-label">RSS Feeds</span>
-    <div id="bottom-right">
-      <button class="bar-btn" onclick="loadFeeds()">↻ Refresh</button>
-      <button class="bar-btn bar-btn-fill" onclick="closeInfo()">Close</button>
-    </div>
-  </div>
 </div>
 
 <script>
 const FEEDS = [
-  { id: 'ap',          name: 'AP',             url: 'https://feeds.apnews.com/rss/apf-topnews' },
-  { id: 'reuters',     name: 'Reuters',        url: 'https://feeds.reuters.com/reuters/topNews' },
-  { id: 'bbc',         name: 'BBC',            url: 'https://feeds.bbci.co.uk/news/rss.xml' },
-  { id: 'guardian',    name: 'Guardian',       url: 'https://www.theguardian.com/world/rss' },
-  { id: 'aljazeera',   name: 'Al Jazeera',     url: 'https://www.aljazeera.com/xml/rss/all.xml' },
-  { id: 'dw',          name: 'DW',             url: 'https://rss.dw.com/rdf/rss-en-all' },
-  { id: 'bbc_sci',     name: 'BBC Science',    url: 'https://feeds.bbci.co.uk/news/science_and_environment/rss.xml' },
-  { id: 'dropsite',    name: 'Drop Site',      url: 'https://dropsiteinfo.substack.com/feed' },
-  { id: 'intercept',   name: 'Intercept',      url: 'https://theintercept.com/feed/?lang=en' },
-  { id: 'propublica',  name: 'ProPublica',     url: 'https://feeds.propublica.org/propublica/main' },
-  { id: 'nation',      name: 'The Nation',     url: 'https://www.thenation.com/feed/?post_type=article' },
-  { id: 'politico',    name: 'Politico',       url: 'https://www.politico.com/rss/politicopicks.xml' },
-  { id: 'wsj',         name: 'WSJ',            url: 'https://feeds.a.dj.com/rss/RSSWorldNews.xml' },
-  { id: 'arst',        name: 'Ars Technica',   url: 'https://feeds.arstechnica.com/arstechnica/index' },
-  { id: 'newscientist',name: 'New Scientist',  url: 'https://www.newscientist.com/feed/home' },
-  { id: 'economist',   name: 'Economist',      url: 'https://www.economist.com/the-world-this-week/rss.xml' },
-  { id: 'foreignaff',  name: 'Foreign Affairs',url: 'https://www.foreignaffairs.com/rss.xml' },
-  { id: 'cnn',         name: 'CNN',            url: 'http://rss.cnn.com/rss/edition.rss' },
+  { id: 'ap',          name: 'AP',             url: 'https://feeds.apnews.com/rss/apf-topnews',                                home: 'https://apnews.com' },
+  { id: 'reuters',     name: 'Reuters',        url: 'https://feeds.reuters.com/reuters/topNews',                               home: 'https://reuters.com' },
+  { id: 'bbc',         name: 'BBC',            url: 'https://feeds.bbci.co.uk/news/rss.xml',                                   home: 'https://bbc.com/news' },
+  { id: 'guardian',    name: 'Guardian',       url: 'https://www.theguardian.com/world/rss',                                   home: 'https://theguardian.com' },
+  { id: 'aljazeera',   name: 'Al Jazeera',     url: 'https://www.aljazeera.com/xml/rss/all.xml',                               home: 'https://aljazeera.com' },
+  { id: 'dw',          name: 'DW',             url: 'https://rss.dw.com/rdf/rss-en-all',                                      home: 'https://dw.com/en' },
+  { id: 'bbc_sci',     name: 'BBC Science',    url: 'https://feeds.bbci.co.uk/news/science_and_environment/rss.xml',           home: 'https://bbc.com/news/science_and_environment' },
+  { id: 'dropsite',    name: 'Drop Site',      url: 'https://dropsiteinfo.substack.com/feed',                                  home: 'https://dropsiteinfo.substack.com' },
+  { id: 'intercept',   name: 'Intercept',      url: 'https://theintercept.com/feed/?lang=en',                                  home: 'https://theintercept.com' },
+  { id: 'propublica',  name: 'ProPublica',     url: 'https://feeds.propublica.org/propublica/main',                            home: 'https://propublica.org' },
+  { id: 'nation',      name: 'The Nation',     url: 'https://www.thenation.com/feed/?post_type=article',                       home: 'https://thenation.com' },
+  { id: 'politico',    name: 'Politico',       url: 'https://www.politico.com/rss/politicopicks.xml',                          home: 'https://politico.com' },
+  { id: 'wsj',         name: 'WSJ',            url: 'https://feeds.a.dj.com/rss/RSSWorldNews.xml',                            home: 'https://wsj.com' },
+  { id: 'arst',        name: 'Ars Technica',   url: 'https://feeds.arstechnica.com/arstechnica/index',                        home: 'https://arstechnica.com' },
+  { id: 'newscientist',name: 'New Scientist',  url: 'https://www.newscientist.com/feed/home',                                  home: 'https://newscientist.com' },
+  { id: 'economist',   name: 'Economist',      url: 'https://www.economist.com/the-world-this-week/rss.xml',                   home: 'https://economist.com' },
+  { id: 'foreignaff',  name: 'Foreign Affairs',url: 'https://www.foreignaffairs.com/rss.xml',                                  home: 'https://foreignaffairs.com' },
+  { id: 'cnn',         name: 'CNN',            url: 'http://rss.cnn.com/rss/edition.rss',                                     home: 'https://cnn.com' },
+  { id: 'newyorker',   name: 'New Yorker',     url: 'https://www.newyorker.com/feed/everything',                               home: 'https://newyorker.com' },
+  { id: 'thehill',     name: 'The Hill',       url: 'https://thehill.com/feed/',                                               home: 'https://thehill.com' },
+  { id: 'foreignpol',  name: 'Foreign Policy', url: 'https://foreignpolicy.com/feed/',                                        home: 'https://foreignpolicy.com' },
+  { id: 'spiegel',     name: 'Der Spiegel',    url: 'https://www.spiegel.de/international/index.rss',                         home: 'https://spiegel.de/international' },
+  { id: 'mee',         name: 'Middle East Eye',url: 'https://www.middleeasteye.net/rss',                                      home: 'https://middleeasteye.net' },
+  { id: 'france24',    name: 'France 24',      url: 'https://www.france24.com/en/rss',                                        home: 'https://france24.com/en' },
+  { id: 'occrp',       name: 'OCCRP',          url: 'https://occrp.org/en/feed',                                              home: 'https://occrp.org' },
+  { id: 'nhk',         name: 'NHK World',      url: 'https://www3.nhk.or.jp/rss/news/cat0.xml',                               home: 'https://nhk.or.jp/nhkworld' },
 ];
 
-const API = 'https://api.rss2json.com/v1/api.json?count=20&rss_url=';
+// ── Replace this URL with your deployed Worker URL ──────────────────────────
+const WORKER_URL = 'https://inked-worker.ccunninghamr.workers.dev';
+// ─────────────────────────────────────────────────────────────────────────────
+
+const API = WORKER_URL + '?url=';
 
 let articles = [];
 let currentSort = 'time';
@@ -512,13 +636,13 @@ async function fetchFeed(feed) {
     const res = await fetch(API + encodeURIComponent(feed.url));
     const data = await res.json();
     if (data.status !== 'ok') return [];
-    return (data.items || []).map(item => ({
+    return (data.items || []).slice(0, 20).map(item => ({
       id: feed.id + '_' + btoa(encodeURIComponent(item.link || item.title || '')).slice(0, 20),
       sourceId: feed.id,
       sourceName: feed.name,
       title: (item.title || '').trim(),
       link: item.link || '#',
-      pubDate: new Date(item.pubDate || item.published || Date.now()),
+      pubDate: new Date(item.pubDate || Date.now()),
     }));
   } catch { return []; }
 }
@@ -580,15 +704,15 @@ function buildSourceBar() {
 }
 
 function buildInfoPanel() {
-  const grid = document.getElementById('sources-grid');
-  grid.innerHTML = '';
-  FEEDS.forEach(feed => {
+  const list = document.getElementById('sources-list');
+  list.innerHTML = '';
+  const sorted = [...FEEDS].sort((a, b) => a.name.localeCompare(b.name));
+  sorted.forEach(feed => {
     const count = articles.filter(a => a.sourceId === feed.id).length;
-    if (!count) return;
     const el = document.createElement('div');
     el.className = 'source-entry';
-    el.innerHTML = `<span class="source-entry-name">${esc(feed.name)}</span><span class="source-entry-count">${count} articles</span>`;
-    grid.appendChild(el);
+    el.innerHTML = `<a class="source-entry-name" href="${feed.home}" target="_blank" rel="noopener noreferrer">${esc(feed.name)}</a><span class="source-entry-count">${count || '—'}</span>`;
+    list.appendChild(el);
   });
   if (lastUpdated) {
     document.getElementById('info-updated').textContent =
@@ -676,15 +800,40 @@ function render() {
 }
 
 loadFeeds();
+buildInfoPanel();
 setInterval(loadFeeds, 15 * 60 * 1000);
 
-// Live clock
+// ── Clocks ───────────────────────────────────────────────────────────────────
+const ZONES = [
+  { id: 'nyc', tz: 'America/New_York' },
+  { id: 'lon', tz: 'Europe/London' },
+  { id: 'fra', tz: 'Europe/Berlin' },
+  { id: 'tyo', tz: 'Asia/Tokyo' },
+];
+
 function updateClock() {
   const now = new Date();
   const date = now.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric', year:'numeric' });
   const time = now.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
   document.getElementById('wordmark-datetime').innerHTML = `${date}<br>${time}`;
+
+  ZONES.forEach(({ id, tz }) => {
+    try {
+      const parts = new Intl.DateTimeFormat('en-US', {
+        timeZone: tz,
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: false,
+      }).formatToParts(now);
+      const h = parseInt(parts.find(p => p.type === 'hour').value) % 12;
+      const m = parseInt(parts.find(p => p.type === 'minute').value);
+      const deg = (h * 30) + (m * 0.5);
+      const hand = document.getElementById(`hand-${id}`);
+      if (hand) hand.setAttribute('transform', `rotate(${deg})`);
+    } catch(e) {}
+  });
 }
+
 updateClock();
 setInterval(updateClock, 1000);
 </script>
