@@ -1,16 +1,12 @@
 # Inked
 
-> *When a story is set, it gets inked — committed to type, sent to press.*
-
-A no-frills, ad-free RSS headline reader. Single-column, typographically considered, built to feel like reading a newspaper rather than scrolling a feed. Selected sources provide a center-to-left broad overview of the current state of the world.
-
-No algorithm. No tracking. Just the news.
+Built for those who want to stay on top of the news cycle without ads, algorithms, or noise. A clean, chronological feed pulling from reputable wire services, broadcasters, investigative outlets, policy journals, science publications, and local press — spanning a wide range of viewpoints and perspectives. Filter by source or read everything in order. No affiliations. No sponsorships. No agenda.
 
 ---
 
 ## What it is
 
-Inked is a single HTML file that pulls live RSS feeds from 36 news sources — wire services, international broadcasters, investigative outlets, policy journals, science publications, and local NYC press — and renders them as a clean chronological headline stream.
+Inked is a single HTML file that pulls live RSS feeds from 44 news sources and renders them as a clean chronological headline stream. Articles are cached locally for up to 3 days so content doesn't disappear as feeds roll over.
 
 It runs entirely in the browser. There is no backend, no database, no login. A Cloudflare Worker acts as a lightweight RSS proxy to handle cross-origin fetching.
 
@@ -27,9 +23,9 @@ It runs entirely in the browser. There is no backend, no database, no login. A C
 | Al Jazeera | International Broadcast |
 | DW | International Broadcast |
 | France 24 | International Broadcast |
-| NHK World | International Broadcast |
 | Der Spiegel | European Press |
 | Guardian | Quality General |
+| Global Voices | Citizen Journalism |
 | The Economist | Policy / Analysis |
 | Foreign Affairs | Policy / Analysis |
 | Foreign Policy | Policy / Analysis |
@@ -44,13 +40,20 @@ It runs entirely in the browser. There is no backend, no database, no login. A C
 | ProPublica | Investigative |
 | Drop Site | Investigative |
 | OCCRP | Investigative |
+| Middle East Eye | Investigative |
 | The Nation | Left / Opinion |
 | New Yorker | Long-form / Culture |
+| Savage Minds | Culture / Politics |
 | Ars Technica | Technology / Science |
 | New Scientist | Science |
-| Savage Minds | Culture / Politics |
+| Quanta Magazine | Science / Physics |
+| NASA | Space |
 | Unusual Whales | Markets / Policy |
 | White House (via Google News) | Government |
+| CBC | Canadian Broadcast |
+| Globe and Mail | Canadian Press |
+| The Narwhal | Canadian Investigative |
+| The Breach | Canadian Investigative |
 | Hell Gate | NYC Local |
 | The City | NYC Local |
 | Notify NYC (via Google News) | NYC Emergency |
@@ -71,7 +74,7 @@ Browser (index.html)
                                     └── Return { status, items[] }
 ```
 
-**`index.html`** — The entire front-end. Self-contained, no build step, no dependencies. Fetches all feeds in parallel on load, parses dates, deduplicates, sorts chronologically, and renders with lazy DOM loading (20 articles at a time as you scroll).
+**`index.html`** — The entire front-end. Self-contained, no build step, no dependencies. Fetches all feeds in parallel on load, merges with a 3-day localStorage cache, deduplicates, sorts chronologically, and renders with lazy DOM loading (20 articles at a time as you scroll).
 
 **`inked-worker.js`** — The Cloudflare Worker source code, included here for reference. This file is **not served from this repository** — it must be deployed separately via the Cloudflare Workers dashboard (see below). Cloudflare runs it on their infrastructure independently of this repo.
 
@@ -100,7 +103,7 @@ const WORKER_URL = 'https://inked-worker.yourname.workers.dev';
 
 ### 3. Deploy to Cloudflare Pages
 
-- Push `index.html` and `README.md` to a GitHub repository
+- Push `index.html`, `inked-worker.js`, and `README.md` to a GitHub repository
 - Connect the repo to Cloudflare Pages (Workers & Pages → Create → Connect to Git)
 - No build command needed — it's a static file
 - Cloudflare will deploy to `your-project.pages.dev`
@@ -111,6 +114,11 @@ const WORKER_URL = 'https://inked-worker.yourname.workers.dev';
 - Tap Share → Add to Home Screen
 - Name it **Inked**
 - Drop an `icon.png` (square, 512×512) in the repo root for a custom home screen icon
+
+### 5. Add to Home Screen (Android)
+
+- Open the Pages URL in Chrome
+- Tap the browser menu → Add to Home Screen or Install App
 
 ---
 
@@ -132,6 +140,17 @@ These will display a `••` indicator and a **Read** button that expands the a
 
 ---
 
+## Caching
+
+Articles are stored in `localStorage` for up to 3 days (2MB cap). This means:
+
+- Articles load instantly on return visits from cache while fresh feeds fetch in the background
+- Content doesn't disappear when it rolls off a feed's RSS window
+- The cache trims automatically — oldest articles are removed first if the size limit is reached
+- Cache is per-browser and per-device; clearing browser data will reset it
+
+---
+
 ## License
 
 GPL-3.0 — see [LICENSE](LICENSE) for details.
@@ -139,4 +158,3 @@ GPL-3.0 — see [LICENSE](LICENSE) for details.
 ---
 
 *Designed and built by [C. Cunningham](https://github.com/christophcunningham), 2026.*
-
