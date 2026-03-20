@@ -679,8 +679,11 @@ const WORKER_URL = 'https://inked-worker.ccunninghamr.workers.dev';
 
 const API = WORKER_URL + '?url=';
 
-let articles = [];
+let articles = JSON.parse('[]'); // will be populated from cache + fetch
 let lastUpdated = null;
+
+// Pre-populate from cache immediately so articles show on load
+articles = loadCache();
 
 // Feeds that include full article text in RSS
 const FULL_TEXT_FEEDS = new Set(['propublica','intercept','dropsite','nation','occrp','arst','savageminds','mee']);
@@ -731,6 +734,7 @@ async function loadFeeds() {
 
   articles = [...existingMap.values()].sort((a, b) => b.pubDate - a.pubDate);
 
+  saveCache(articles);
   lastUpdated = new Date();
   buildSourceBar();
   buildInfoPanel();
@@ -877,7 +881,38 @@ function makeCard(a, showSource) {
   return el;
 }
 
-// ── Lazy rendering ───────────────────────────────────────────────────────────
+// ── Article Cache (localStorage) ─────────────────────────────────────────────
+const CACHE_KEY = 'inked_articles';
+const MAX_AGE_MS = 3 * 24 * 60 * 60 * 1000; // 3 days
+const MAX_BYTES  = 2 * 1024 * 1024;          // 2MB
+
+function saveCache(arts) {
+  try {
+    const cutoff = Date.now() - MAX_AGE_MS;
+    const fresh = arts.filter(a => a.pubDate >= cutoff);
+    let json = JSON.stringify(fresh.map(a => ({
+      ...a,
+      pubDate: a.pubDate.getTime(), // store as timestamp
+    })));
+    // Trim oldest if over size limit
+    while (json.length > MAX_BYTES && fresh.length > 0) {
+      fresh.pop();
+      json = JSON.stringify(fresh.map(a => ({ ...a, pubDate: a.pubDate.getTime() })));
+    }
+    localStorage.setItem(CACHE_KEY, json);
+  } catch(e) {}
+}
+
+function loadCache() {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return [];
+    const cutoff = Date.now() - MAX_AGE_MS;
+    return JSON.parse(raw)
+      .map(a => ({ ...a, pubDate: new Date(a.pubDate) }))
+      .filter(a => a.pubDate >= cutoff);
+  } catch(e) { return []; }
+}
 const BATCH = 20; // articles rendered per batch
 let renderQueue = [];
 let sentinel = null;
@@ -971,6 +1006,15 @@ function loadFeedsThrottled() {
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible') loadFeedsThrottled();
 });
+
+// Show cached articles immediately, then fetch fresh
+if (articles.length > 0) {
+  buildSourceBar();
+  buildInfoPanel();
+  document.getElementById('status').style.display = 'none';
+  document.getElementById('bottom-bar').style.display = 'block';
+  render();
+}
 
 loadFeeds();
 buildInfoPanel();
