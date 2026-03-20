@@ -725,33 +725,21 @@ async function loadFeeds() {
   const results = await Promise.allSettled(FEEDS.map(fetchFeed));
   const raw = results.flatMap(r => r.status === 'fulfilled' ? r.value : []);
 
-  // Merge new articles with existing ones, deduplicate by id
-  const existingIds = new Set(articles.map(a => a.id));
-  const newArticles = raw.filter(a => !existingIds.has(a.id));
+  // Merge with existing articles, deduplicate by id, keep all
+  const existingMap = new Map(articles.map(a => [a.id, a]));
+  raw.forEach(a => { if (!existingMap.has(a.id)) existingMap.set(a.id, a); });
 
-  const seen = new Set(articles.map(a => a.id));
-  const merged = [...articles, ...newArticles]
-    .filter(a => { if (seen.has(a.id) && newArticles.includes(a)) return false; return true; });
-
-  // Full dedup and sort
-  const deduped = new Set();
-  articles = [...articles, ...newArticles]
-    .filter(a => { if (deduped.has(a.id)) return false; deduped.add(a.id); return true; })
-    .sort((a, b) => b.pubDate - a.pubDate);
+  articles = [...existingMap.values()].sort((a, b) => b.pubDate - a.pubDate);
 
   lastUpdated = new Date();
   buildSourceBar();
   buildInfoPanel();
 
-  // Only clear and re-render if we have new content
-  if (newArticles.length > 0 || articles.length === 0) {
-    document.getElementById('feed-list').innerHTML = '';
-    document.getElementById('status').style.display = 'none';
-    render();
-  }
-
   document.getElementById('status').style.display = 'none';
   document.getElementById('bottom-bar').style.display = 'block';
+  document.getElementById('feed-list').innerHTML = '';
+  render();
+
   btn.classList.remove('spinning');
 }
 
@@ -970,13 +958,8 @@ function render() {
   }
 }
 
-lastLoad = Date.now();
-loadFeeds();
-buildInfoPanel();
-setInterval(loadFeeds, 15 * 60 * 1000);
-
 // Reload on visibility only if 5+ minutes have passed
-let lastLoad = 0;
+let lastLoad = Date.now();
 function loadFeedsThrottled() {
   const now = Date.now();
   if (now - lastLoad > 5 * 60 * 1000) {
@@ -988,6 +971,10 @@ function loadFeedsThrottled() {
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible') loadFeedsThrottled();
 });
+
+loadFeeds();
+buildInfoPanel();
+setInterval(loadFeeds, 15 * 60 * 1000);
 
 // ── Clocks ───────────────────────────────────────────────────────────────────
 const ZONES = [
