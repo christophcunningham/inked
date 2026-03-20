@@ -706,7 +706,7 @@ async function fetchFeed(feed) {
       if (feed.id === 'economist' && (!title || title.toLowerCase().includes('cartoon') || title.toLowerCase().includes('chart'))) return null;
 
       return {
-        id: feed.id + '_' + btoa(encodeURIComponent(item.link || title || '')).slice(0, 20),
+        id: feed.id + '_' + (item.link || title || Math.random().toString(36)),
         sourceId: feed.id,
         sourceName: feed.name,
         title,
