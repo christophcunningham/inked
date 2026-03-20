@@ -721,21 +721,34 @@ async function fetchFeed(feed) {
 async function loadFeeds() {
   const btn = document.getElementById('refresh-btn');
   btn.classList.add('spinning');
-  document.getElementById('status').style.display = 'block';
-  document.getElementById('feed-list').innerHTML = '';
 
   const results = await Promise.allSettled(FEEDS.map(fetchFeed));
   const raw = results.flatMap(r => r.status === 'fulfilled' ? r.value : []);
 
-  const seen = new Set();
-  articles = raw
-    .filter(a => { if (seen.has(a.id)) return false; seen.add(a.id); return true; })
+  // Merge new articles with existing ones, deduplicate by id
+  const existingIds = new Set(articles.map(a => a.id));
+  const newArticles = raw.filter(a => !existingIds.has(a.id));
+
+  const seen = new Set(articles.map(a => a.id));
+  const merged = [...articles, ...newArticles]
+    .filter(a => { if (seen.has(a.id) && newArticles.includes(a)) return false; return true; });
+
+  // Full dedup and sort
+  const deduped = new Set();
+  articles = [...articles, ...newArticles]
+    .filter(a => { if (deduped.has(a.id)) return false; deduped.add(a.id); return true; })
     .sort((a, b) => b.pubDate - a.pubDate);
 
   lastUpdated = new Date();
   buildSourceBar();
   buildInfoPanel();
-  render();
+
+  // Only clear and re-render if we have new content
+  if (newArticles.length > 0 || articles.length === 0) {
+    document.getElementById('feed-list').innerHTML = '';
+    document.getElementById('status').style.display = 'none';
+    render();
+  }
 
   document.getElementById('status').style.display = 'none';
   document.getElementById('bottom-bar').style.display = 'block';
@@ -957,13 +970,23 @@ function render() {
   }
 }
 
+lastLoad = Date.now();
 loadFeeds();
 buildInfoPanel();
 setInterval(loadFeeds, 15 * 60 * 1000);
 
-// Reload whenever the app is opened or tab becomes visible
+// Reload on visibility only if 5+ minutes have passed
+let lastLoad = 0;
+function loadFeedsThrottled() {
+  const now = Date.now();
+  if (now - lastLoad > 5 * 60 * 1000) {
+    lastLoad = now;
+    loadFeeds();
+  }
+}
+
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible') loadFeeds();
+  if (document.visibilityState === 'visible') loadFeedsThrottled();
 });
 
 // ── Clocks ───────────────────────────────────────────────────────────────────
