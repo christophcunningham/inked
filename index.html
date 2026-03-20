@@ -183,6 +183,31 @@ html, body {
   line-height: 1.5;
 }
 
+#source-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+#src-scroll-left,
+#src-scroll-right {
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  font-family: var(--font-ui);
+  color: var(--ink-light);
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.1s;
+  user-select: none;
+}
+
+#src-scroll-left:hover,
+#src-scroll-right:hover { color: var(--ink); }
+
 #source-bar {
   display: flex;
   overflow-x: auto;
@@ -203,7 +228,7 @@ html, body {
   padding: 3px 10px;
   border: 1px solid var(--rule);
   background: transparent;
-  color: var(--ink-light);
+  color: var(--ink-mid);
   cursor: pointer;
   white-space: nowrap;
   -webkit-tap-highlight-color: transparent;
@@ -625,7 +650,11 @@ html, body {
       <div id="wordmark-datetime"></div>
     </div>
   </div>
-  <div id="source-bar"></div>
+  <div id="source-bar-wrap">
+    <button id="src-scroll-left" onclick="scrollSourceBar(-1)">‹</button>
+    <div id="source-bar"></div>
+    <button id="src-scroll-right" onclick="scrollSourceBar(1)">›</button>
+  </div>
 </header>
 
 <main id="main">
@@ -1071,7 +1100,16 @@ loadFeeds();
 buildInfoPanel();
 setInterval(loadFeeds, 15 * 60 * 1000);
 
-// ── Clocks ───────────────────────────────────────────────────────────────────
+function scrollSourceBar(dir) {
+  document.getElementById('source-bar').scrollBy({ left: dir * 200, behavior: 'smooth' });
+}
+
+document.getElementById('source-bar').addEventListener('wheel', (e) => {
+  if (e.deltaY !== 0) {
+    e.preventDefault();
+    document.getElementById('source-bar').scrollLeft += e.deltaY;
+  }
+}, { passive: false });
 const ZONES = [
   { id: 'nyc', tz: 'America/New_York' },
   { id: 'lon', tz: 'Europe/London' },
