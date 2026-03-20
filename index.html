@@ -659,6 +659,7 @@ const FEEDS = [
   { id: 'foreignpol',  name: 'Foreign Policy', url: 'https://foreignpolicy.com/feed/',                                                   home: 'https://foreignpolicy.com' },
   { id: 'spiegel',     name: 'Der Spiegel',    url: 'https://www.spiegel.de/international/index.rss',                                    home: 'https://spiegel.de/international' },
   { id: 'france24',    name: 'France 24',      url: 'https://www.france24.com/en/rss',                                                   home: 'https://france24.com/en' },
+  { id: 'mee',         name: 'Middle East Eye',url: 'https://www.middleeasteye.net/rss',                                                  home: 'https://middleeasteye.net' },
   { id: 'occrp',       name: 'OCCRP',          url: 'https://occrp.org/en/feed',                                                         home: 'https://occrp.org' },
   { id: 'savageminds', name: 'Savage Minds',   url: 'https://savageminds.substack.com/feed',                                             home: 'https://savageminds.substack.com' },
   { id: 'bulwark',     name: 'The Bulwark',    url: 'https://thebulwark.substack.com/feed',                                             home: 'https://www.thebulwark.com' },
@@ -682,7 +683,7 @@ let articles = [];
 let lastUpdated = null;
 
 // Feeds that include full article text in RSS
-const FULL_TEXT_FEEDS = new Set(['propublica','intercept','dropsite','nation','occrp','arst','savageminds']);
+const FULL_TEXT_FEEDS = new Set(['propublica','intercept','dropsite','nation','occrp','arst','savageminds','mee']);
 
 async function fetchFeed(feed) {
   try {
@@ -710,7 +711,7 @@ async function fetchFeed(feed) {
         pubDate,
         hasFullText: FULL_TEXT_FEEDS.has(feed.id),
         fullText: FULL_TEXT_FEEDS.has(feed.id)
-          ? (item.content || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
+          ? decodeEntities((item.content || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()).slice(0, 2000)
           : null,
       };
     }).filter(a => a && a.title && a.pubDate);
@@ -825,6 +826,18 @@ function formatAge(date) {
   }
   const d = Math.floor(s / 86400);
   return d + (d === 1 ? ' day ago' : ' days ago');
+}
+
+function decodeEntities(str) {
+  return str
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCharCode(parseInt(h, 16)));
 }
 
 function esc(s) {
