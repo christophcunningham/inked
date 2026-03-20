@@ -714,7 +714,7 @@ async function fetchFeed(feed) {
         pubDate,
         hasFullText: FULL_TEXT_FEEDS.has(feed.id),
         fullText: FULL_TEXT_FEEDS.has(feed.id)
-          ? decodeEntities((item.content || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()).slice(0, 2000)
+          ? extractText(item.content || '')
           : null,
       };
     }).filter(a => a && a.title);
@@ -831,6 +831,17 @@ function formatAge(date) {
   }
   const d = Math.floor(s / 86400);
   return d + (d === 1 ? ' day ago' : ' days ago');
+}
+
+function extractText(html) {
+  // Extract text from <p> tags first, fall back to stripping all tags
+  const paragraphs = [...html.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi)]
+    .map(m => m[1].replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim())
+    .filter(t => t.length > 20);
+  const text = paragraphs.length > 0
+    ? paragraphs.join(' ')
+    : html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  return decodeEntities(text).slice(0, 2000);
 }
 
 function decodeEntities(str) {
