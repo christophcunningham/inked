@@ -666,7 +666,7 @@ const FEEDS = [
 const WORKER_URL = 'https://inked-worker.ccunninghamr.workers.dev';
 // ─────────────────────────────────────────────────────────────────────────────
 
-const API = WORKER_URL + '?count=50&url=';
+const API = WORKER_URL + '?count=75&url=';
 
 let articles = [];
 let currentSort = 'time';
@@ -745,6 +745,7 @@ function buildSourceBar() {
   bar.innerHTML = '';
 
   const availableIds = FEEDS.filter(f => articles.some(a => a.sourceId === f.id)).map(f => f.id);
+  const sortedFeeds = FEEDS.filter(f => availableIds.includes(f.id)).sort((a, b) => a.name.localeCompare(b.name));
 
   const allBtn = document.createElement('button');
   allBtn.id = 'src-all';
@@ -774,7 +775,7 @@ function buildSourceBar() {
   updateAllBtn();
   bar.appendChild(allBtn);
 
-  FEEDS.forEach(feed => {
+  sortedFeeds.forEach(feed => {
     if (!availableIds.includes(feed.id)) return;
     const btn = document.createElement('button');
     btn.className = 'src-tag' + (activeSources.has(feed.id) ? ' active' : '');
@@ -892,8 +893,8 @@ function render() {
       list.appendChild(makeCard(a, true));
     });
   } else {
-    FEEDS.forEach(feed => {
-      if (!activeSources.has(feed.id)) return;
+    const sortedSources = FEEDS.filter(f => activeSources.has(f.id)).sort((a, b) => a.name.localeCompare(b.name));
+    sortedSources.forEach(feed => {
       const items = visible.filter(a => a.sourceId === feed.id);
       if (!items.length) return;
       const section = document.createElement('div');
