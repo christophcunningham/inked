@@ -109,10 +109,10 @@ html, body {
 .clock-label {
   font-family: var(--font-ui);
   font-size: 7px;
-  font-weight: 400;
+  font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--ink-light);
+  color: var(--ink-mid);
   text-align: center;
 }
 
@@ -278,6 +278,33 @@ html, body {
   top: -2px;
   letter-spacing: 2px;
 }
+
+.paywall-tag {
+  font-family: var(--font-ui);
+  font-size: 8px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+}
+
+.article-archive {
+  display: inline-block;
+  margin-top: 8px;
+  font-family: var(--font-ui);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border: 1px solid var(--rule-heavy);
+  background: transparent;
+  color: var(--ink-mid);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.1s;
+}
+.article-archive:active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 
 .article-expand {
   display: inline-block;
@@ -686,6 +713,9 @@ let lastUpdated = null;
 // Pre-populate from cache immediately so articles show on load
 articles = loadCache();
 
+// Outlets known to be paywalled
+const PAYWALLED = new Set(['wsj','nyt','economist','foreignaff','newyorker','newscientist','foreignpol']);
+
 // Feeds that include full article text in RSS
 const FULL_TEXT_FEEDS = new Set(['propublica','intercept','dropsite','nation','occrp','arst','savageminds']);
 
@@ -714,6 +744,7 @@ async function fetchFeed(feed) {
         link: item.link || '#',
         pubDate,
         hasFullText: FULL_TEXT_FEEDS.has(feed.id),
+        isPaywalled: PAYWALLED.has(feed.id),
         fullText: FULL_TEXT_FEEDS.has(feed.id)
           ? extractText(item.content || '')
           : null,
@@ -874,8 +905,9 @@ function makeCard(a, showSource) {
   el.innerHTML = `
     <a class="article-link" href="${a.link}" target="_blank" rel="noopener noreferrer">
       <div class="article-headline">${esc(a.title)}${indicator}</div>
-      <div class="article-meta">${meta}</div>
+      <div class="article-meta">${meta}${a.isPaywalled ? ' <span class="paywall-tag">paywalled</span>' : ''}</div>
     </a>
+    ${a.isPaywalled ? `<a class="article-archive" href="https://archive.ph/newest/${encodeURIComponent(a.link)}" target="_blank" rel="noopener noreferrer">Archive</a>` : ''}
     ${a.hasFullText && a.fullText ? `<div class="article-body" style="display:none">${esc(a.fullText)}</div><button class="article-expand">Read</button>` : ''}
   `;
 
