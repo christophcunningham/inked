@@ -161,7 +161,7 @@ html, body {
 
 #wordmark {
   font-family: var(--font-ui);
-  font-size: 22px;
+  font-size: 17px;
   font-weight: 400;
   font-style: normal;
   letter-spacing: -0.03em;
@@ -245,12 +245,8 @@ html, body {
 
 .article {
   display: block;
-  text-decoration: none;
-  color: inherit;
   padding: 22px 0 18px;
   border-bottom: 1px solid var(--rule);
-  -webkit-tap-highlight-color: transparent;
-  cursor: pointer;
 }
 .article:active { opacity: 0.55; }
 
@@ -264,7 +260,50 @@ html, body {
   margin-bottom: 8px;
 }
 
-.article-meta {
+.article-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.full-text-dot {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 20px;
+  line-height: 0;
+  vertical-align: middle;
+  color: var(--ink-light);
+  position: relative;
+  top: -1px;
+}
+
+.article-body {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.65;
+  color: var(--ink-mid);
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--rule);
+}
+
+.article-expand {
+  display: inline-block;
+  margin-top: 10px;
+  font-family: var(--font-ui);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border: 1px solid var(--rule-heavy);
+  background: transparent;
+  color: var(--ink-mid);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.article-expand:active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
   font-family: var(--font-ui);
   font-size: 13px;
   font-weight: 400;
@@ -483,12 +522,12 @@ html, body {
 /* ── RESPONSIVE ── */
 @media (min-width: 640px) {
   :root { --pad: 40px; }
-  #wordmark { font-size: 26px; }
+  #wordmark { font-size: 21px; }
   .article-headline { font-size: 30px; }
 }
 @media (min-width: 1000px) {
   :root { --pad: 56px; }
-  #wordmark { font-size: 30px; }
+  #wordmark { font-size: 25px; }
   .article-headline { font-size: 32px; }
 
   #header, #main, #bottom-bar, #info-overlay {
@@ -617,7 +656,6 @@ const FEEDS = [
   { id: 'mee',         name: 'Middle East Eye',url: 'https://www.middleeasteye.net/rss',                                      home: 'https://middleeasteye.net' },
   { id: 'france24',    name: 'France 24',      url: 'https://www.france24.com/en/rss',                                        home: 'https://france24.com/en' },
   { id: 'occrp',       name: 'OCCRP',          url: 'https://occrp.org/en/feed',                                              home: 'https://occrp.org' },
-  { id: 'nhk',         name: 'NHK World',      url: 'https://www3.nhk.or.jp/rss/news/cat0.xml',                               home: 'https://nhk.or.jp/nhkworld' },
 ];
 
 // ── Replace this URL with your deployed Worker URL ──────────────────────────
@@ -631,19 +669,39 @@ let currentSort = 'time';
 let activeSources = new Set(FEEDS.map(f => f.id));
 let lastUpdated = null;
 
+// Feeds that include full article text in RSS
+const FULL_TEXT_FEEDS = new Set(['propublica','intercept','dropsite','nation','occrp','arst','mee']);
+
 async function fetchFeed(feed) {
   try {
     const res = await fetch(API + encodeURIComponent(feed.url));
     const data = await res.json();
     if (data.status !== 'ok') return [];
-    return (data.items || []).slice(0, 20).map(item => ({
-      id: feed.id + '_' + btoa(encodeURIComponent(item.link || item.title || '')).slice(0, 20),
-      sourceId: feed.id,
-      sourceName: feed.name,
-      title: (item.title || '').trim(),
-      link: item.link || '#',
-      pubDate: new Date(item.pubDate || Date.now()),
-    }));
+    const now = Date.now();
+    const sixMonthsAgo = now - (180 * 24 * 60 * 60 * 1000);
+    return (data.items || []).slice(0, 50).map(item => {
+      // Validate date — reject anything in the future or clearly epoch/invalid
+      const raw = new Date(item.pubDate || '');
+      const pubDate = (!isNaN(raw) && raw > sixMonthsAgo && raw <= now + 86400000)
+        ? raw : null;
+
+      const title = (item.title || '').trim();
+      // Filter Economist non-article entries (charts, cartoons, etc.)
+      if (feed.id === 'economist' && (!title || title.toLowerCase().includes('cartoon') || title.toLowerCase().includes('chart'))) return null;
+
+      return {
+        id: feed.id + '_' + btoa(encodeURIComponent(item.link || title || '')).slice(0, 20),
+        sourceId: feed.id,
+        sourceName: feed.name,
+        title,
+        link: item.link || '#',
+        pubDate,
+        hasFullText: FULL_TEXT_FEEDS.has(feed.id),
+        fullText: FULL_TEXT_FEEDS.has(feed.id)
+          ? (item.content || item.description || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
+          : null,
+      };
+    }).filter(a => a && a.title && a.pubDate);
   } catch { return []; }
 }
 
@@ -682,6 +740,26 @@ function buildSourceBar() {
   const bar = document.getElementById('source-bar');
   bar.innerHTML = '';
 
+  const allBtn = document.createElement('button');
+  allBtn.className = 'src-tag active';
+  allBtn.id = 'src-all';
+  allBtn.textContent = 'All';
+  allBtn.onclick = () => {
+    const allActive = activeSources.size === FEEDS.filter(f => articles.some(a => a.sourceId === f.id)).length;
+    if (allActive) {
+      // Deselect all
+      activeSources.clear();
+      bar.querySelectorAll('.src-tag:not(#src-all)').forEach(t => t.classList.remove('active'));
+      allBtn.classList.remove('active');
+    } else {
+      // Select all
+      FEEDS.forEach(f => activeSources.add(f.id));
+      bar.querySelectorAll('.src-tag').forEach(t => t.classList.add('active'));
+    }
+    render();
+  };
+  bar.appendChild(allBtn);
+
   FEEDS.forEach(feed => {
     if (!articles.some(a => a.sourceId === feed.id)) return;
     const btn = document.createElement('button');
@@ -689,7 +767,6 @@ function buildSourceBar() {
     btn.id = `src-${feed.id}`;
     btn.textContent = feed.name;
     btn.onclick = () => {
-      if (activeSources.has(feed.id) && activeSources.size === 1) return;
       if (activeSources.has(feed.id)) {
         activeSources.delete(feed.id);
         btn.classList.remove('active');
@@ -697,6 +774,9 @@ function buildSourceBar() {
         activeSources.add(feed.id);
         btn.classList.add('active');
       }
+      const availableFeeds = FEEDS.filter(f => articles.some(a => a.sourceId === f.id));
+      const allActive = availableFeeds.every(f => activeSources.has(f.id));
+      document.getElementById('src-all')?.classList.toggle('active', allActive);
       render();
     };
     bar.appendChild(btn);
@@ -724,6 +804,7 @@ function openInfo()  { document.getElementById('info-overlay').classList.add('op
 function closeInfo() { document.getElementById('info-overlay').classList.remove('open'); }
 
 function getVisible() {
+  if (activeSources.size === 0) return [];
   return articles.filter(a => activeSources.has(a.sourceId));
 }
 
@@ -744,18 +825,34 @@ function esc(s) {
 }
 
 function makeCard(a, showSource) {
-  const el = document.createElement('a');
+  const el = document.createElement('div');
   el.className = 'article';
-  el.href = a.link;
-  el.target = '_blank';
-  el.rel = 'noopener noreferrer';
+
   const meta = showSource
     ? `${formatAge(a.pubDate)} – ${esc(a.sourceName)}`
     : formatAge(a.pubDate);
+
+  const indicator = a.hasFullText ? '<span class="full-text-dot" title="Full text available">·</span>' : '';
+
   el.innerHTML = `
-    <div class="article-headline">${esc(a.title)}</div>
-    <div class="article-meta">${meta}</div>
+    <a class="article-link" href="${a.link}" target="_blank" rel="noopener noreferrer">
+      <div class="article-headline">${esc(a.title)}${indicator}</div>
+      <div class="article-meta">${meta}</div>
+    </a>
+    ${a.hasFullText && a.fullText ? `<div class="article-body" style="display:none">${esc(a.fullText)}</div><button class="article-expand">Read</button>` : ''}
   `;
+
+  if (a.hasFullText && a.fullText) {
+    const btn = el.querySelector('.article-expand');
+    const body = el.querySelector('.article-body');
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const open = body.style.display !== 'none';
+      body.style.display = open ? 'none' : 'block';
+      btn.textContent = open ? 'Read' : 'Close';
+    };
+  }
+
   return el;
 }
 
@@ -802,6 +899,11 @@ function render() {
 loadFeeds();
 buildInfoPanel();
 setInterval(loadFeeds, 15 * 60 * 1000);
+
+// Reload whenever the app is opened or tab becomes visible
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') loadFeeds();
+});
 
 // ── Clocks ───────────────────────────────────────────────────────────────────
 const ZONES = [
