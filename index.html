@@ -712,7 +712,10 @@ const FEEDS = [
   { id: 'wsj',         name: 'WSJ',            url: 'https://bsky.app/profile/wsj.com/rss',                                             home: 'https://wsj.com' },
   { id: 'arst',        name: 'Ars Technica',   url: 'https://feeds.arstechnica.com/arstechnica/index',                                   home: 'https://arstechnica.com' },
   { id: 'newscientist',name: 'New Scientist',  url: 'https://www.newscientist.com/feed/home',                                             home: 'https://newscientist.com' },
+  { id: 'economist',   name: 'Economist',      url: 'https://www.economist.com/leaders/rss.xml',                                          home: 'https://economist.com' },
   { id: 'economist',   name: 'Economist',      url: 'https://www.economist.com/international/rss.xml',                                    home: 'https://economist.com' },
+  { id: 'economist',   name: 'Economist',      url: 'https://www.economist.com/business/rss.xml',                                         home: 'https://economist.com' },
+  { id: 'economist',   name: 'Economist',      url: 'https://www.economist.com/science-and-technology/rss.xml',                           home: 'https://economist.com' },
   { id: 'foreignaff',  name: 'Foreign Affairs',url: 'https://www.foreignaffairs.com/rss.xml',                                             home: 'https://foreignaffairs.com' },
   { id: 'newyorker',   name: 'New Yorker',     url: 'https://www.newyorker.com/feed/everything',                                          home: 'https://newyorker.com' },
   { id: 'thehill',     name: 'The Hill',       url: 'https://thehill.com/feed/',                                                          home: 'https://thehill.com' },
@@ -724,7 +727,6 @@ const FEEDS = [
   { id: 'savageminds', name: 'Savage Minds',   url: 'https://savageminds.substack.com/feed',                                             home: 'https://savageminds.substack.com' },
   { id: 'bulwark',     name: 'The Bulwark',    url: 'https://thebulwark.substack.com/feed',                                             home: 'https://www.thebulwark.com' },
   { id: 'isw',         name: 'ISW',            url: 'https://bsky.app/profile/thestudyofwar.bsky.social/rss',                           home: 'https://www.iswresearch.org' },
-  { id: 'whitehouse',  name: 'White House',    url: 'https://news.google.com/rss/search?q=when:24h+allinurl:whitehouse.gov&ceid=US:en&hl=en-US&gl=US', home: 'https://www.whitehouse.gov' },
   { id: 'unusualwhales',name: 'Unusual Whales',url: 'https://unusualwhales.substack.com/feed',                                         home: 'https://unusualwhales.com' },
   { id: 'nyt',         name: 'NYT',            url: 'https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml',                        home: 'https://nytimes.com' },
   { id: 'hellgate',    name: 'Hell Gate',      url: 'https://hellgatenyc.com/all-posts/rss/',                                             home: 'https://hellgatenyc.com' },
@@ -737,6 +739,11 @@ const FEEDS = [
   { id: 'quanta',      name: 'Quanta',         url: 'https://www.quantamagazine.org/feed/',                                               home: 'https://www.quantamagazine.org' },
   { id: 'nasa',        name: 'NASA',           url: 'https://www.nasa.gov/rss/dyn/breaking_news.rss',                                     home: 'https://www.nasa.gov/news' },
   { id: 'globalvoices',name: 'Global Voices', url: 'https://globalvoices.org/feed/',                                                     home: 'https://globalvoices.org' },
+  { id: 'npr',         name: 'NPR',            url: 'https://feeds.npr.org/1001/rss.xml',                                                 home: 'https://npr.org' },
+  { id: 'scmp',        name: 'South China MP', url: 'https://www.scmp.com/rss/91/feed',                                                   home: 'https://scmp.com' },
+  { id: 'bellingcat',  name: 'Bellingcat',     url: 'https://www.bellingcat.com/feed',                                                    home: 'https://bellingcat.com' },
+  { id: 'mittr',       name: 'MIT Tech Review',url: 'https://www.technologyreview.com/topnews.rss',                                       home: 'https://technologyreview.com' },
+  { id: 'ft',          name: 'Financial Times', url: 'https://www.ft.com/rss/home/international',                                        home: 'https://ft.com' },
 ];
 
 // ── Replace this URL with your deployed Worker URL ──────────────────────────
@@ -752,7 +759,7 @@ let lastUpdated = null;
 articles = loadCache();
 
 // Outlets known to be paywalled
-const PAYWALLED = new Set(['wsj','nyt','economist','foreignaff','newyorker','newscientist','foreignpol']);
+const PAYWALLED = new Set(['wsj','nyt','economist','foreignaff','newyorker','newscientist','foreignpol','ft']);
 
 // Feeds that include full article text in RSS
 const FULL_TEXT_FEEDS = new Set(['propublica','intercept','dropsite','nation','occrp','arst','savageminds']);
@@ -763,12 +770,15 @@ async function fetchFeed(feed) {
     const data = await res.json();
     if (data.status !== 'ok') return [];
     const now = Date.now();
-    const sixMonthsAgo = now - (180 * 24 * 60 * 60 * 1000);
+    const tenMonthsAgo = now - (300 * 24 * 60 * 60 * 1000);
     return (data.items || []).map(item => {
       // Validate date — reject anything in the future or clearly epoch/invalid
       const raw = new Date(item.pubDate || '');
       // Accept any valid date — only reject completely unparseable dates
       const pubDate = !isNaN(raw) ? raw : new Date();
+
+      // Reject articles older than 10 months
+      if (pubDate.getTime() < tenMonthsAgo) return null;
 
       const title = (item.title || item.description || '').trim();
       // Filter Economist non-article entries (charts, cartoons, etc.)
@@ -869,8 +879,11 @@ function updateSourceBar() {
 function buildInfoPanel() {
   const list = document.getElementById('sources-list');
   list.innerHTML = '';
+  const seen = new Set();
   const sorted = [...FEEDS].sort((a, b) => a.name.localeCompare(b.name));
   sorted.forEach(feed => {
+    if (seen.has(feed.id)) return;
+    seen.add(feed.id);
     const count = articles.filter(a => a.sourceId === feed.id).length;
     const el = document.createElement('div');
     el.className = 'source-entry';
