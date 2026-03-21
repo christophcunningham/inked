@@ -6,7 +6,7 @@ Built for those who want to stay on top of the news cycle without ads, algorithm
 
 ## What it is
 
-Inked is a single HTML file that pulls live RSS feeds from 44 news sources and renders them as a clean chronological headline stream. Articles are cached locally for up to 3 days so content doesn't disappear as feeds roll over.
+Inked is a single HTML file that pulls live RSS feeds from 48 news sources and renders them as a clean chronological headline stream. Articles are cached locally for up to 3 days so content doesn't disappear as feeds roll over. Articles older than 10 months are filtered out globally.
 
 It runs entirely in the browser. There is no backend, no database, no login. A Cloudflare Worker acts as a lightweight RSS proxy to handle cross-origin fetching.
 
@@ -16,7 +16,7 @@ It runs entirely in the browser. There is no backend, no database, no login. A C
 
 | Outlet | Category |
 |---|---|
-| AP | Wire |
+| AP (via Bluesky) | Wire |
 | Reuters (via Google News) | Wire |
 | BBC | International Broadcast |
 | BBC Science | Science |
@@ -26,40 +26,44 @@ It runs entirely in the browser. There is no backend, no database, no login. A C
 | Der Spiegel | European Press |
 | Guardian | Quality General |
 | Global Voices | Citizen Journalism |
+| South China Morning Post | Asia / China |
 | The Economist | Policy / Analysis |
 | Foreign Affairs | Policy / Analysis |
 | Foreign Policy | Policy / Analysis |
-| ISW | Defense / Conflict |
-| CNN | US Legacy |
+| Financial Times | Business / Economics |
+| ISW (via Bluesky) | Defense / Conflict |
 | NYT | US Legacy |
-| WSJ | US Legacy |
+| WSJ (via Bluesky) | US Legacy |
 | Politico | US Politics |
 | The Hill | US Politics |
 | The Bulwark | US Politics |
+| NPR | US Public Radio |
 | The Intercept | Investigative |
 | ProPublica | Investigative |
 | Drop Site | Investigative |
 | OCCRP | Investigative |
-| Middle East Eye | Investigative |
+| Bellingcat | Open-Source Investigation |
+| Middle East Eye | Middle East |
 | The Nation | Left / Opinion |
 | New Yorker | Long-form / Culture |
 | Savage Minds | Culture / Politics |
 | Ars Technica | Technology / Science |
+| MIT Technology Review | Technology |
 | New Scientist | Science |
-| Quanta Magazine | Science / Physics |
+| Quanta | Science / Physics |
 | NASA | Space |
 | Unusual Whales | Markets / Policy |
-| White House (via Google News) | Government |
 | CBC | Canadian Broadcast |
 | Globe and Mail | Canadian Press |
 | The Narwhal | Canadian Investigative |
 | The Breach | Canadian Investigative |
 | Hell Gate | NYC Local |
 | The City | NYC Local |
-| Notify NYC (via Google News) | NYC Emergency |
-| NYPD (via Google News) | NYC Emergency |
+| NYPD (via Google News) | NYC |
 
-Outlets marked `••` in the feed support in-app full-text reading where RSS content is available.
+Paywalled outlets show an **Archive** button linking to archive.ph. Outlets marked `••` support in-app full-text reading where RSS content is available.
+
+Some sources (AP, ISW, WSJ) are fetched via their Bluesky RSS feeds due to direct feed blocks on Cloudflare Worker IPs. The Worker extracts the original article URL from the post body automatically.
 
 ---
 
@@ -130,6 +134,8 @@ All feeds are defined in the `FEEDS` array near the top of the script in `index.
 { id: 'unique_id', name: 'Display Name', url: 'https://feed.url/rss', home: 'https://outlet.com' }
 ```
 
+Multiple entries can share the same `id` to merge feeds under a single source chip (e.g. Economist pulls from four section feeds but appears as one). The sources page and filter bar deduplicate by `id` automatically.
+
 Outlets whose RSS includes full article text can be added to `FULL_TEXT_FEEDS`:
 
 ```js
@@ -137,6 +143,12 @@ const FULL_TEXT_FEEDS = new Set(['propublica', 'intercept', 'dropsite', ...]);
 ```
 
 These will display a `••` indicator and a **Read** button that expands the article inline.
+
+Paywalled outlets can be added to `PAYWALLED`:
+
+```js
+const PAYWALLED = new Set(['wsj', 'nyt', 'economist', 'ft', ...]);
+```
 
 ---
 
@@ -147,6 +159,7 @@ Articles are stored in `localStorage` for up to 3 days (2MB cap). This means:
 - Articles load instantly on return visits from cache while fresh feeds fetch in the background
 - Content doesn't disappear when it rolls off a feed's RSS window
 - The cache trims automatically — oldest articles are removed first if the size limit is reached
+- Articles older than 10 months are filtered out globally regardless of cache
 - Cache is per-browser and per-device; clearing browser data will reset it
 
 ---

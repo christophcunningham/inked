@@ -51,8 +51,10 @@ html, body {
 
 /* ── HEADER ── */
 #header {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 100;
   background: var(--paper);
   padding: calc(var(--safe-top) + 20px) var(--pad) 0;
@@ -1136,7 +1138,15 @@ document.getElementById('source-bar').addEventListener('wheel', (e) => {
     document.getElementById('source-bar').scrollLeft += e.deltaY;
   }
 }, { passive: false });
-// Re-align active chip to left edge when scrolling the feed
+// Set main padding to match fixed header height
+function syncHeaderPad() {
+  const h = document.getElementById('header').offsetHeight;
+  document.getElementById('main').style.paddingTop = h + 'px';
+}
+syncHeaderPad();
+window.addEventListener('resize', syncHeaderPad);
+
+// Hide header on scroll down, show on scroll up
 let chipRealignTimer = null;
 window.addEventListener('scroll', () => {
   if (activeFilter) {
