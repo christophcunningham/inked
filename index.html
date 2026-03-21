@@ -833,8 +833,14 @@ function buildSourceBar() {
   const bar = document.getElementById('source-bar');
   bar.innerHTML = '';
 
+  const seen = new Set();
   const availableFeeds = FEEDS
-    .filter(f => articles.some(a => a.sourceId === f.id))
+    .filter(f => {
+      if (seen.has(f.id)) return false;
+      if (!articles.some(a => a.sourceId === f.id)) return false;
+      seen.add(f.id);
+      return true;
+    })
     .sort((a, b) => a.name.localeCompare(b.name));
 
   const allBtn = document.createElement('button');
