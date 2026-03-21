@@ -543,6 +543,8 @@ html, body {
   padding: 7px 0;
   border-bottom: 1px solid var(--rule);
 }
+.source-entry:last-child { border-bottom: none; }
+.source-entry:last-child { border-bottom: none; }
 
 .source-entry-name {
   font-family: var(--font-ui);
@@ -691,13 +693,13 @@ html, body {
   <div id="sources-list"></div>
   <div id="info-description">Built for those who want to stay on top of the news cycle without ads, algorithms, or noise. A clean, chronological feed pulling from reputable wire services, broadcasters, investigative outlets, policy journals, science publications, and local press — spanning a wide range of viewpoints and perspectives. Filter by source or read everything in order. No affiliations. No sponsorships. No agenda.</div>
   <div id="info-description" style="margin-top:16px">To add Inked to your home screen on iOS, open this page in Safari, tap the Share button, and select Add to Home Screen. On Android, tap the browser menu and select Add to Home Screen or Install App.</div>
-  <div id="info-description" style="margin-top:16px">Designed and built by <a href="https://github.com/christophcunningham" target="_blank" rel="noopener noreferrer" style="color:var(--ink);text-decoration:underline">C. Cunningham</a>, 2026. <a href="https://github.com/christophcunningham/inked" target="_blank" rel="noopener noreferrer" style="color:var(--ink);text-decoration:underline">GitHub</a></div>
+  <div id="info-description" style="margin-top:16px">Designed and built by <a href="https://github.com/christophcunningham" target="_blank" rel="noopener noreferrer" style="color:var(--ink);text-decoration:underline">C. Cunningham</a>, 2026.</div>
   <div id="info-updated"></div>
 </div>
 
 <script>
 const FEEDS = [
-  { id: 'ap',          name: 'AP',             url: 'https://feeds.apnews.com/rss/apf-topnews',                                           home: 'https://apnews.com' },
+  { id: 'ap',          name: 'AP',             url: 'https://news.google.com/rss/search?q=when:24h+allinurl:apnews.com&ceid=US:en&hl=en-US&gl=US',            home: 'https://apnews.com' },
   { id: 'reuters',     name: 'Reuters',        url: 'https://news.google.com/rss/search?q=when:24h+allinurl:reuters.com&ceid=US:en&hl=en-US&gl=US', home: 'https://reuters.com' },
   { id: 'bbc',         name: 'BBC',            url: 'https://feeds.bbci.co.uk/news/rss.xml',                                              home: 'https://bbc.com/news' },
   { id: 'guardian',    name: 'Guardian',       url: 'https://www.theguardian.com/world/rss',                                              home: 'https://theguardian.com' },
@@ -712,7 +714,7 @@ const FEEDS = [
   { id: 'wsj',         name: 'WSJ',            url: 'https://feeds.a.dj.com/rss/RSSWorldNews.xml',                                       home: 'https://wsj.com' },
   { id: 'arst',        name: 'Ars Technica',   url: 'https://feeds.arstechnica.com/arstechnica/index',                                   home: 'https://arstechnica.com' },
   { id: 'newscientist',name: 'New Scientist',  url: 'https://www.newscientist.com/feed/home',                                             home: 'https://newscientist.com' },
-  { id: 'economist',   name: 'Economist',      url: 'https://www.economist.com/the-world-this-week/rss.xml',                              home: 'https://economist.com' },
+  { id: 'economist',   name: 'Economist',      url: 'https://www.economist.com/international/rss.xml',                                    home: 'https://economist.com' },
   { id: 'foreignaff',  name: 'Foreign Affairs',url: 'https://www.foreignaffairs.com/rss.xml',                                             home: 'https://foreignaffairs.com' },
   { id: 'newyorker',   name: 'New Yorker',     url: 'https://www.newyorker.com/feed/everything',                                          home: 'https://newyorker.com' },
   { id: 'thehill',     name: 'The Hill',       url: 'https://thehill.com/feed/',                                                          home: 'https://thehill.com' },
@@ -723,7 +725,7 @@ const FEEDS = [
   { id: 'occrp',       name: 'OCCRP',          url: 'https://occrp.org/en/feed',                                                         home: 'https://occrp.org' },
   { id: 'savageminds', name: 'Savage Minds',   url: 'https://savageminds.substack.com/feed',                                             home: 'https://savageminds.substack.com' },
   { id: 'bulwark',     name: 'The Bulwark',    url: 'https://thebulwark.substack.com/feed',                                             home: 'https://www.thebulwark.com' },
-  { id: 'isw',         name: 'ISW',            url: 'https://www.iswresearch.org/feeds/posts/default',                                  home: 'https://www.iswresearch.org' },
+  { id: 'isw',         name: 'ISW',            url: 'https://www.iswresearch.org/feeds/posts/default?alt=rss',                          home: 'https://www.iswresearch.org' },
   { id: 'whitehouse',  name: 'White House',    url: 'https://news.google.com/rss/search?q=when:24h+allinurl:whitehouse.gov&ceid=US:en&hl=en-US&gl=US', home: 'https://www.whitehouse.gov' },
   { id: 'unusualwhales',name: 'Unusual Whales',url: 'https://unusualwhales.substack.com/feed',                                         home: 'https://unusualwhales.com' },
   { id: 'nyt',         name: 'NYT',            url: 'https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml',                        home: 'https://nytimes.com' },
@@ -734,7 +736,7 @@ const FEEDS = [
   { id: 'globemail',   name: 'Globe and Mail', url: 'https://www.theglobeandmail.com/arc/outboundfeeds/rss/category/canada/',             home: 'https://theglobeandmail.com' },
   { id: 'narwhal',     name: 'The Narwhal',    url: 'https://thenarwhal.ca/feed/',                                                        home: 'https://thenarwhal.ca' },
   { id: 'breach',      name: 'The Breach',     url: 'https://breachmedia.ca/feed/',                                                       home: 'https://breachmedia.ca' },
-  { id: 'quanta',      name: 'Quanta Magazine',url: 'https://www.quantamagazine.org/feed/',                                               home: 'https://www.quantamagazine.org' },
+  { id: 'quanta',      name: 'Quanta',         url: 'https://www.quantamagazine.org/feed/',                                               home: 'https://www.quantamagazine.org' },
   { id: 'nasa',        name: 'NASA',           url: 'https://www.nasa.gov/rss/dyn/breaking_news.rss',                                     home: 'https://www.nasa.gov/news' },
   { id: 'globalvoices',name: 'Global Voices', url: 'https://globalvoices.org/feed/',                                                     home: 'https://globalvoices.org' },
 ];
