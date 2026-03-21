@@ -56,6 +56,7 @@ html, body {
   z-index: 100;
   background: var(--paper);
   padding: calc(var(--safe-top) + 20px) var(--pad) 0;
+  transition: transform 0.3s ease;
 }
 
 #header-row {
@@ -861,10 +862,14 @@ function buildSourceBar() {
     btn.textContent = feed.name;
     btn.onclick = () => {
       if (activeFilter === feed.id) {
-        // Tap again — return to all
         activeFilter = null;
+        document.getElementById('source-bar').scrollTo({ left: 0, behavior: 'smooth' });
       } else {
         activeFilter = feed.id;
+        // Scroll chip to left edge of bar
+        const bar = document.getElementById('source-bar');
+        const btnLeft = btn.offsetLeft - bar.offsetLeft;
+        bar.scrollTo({ left: btnLeft, behavior: 'smooth' });
       }
       updateSourceBar();
       render();
@@ -1131,6 +1136,33 @@ document.getElementById('source-bar').addEventListener('wheel', (e) => {
     document.getElementById('source-bar').scrollLeft += e.deltaY;
   }
 }, { passive: false });
+// Re-align active chip to left edge when scrolling the feed
+let chipRealignTimer = null;
+window.addEventListener('scroll', () => {
+  if (activeFilter) {
+    clearTimeout(chipRealignTimer);
+    chipRealignTimer = setTimeout(() => {
+      const bar = document.getElementById('source-bar');
+      const btn = document.getElementById(`src-${activeFilter}`);
+      if (btn) {
+        const btnLeft = btn.offsetLeft - bar.offsetLeft;
+        bar.scrollTo({ left: btnLeft, behavior: 'smooth' });
+      }
+    }, 300);
+  }
+}, { passive: true });
+let lastScrollY = 0;
+window.addEventListener('scroll', () => {
+  const currentScrollY = window.scrollY;
+  const header = document.getElementById('header');
+  if (currentScrollY > lastScrollY && currentScrollY > 80) {
+    header.style.transform = 'translateY(-100%)';
+  } else {
+    header.style.transform = 'translateY(0)';
+  }
+  lastScrollY = currentScrollY;
+}, { passive: true });
+
 const ZONES = [
   { id: 'nyc', tz: 'America/New_York' },
   { id: 'lon', tz: 'Europe/London' },
