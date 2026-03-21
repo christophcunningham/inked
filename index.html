@@ -543,8 +543,7 @@ html, body {
   padding: 7px 0;
   border-bottom: 1px solid var(--rule);
 }
-.source-entry:last-child { border-bottom: none; }
-.source-entry:last-child { border-bottom: none; }
+.source-entry:last-child { border-bottom: none; padding-bottom: 0; }
 
 .source-entry-name {
   font-family: var(--font-ui);
@@ -562,7 +561,7 @@ html, body {
   color: var(--ink-light);
 }
 #info-description {
-  margin-top: 24px;
+  margin-top: 8px;
   font-family: var(--font-body);
   font-size: 15px;
   font-weight: 400;
@@ -691,7 +690,7 @@ html, body {
     <button id="info-close" onclick="closeInfo()">Close</button>
   </div>
   <div id="sources-list"></div>
-  <div id="info-description">Built for those who want to stay on top of the news cycle without ads, algorithms, or noise. A clean, chronological feed pulling from reputable wire services, broadcasters, investigative outlets, policy journals, science publications, and local press — spanning a wide range of viewpoints and perspectives. Filter by source or read everything in order. No affiliations. No sponsorships. No agenda.</div>
+  <div id="info-description" style="margin-top:24px">Built for those who want to stay on top of the news cycle without ads, algorithms, or noise. A clean, chronological feed pulling from reputable wire services, broadcasters, investigative outlets, policy journals, science publications, and local press — spanning a wide range of viewpoints and perspectives. Filter by source or read everything in order. No affiliations. No sponsorships. No agenda.</div>
   <div id="info-description" style="margin-top:16px">To add Inked to your home screen on iOS, open this page in Safari, tap the Share button, and select Add to Home Screen. On Android, tap the browser menu and select Add to Home Screen or Install App.</div>
   <div id="info-description" style="margin-top:16px">Designed and built by <a href="https://github.com/christophcunningham" target="_blank" rel="noopener noreferrer" style="color:var(--ink);text-decoration:underline">C. Cunningham</a>, 2026.</div>
   <div id="info-updated"></div>
@@ -772,7 +771,7 @@ async function fetchFeed(feed) {
       // Accept any valid date — only reject completely unparseable dates
       const pubDate = !isNaN(raw) ? raw : new Date();
 
-      const title = (item.title || '').trim();
+      const title = (item.title || item.description || '').trim();
       // Filter Economist non-article entries (charts, cartoons, etc.)
       if (feed.id === 'economist' && (!title || title.toLowerCase().includes('cartoon') || title.toLowerCase().includes('chart'))) return null;
 
