@@ -693,7 +693,9 @@ html, body {
   </div>
   <div id="sources-list"></div>
   <div id="info-description" style="margin-top:24px">Built for those who want to stay on top of the news cycle without ads, algorithms, or noise. A clean, chronological feed pulling from reputable wire services, broadcasters, investigative outlets, policy journals, science publications, and local press — spanning a wide range of viewpoints and perspectives. Filter by source or read everything in order. No affiliations. No sponsorships. No agenda.</div>
+  <hr style="border:none;border-top:1px solid var(--rule);margin:20px 0 0">
   <div id="info-description" style="margin-top:16px">To add Inked to your home screen on iOS, open this page in Safari, tap the Share button, and select Add to Home Screen. On Android, tap the browser menu and select Add to Home Screen or Install App.</div>
+  <hr style="border:none;border-top:1px solid var(--rule);margin:20px 0 0">
   <div id="info-description" style="margin-top:16px">Designed and built by <a href="https://github.com/christophcunningham" target="_blank" rel="noopener noreferrer" style="color:var(--ink);text-decoration:underline">C. Cunningham</a>, 2026.</div>
   <div id="info-updated"></div>
 </div>
@@ -742,6 +744,9 @@ const FEEDS = [
   { id: 'quanta',      name: 'Quanta',         url: 'https://www.quantamagazine.org/feed/',                                               home: 'https://www.quantamagazine.org' },
   { id: 'nasa',        name: 'NASA',           url: 'https://www.nasa.gov/rss/dyn/breaking_news.rss',                                     home: 'https://www.nasa.gov/news' },
   { id: 'globalvoices',name: 'Global Voices', url: 'https://globalvoices.org/feed/',                                                     home: 'https://globalvoices.org' },
+  { id: 'diem25',      name: 'DiEM25',         url: 'https://bsky.app/profile/did:plc:kzcwyilg6zrk7d5dqplkr6yf/rss',                    home: 'https://diem25.org' },
+  { id: 'novara',      name: 'Novara Media',   url: 'https://novaramedia.com/feed/',                                                      home: 'https://novaramedia.com' },
+  { id: 'dispatch',    name: 'The Dispatch',   url: 'https://thedispatch.com/feed',                                                       home: 'https://thedispatch.com' },
   { id: 'npr',         name: 'NPR',            url: 'https://feeds.npr.org/1001/rss.xml',                                                 home: 'https://npr.org' },
   { id: 'scmp',        name: 'South China MP', url: 'https://www.scmp.com/rss/91/feed',                                                   home: 'https://scmp.com' },
   { id: 'bellingcat',  name: 'Bellingcat',     url: 'https://www.bellingcat.com/feed',                                                    home: 'https://bellingcat.com' },
@@ -762,7 +767,7 @@ let lastUpdated = null;
 articles = loadCache();
 
 // Outlets known to be paywalled
-const PAYWALLED = new Set(['wsj','nyt','economist','foreignaff','newyorker','newscientist','foreignpol','ft']);
+const PAYWALLED = new Set(['wsj','nyt','economist','foreignaff','newyorker','newscientist','foreignpol','ft','dispatch']);
 
 // Feeds that include full article text in RSS
 const FULL_TEXT_FEEDS = new Set(['propublica','intercept','dropsite','nation','occrp','arst','savageminds']);

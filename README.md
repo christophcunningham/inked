@@ -6,7 +6,7 @@ Built for those who want to stay on top of the news cycle without ads, algorithm
 
 ## What it is
 
-Inked is a single HTML file that pulls live RSS feeds from 48 news sources and renders them as a clean chronological headline stream. Articles are cached locally for up to 3 days so content doesn't disappear as feeds roll over. Articles older than 10 months are filtered out globally.
+Inked is a single HTML file that pulls live RSS feeds from 50 news sources and renders them as a clean chronological headline stream. Articles are cached locally for up to 3 days so content doesn't disappear as feeds roll over. Articles older than 10 months are filtered out globally.
 
 It runs entirely in the browser. There is no backend, no database, no login. A Cloudflare Worker acts as a lightweight RSS proxy to handle cross-origin fetching.
 
@@ -37,6 +37,7 @@ It runs entirely in the browser. There is no backend, no database, no login. A C
 | Politico | US Politics |
 | The Hill | US Politics |
 | The Bulwark | US Politics |
+| The Dispatch | Centre-Right / US Politics |
 | NPR | US Public Radio |
 | The Intercept | Investigative |
 | ProPublica | Investigative |
@@ -47,6 +48,8 @@ It runs entirely in the browser. There is no backend, no database, no login. A C
 | The Nation | Left / Opinion |
 | New Yorker | Long-form / Culture |
 | Savage Minds | Culture / Politics |
+| DiEM25 (via Bluesky) | European Left |
+| Novara Media | Left / UK |
 | Ars Technica | Technology / Science |
 | MIT Technology Review | Technology |
 | New Scientist | Science |
@@ -63,7 +66,9 @@ It runs entirely in the browser. There is no backend, no database, no login. A C
 
 Paywalled outlets show an **Archive** button linking to archive.ph. Outlets marked `••` support in-app full-text reading where RSS content is available.
 
-Some sources (AP, ISW, WSJ) are fetched via their Bluesky RSS feeds due to direct feed blocks on Cloudflare Worker IPs. The Worker extracts the original article URL from the post body automatically.
+Some sources (AP, ISW, WSJ, DiEM25) are fetched via Bluesky RSS feeds due to direct feed blocks on Cloudflare Worker IPs. The Worker extracts the original article URL from the post body automatically.
+
+The Economist pulls from four section feeds (Leaders, International, Business, Science & Technology) but appears as a single source throughout the app.
 
 ---
 
@@ -147,7 +152,7 @@ These will display a `••` indicator and a **Read** button that expands the a
 Paywalled outlets can be added to `PAYWALLED`:
 
 ```js
-const PAYWALLED = new Set(['wsj', 'nyt', 'economist', 'ft', ...]);
+const PAYWALLED = new Set(['wsj', 'nyt', 'economist', 'ft', 'dispatch', ...]);
 ```
 
 ---
