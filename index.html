@@ -1127,6 +1127,7 @@ async function loadFeeds() {
 
   // Merge with existing articles, deduplicate by id, keep all
   const existingMap = new Map(articles.map(a => [a.id, a]));
+  const hadNewArticles = raw.some(a => !existingMap.has(a.id));
   raw.forEach(a => { if (!existingMap.has(a.id)) existingMap.set(a.id, a); });
 
   articles = [...existingMap.values()].sort((a, b) => b.pubDate - a.pubDate);
@@ -1138,11 +1139,16 @@ async function loadFeeds() {
 
   document.getElementById('status').style.display = 'none';
   document.getElementById('tab-bar').style.display = 'block';
+
+  // Always refresh the feed list
   document.getElementById('feed-list').innerHTML = '';
   render();
 
-  // Re-render photos if images tab is active
-  if (activeTab === 'images') renderPhotos();
+  // Only rebuild photo grid if new images arrived AND user isn't mid-browse
+  // (i.e. not scrolled into the grid yet)
+  if (activeTab === 'images' && hadNewArticles && document.getElementById('images-view').scrollTop < 100) {
+    renderPhotos();
+  }
 
   btn.classList.remove('spinning');
 }
@@ -1171,6 +1177,7 @@ function buildSourceBar() {
     activeFilter = null;
     updateSourceBar();
     render();
+    if (activeTab === 'images') renderPhotos();
   };
   bar.appendChild(allBtn);
 
@@ -1185,13 +1192,13 @@ function buildSourceBar() {
         document.getElementById('source-bar').scrollTo({ left: 0, behavior: 'smooth' });
       } else {
         activeFilter = feed.id;
-        // Scroll chip to left edge of bar
         const bar = document.getElementById('source-bar');
         const btnLeft = btn.offsetLeft - bar.offsetLeft;
         bar.scrollTo({ left: btnLeft, behavior: 'smooth' });
       }
       updateSourceBar();
       render();
+      if (activeTab === 'images') renderPhotos();
     };
     bar.appendChild(btn);
   });
@@ -1388,7 +1395,6 @@ function render() {
 
   if (!visible.length) {
     list.innerHTML = '<div style="padding:40px 0;font-family:var(--font-ui);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-light)">No articles</div>';
-    if (activeTab === 'images') renderPhotos();
     return;
   }
 
@@ -1417,9 +1423,6 @@ function render() {
     // Single source — just articles, no source label needed
     lazyRender(list, visible, a => makeCard(a, false));
   }
-
-  // Keep photos in sync if images tab is currently active
-  if (activeTab === 'images') renderPhotos();
 }
 
 // ── IMAGES MODE ──────────────────────────────────────────────────────────────
@@ -1490,11 +1493,11 @@ function makePhotoCell(a) {
 
   const img = document.createElement('img');
   img.alt = '';
-  img.loading = 'lazy';
+  // Do NOT use loading="lazy" — it breaks inside fixed overflow containers
   img.decoding = 'async';
 
-  // Silent error — just remove the cell
-  img.onerror = () => { cell.remove(); };
+  // Silent error — hide the cell but don't remove it (removing mid-grid breaks layout)
+  img.onerror = () => { cell.style.display = 'none'; };
   img.onload  = () => { cell.classList.remove('loading'); };
 
   img.src = a.imageUrl;
