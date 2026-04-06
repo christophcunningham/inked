@@ -60,6 +60,7 @@ html, body {
   padding: calc(var(--safe-top) + 20px) var(--pad) 0;
   transition: transform 0.3s ease;
 }
+#header.hide { transform: translateY(-100%); }
 
 #header-row {
   display: flex;
@@ -412,15 +413,8 @@ html, body {
   color: var(--ink-light);
 }
 
-/* ── BOTTOM BAR (shared) ── */
-#bottom-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0; right: 0;
-  background: var(--paper);
-  z-index: 150;
-  display: none;
-}
+/* ── TAB BAR (replaces bottom-bar) ── */
+#tab-bar-legacy-stub { display: none; } /* reserved */
 
 #info-overlay .bottom-bar-inner {
   position: fixed;
@@ -582,6 +576,260 @@ html, body {
   color: var(--ink-light);
 }
 
+/* ── HEADER DARK MODE (images tab) ── */
+#header.dark {
+  background: rgba(40, 40, 40, 0.93) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  /* Full width override — remove desktop centering constraints */
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  transform: none !important;
+  padding-left: var(--pad);
+  padding-right: var(--pad);
+}
+/* When hiding in images mode, only translateY */
+#header.dark.hide { transform: translateY(-100%) !important; }
+
+/* Collapsed header row in images mode */
+#header.dark #header-row {
+  align-items: center;
+  padding-bottom: 10px;
+}
+#header.dark #clocks-group { display: none; }
+#header.dark #wordmark-datetime { display: none; }
+#header.dark #wordmark {
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+#header.dark #wordmark-group {
+  gap: 0;
+}
+#header.dark #source-bar-wrap {
+  padding-bottom: 10px;
+}
+
+#header.dark .clock-circle { stroke: rgba(255,255,255,0.6); }
+#header.dark .clock-hand   { stroke: rgba(255,255,255,0.9); }
+#header.dark .clock-center { fill: rgba(255,255,255,0.9); }
+#header.dark .clock-label  { color: rgba(255,255,255,0.4); }
+#header.dark #wordmark     { color: rgba(255,255,255,0.9); }
+#header.dark #wordmark-datetime { color: rgba(255,255,255,0.4); }
+#header.dark .src-tag       { color: rgba(255,255,255,0.5); border-color: rgba(255,255,255,0.2); }
+#header.dark .src-tag.active { background: rgba(255,255,255,0.9); color: #282828; border-color: rgba(255,255,255,0.9); }
+#header.dark #src-scroll-left,
+#header.dark #src-scroll-right { color: rgba(255,255,255,0.35); }
+#header.dark .grid-btn      { color: rgba(255,255,255,0.5); border-color: rgba(255,255,255,0.2); }
+#header.dark .grid-btn.active { background: rgba(255,255,255,0.9); color: #282828; border-color: rgba(255,255,255,0.9); }
+
+/* ── TAB BAR ── */
+#tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0; right: 0;
+  background: var(--paper);
+  z-index: 150;
+  display: none;
+}
+
+#tab-bar .bottom-bar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tab-nav {
+  display: flex;
+  gap: 0;
+}
+
+.tab-btn {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 5px 16px;
+  border: 1px solid var(--rule-heavy);
+  background: transparent;
+  color: var(--ink-mid);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.1s;
+}
+.tab-btn + .tab-btn { border-left: none; }
+.tab-btn.active {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+/* ── IMAGES VIEW ── */
+#images-view {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: #282828;
+  z-index: 90;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+#images-view::-webkit-scrollbar { display: none; }
+#images-view.active { display: block; }
+
+#photo-grid {
+  display: grid;
+  gap: 1px;
+  padding-top: 0; /* set via JS to match header height */
+  padding-bottom: calc(var(--safe-bottom) + 60px);
+  background: #282828;
+}
+
+/* grid columns set via JS */
+#photo-grid.cols-1  { grid-template-columns: 1fr; }
+#photo-grid.cols-3  { grid-template-columns: repeat(3, 1fr); }
+#photo-grid.cols-5  { grid-template-columns: repeat(5, 1fr); }
+#photo-grid.cols-9  { grid-template-columns: repeat(9, 1fr); }
+
+.photo-cell {
+  position: relative;
+  overflow: hidden;
+  background: #333;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* aspect ratio: all cols = 4/5 portrait */
+#photo-grid.cols-1 .photo-cell,
+#photo-grid.cols-3 .photo-cell,
+#photo-grid.cols-5 .photo-cell,
+#photo-grid.cols-9 .photo-cell  { aspect-ratio: 4 / 5; }
+
+.photo-cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: opacity 0.2s;
+}
+
+.photo-cell .caption-dot {
+  position: absolute;
+  bottom: 7px;
+  right: 7px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 5;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s;
+}
+#photo-grid.cols-5 .caption-dot,
+#photo-grid.cols-9 .caption-dot { display: none; } /* too small */
+
+.caption-dot-inner {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.75);
+}
+
+.photo-caption {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.78);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 14px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s;
+}
+.photo-caption.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.photo-caption-text {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.45;
+  color: rgba(255,255,255,0.9);
+  letter-spacing: 0.01em;
+}
+#photo-grid.cols-3 .photo-caption-text { font-size: 9px; }
+
+/* ── GRID DENSITY CONTROLS (shown in header when Images active) ── */
+#grid-controls {
+  display: none;
+  align-items: center;
+  gap: 4px;
+}
+#grid-controls.visible { display: flex; }
+
+.grid-btn {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  padding: 4px 10px;
+  border: 1px solid var(--rule-heavy);
+  background: transparent;
+  color: var(--ink-mid);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.1s;
+}
+.grid-btn.active {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+/* images view header — dark bg */
+#images-view.active ~ #header {
+  /* header stays paper coloured, images scroll underneath */
+}
+
+/* photo loading shimmer */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+.photo-cell.loading {
+  background: linear-gradient(90deg, #282828 25%, #383838 50%, #282828 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+/* ── TAB BAR DARK MODE ── */
+#tab-bar.dark {
+  background: rgba(40, 40, 40, 0.93);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  /* Full width override */
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  transform: none !important;
+}
+#tab-bar.dark .bottom-bar-inner::before,
+#tab-bar.dark .bottom-bar-inner::after { background: rgba(255,255,255,0.15); }
+#tab-bar.dark .tab-btn { color: rgba(255,255,255,0.45); border-color: rgba(255,255,255,0.18); }
+#tab-bar.dark .tab-btn.active { background: rgba(255,255,255,0.9); color: #282828; border-color: rgba(255,255,255,0.9); }
+#tab-bar.dark .bar-btn { color: rgba(255,255,255,0.45); border-color: rgba(255,255,255,0.18); }
+#tab-bar.dark .bar-btn.bar-btn-fill { background: rgba(255,255,255,0.9); color: #282828; border-color: rgba(255,255,255,0.9); }
+
 /* ── RESPONSIVE ── */
 @media (min-width: 640px) {
   :root { --pad: 40px; }
@@ -593,13 +841,25 @@ html, body {
   #wordmark { font-size: 24px; }
   .article-headline { font-size: 28px; }
 
-  #header, #main, #bottom-bar, #info-overlay {
+  #header {
+    left: 50%;
+    transform: translateX(-50%);
+    width: 75%;
+    max-width: 75%;
+    margin: 0;
+  }
+  /* Override transform when header is hiding on scroll */
+  #header.hide {
+    transform: translateX(-50%) translateY(-100%);
+  }
+
+  #main, #info-overlay {
     max-width: 75%;
     margin-left: auto;
     margin-right: auto;
   }
 
-  #bottom-bar {
+  #tab-bar {
     left: 50%;
     transform: translateX(-50%);
     width: 75%;
@@ -635,7 +895,7 @@ html, body {
             <line class="clock-hand" id="hand-fra" x1="14" y1="14" x2="14" y2="4"/>
             <circle class="clock-center" cx="14" cy="14" r="1.5"/>
           </svg>
-          <span class="clock-label">FRA</span>
+          <span class="clock-label">MSK</span>
         </div>
         <div class="clock-item">
           <svg class="clock-face" id="clock-tyo" viewBox="0 0 28 28">
@@ -650,6 +910,12 @@ html, body {
         <span id="sort-label">Sort</span>
         <button class="sort-btn active" id="sort-time" onclick="setSort('time')">Time</button>
         <button class="sort-btn" id="sort-source" onclick="setSort('source')">Source</button>
+      </div>
+      <div id="grid-controls">
+        <button class="grid-btn active" id="grid-1" onclick="setGrid(1)">1</button>
+        <button class="grid-btn" id="grid-3" onclick="setGrid(3)">3</button>
+        <button class="grid-btn" id="grid-5" onclick="setGrid(5)">5</button>
+        <button class="grid-btn" id="grid-9" onclick="setGrid(9)">9</button>
       </div>
     </div>
     <div id="wordmark-group">
@@ -676,14 +942,21 @@ html, body {
   <div id="feed-list"></div>
 </main>
 
-<div id="bottom-bar">
+<div id="tab-bar">
   <div class="bottom-bar-inner">
-    <span id="rss-label">RSS Feeds</span>
+    <div class="tab-nav">
+      <button class="tab-btn active" id="tab-feed" onclick="switchTab('feed')">Feed</button>
+      <button class="tab-btn" id="tab-images" onclick="switchTab('images')">Images</button>
+    </div>
     <div id="bottom-right">
       <button class="bar-btn" id="refresh-btn" onclick="loadFeeds()">↻ Refresh</button>
       <button class="bar-btn bar-btn-fill" onclick="openInfo()">Info</button>
     </div>
   </div>
+</div>
+
+<div id="images-view">
+  <div id="photo-grid" class="cols-1"></div>
 </div>
 
 <div id="info-overlay">
@@ -693,6 +966,8 @@ html, body {
   </div>
   <div id="sources-list"></div>
   <div id="info-description" style="margin-top:24px">Built for those who want to stay on top of the news cycle without ads, algorithms, or noise. A clean, chronological feed pulling from reputable wire services, broadcasters, investigative outlets, policy journals, science publications, and local press — spanning a wide range of viewpoints and perspectives. Filter by source or read everything in order. No affiliations. No sponsorships. No agenda.</div>
+  <hr style="border:none;border-top:1px solid var(--rule);margin:20px 0 0">
+  <div id="info-description" style="margin-top:16px">Switch to Images mode via the tab bar to browse a continuous stream of photojournalism pulled from the same sources. Choose between single-column and 3, 5, or 9-column grid layouts. Tap any image to open the source article. Tap the dot in the corner to reveal a caption where available.</div>
   <hr style="border:none;border-top:1px solid var(--rule);margin:20px 0 0">
   <div id="info-description" style="margin-top:16px">To add Inked to your home screen on iOS, open this page in Safari, tap the Share button, and select Add to Home Screen. On Android, tap the browser menu and select Add to Home Screen or Install App.</div>
   <hr style="border:none;border-top:1px solid var(--rule);margin:20px 0 0">
@@ -792,6 +1067,10 @@ async function fetchFeed(feed) {
       // Filter Economist non-article entries (charts, cartoons, etc.)
       if (feed.id === 'economist' && (!title || title.toLowerCase().includes('cartoon') || title.toLowerCase().includes('chart'))) return null;
 
+      // ── Extract image URL ──────────────────────────────────────────────────
+      const imageUrl = extractImage(item);
+      const imageCaption = extractCaption(item, title);
+
       return {
         id: feed.id + '_' + (item.link || title || Math.random().toString(36)),
         sourceId: feed.id,
@@ -804,9 +1083,38 @@ async function fetchFeed(feed) {
         fullText: FULL_TEXT_FEEDS.has(feed.id)
           ? extractText(item.content || '')
           : null,
+        imageUrl,
+        imageCaption,
       };
     }).filter(a => a && a.title);
   } catch { return []; }
+}
+
+function extractImage(item) {
+  // 1. RSS enclosure
+  if (item.enclosure && /image/i.test(item.enclosure.type || '') && item.enclosure.url) {
+    return item.enclosure.url;
+  }
+  // 2. media:content / media:thumbnail (common in news RSS)
+  if (item.media_content && item.media_content.url) return item.media_content.url;
+  if (item.media_thumbnail && item.media_thumbnail.url) return item.media_thumbnail.url;
+  // 3. Scan raw content/description for first <img src="...">
+  const html = item.content || item.description || '';
+  const imgMatch = html.match(/<img[^>]+src=["']([^"']+)["']/i);
+  if (imgMatch) return imgMatch[1];
+  // 4. itunes:image or similar
+  if (item.itunes_image) return item.itunes_image;
+  return null;
+}
+
+function extractCaption(item, fallbackTitle) {
+  // Try media:description, then itunes:summary, then fall back to headline
+  if (item.media_description && item.media_description.trim()) return item.media_description.trim();
+  if (item.itunes_summary && item.itunes_summary.trim()) return item.itunes_summary.trim().slice(0, 200);
+  // Extract first sentence of description if it's text-only
+  const desc = (item.description || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  if (desc && desc.length > 10 && desc !== fallbackTitle) return desc.slice(0, 200);
+  return fallbackTitle;
 }
 
 async function loadFeeds() {
@@ -828,9 +1136,12 @@ async function loadFeeds() {
   buildInfoPanel();
 
   document.getElementById('status').style.display = 'none';
-  document.getElementById('bottom-bar').style.display = 'block';
+  document.getElementById('tab-bar').style.display = 'block';
   document.getElementById('feed-list').innerHTML = '';
   render();
+
+  // Re-render photos if images tab is active
+  if (activeTab === 'images') renderPhotos();
 
   btn.classList.remove('spinning');
 }
@@ -1076,6 +1387,7 @@ function render() {
 
   if (!visible.length) {
     list.innerHTML = '<div style="padding:40px 0;font-family:var(--font-ui);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-light)">No articles</div>';
+    if (activeTab === 'images') renderPhotos();
     return;
   }
 
@@ -1104,9 +1416,182 @@ function render() {
     // Single source — just articles, no source label needed
     lazyRender(list, visible, a => makeCard(a, false));
   }
+
+  // Keep photos in sync if images tab is currently active
+  if (activeTab === 'images') renderPhotos();
 }
 
-// Reload on visibility only if 5+ minutes have passed
+// ── IMAGES MODE ──────────────────────────────────────────────────────────────
+let activeTab = 'feed';   // 'feed' | 'images'
+let gridCols  = 1;
+
+// Separate lazy-render state for photos
+let photoObserver = null;
+let photoSentinel = null;
+
+function switchTab(tab) {
+  activeTab = tab;
+  const feedMain    = document.getElementById('main');
+  const imagesView  = document.getElementById('images-view');
+  const tabFeed     = document.getElementById('tab-feed');
+  const tabImages   = document.getElementById('tab-images');
+  const gridControls = document.getElementById('grid-controls');
+  const header      = document.getElementById('header');
+
+  if (tab === 'feed') {
+    feedMain.style.display   = '';
+    imagesView.classList.remove('active');
+    tabFeed.classList.add('active');
+    tabImages.classList.remove('active');
+    gridControls.classList.remove('visible');
+    header.classList.remove('dark');
+    header.classList.remove('hide');
+    document.getElementById('tab-bar').classList.remove('dark');
+    lastScrollY = 0;
+    // Small delay so CSS transition settles before measuring
+    setTimeout(syncHeaderPad, 50);
+  } else {
+    feedMain.style.display   = 'none';
+    imagesView.classList.add('active');
+    tabFeed.classList.remove('active');
+    tabImages.classList.add('active');
+    gridControls.classList.add('visible');
+    header.classList.add('dark');
+    header.classList.remove('hide');
+    document.getElementById('tab-bar').classList.add('dark');
+    lastScrollY = 0;
+    imagesView.scrollTop = 0;
+    // Measure collapsed header height before rendering photos
+    setTimeout(() => { syncHeaderPad(); renderPhotos(); }, 50);
+  }
+}
+
+function setGrid(cols) {
+  gridCols = cols;
+  // Update active button
+  [1,3,5,9].forEach(c => {
+    const btn = document.getElementById(`grid-${c}`);
+    if (btn) btn.classList.toggle('active', c === cols);
+  });
+  const grid = document.getElementById('photo-grid');
+  grid.className = `cols-${cols}`;
+  renderPhotos();
+}
+
+function getPhotoArticles() {
+  const visible = activeFilter ? articles.filter(a => a.sourceId === activeFilter) : articles;
+  return visible.filter(a => a.imageUrl);
+}
+
+function makePhotoCell(a) {
+  const cell = document.createElement('div');
+  cell.className = 'photo-cell loading';
+
+  const img = document.createElement('img');
+  img.alt = '';
+  img.loading = 'lazy';
+  img.decoding = 'async';
+
+  // Silent error — just remove the cell
+  img.onerror = () => { cell.remove(); };
+  img.onload  = () => { cell.classList.remove('loading'); };
+
+  img.src = a.imageUrl;
+
+  const caption = document.createElement('div');
+  caption.className = 'photo-caption';
+  caption.innerHTML = `<span class="photo-caption-text">${esc(a.imageCaption || a.title)}</span>`;
+
+  // Tap image → open article
+  // Tap dot  → toggle caption
+  const hasCaptionDot = gridCols !== 5 && gridCols !== 9;
+
+  if (hasCaptionDot && a.imageCaption) {
+    const dot = document.createElement('div');
+    dot.className = 'caption-dot';
+    dot.innerHTML = '<div class="caption-dot-inner"></div>';
+    dot.addEventListener('click', (e) => {
+      e.stopPropagation();
+      caption.classList.toggle('visible');
+    });
+    cell.appendChild(dot);
+
+    // Tap caption area to dismiss
+    caption.addEventListener('click', (e) => {
+      e.stopPropagation();
+      caption.classList.remove('visible');
+    });
+    cell.appendChild(caption);
+  }
+
+  // Tap image → open article link
+  img.addEventListener('click', () => {
+    if (a.link && a.link !== '#') window.open(a.link, '_blank', 'noopener,noreferrer');
+  });
+
+  cell.appendChild(img);
+  return cell;
+}
+
+function renderPhotos() {
+  const grid = document.getElementById('photo-grid');
+  const imagesView = document.getElementById('images-view');
+
+  // Clean up previous observer
+  if (photoObserver) { photoObserver.disconnect(); photoObserver = null; }
+  if (photoSentinel) { photoSentinel.remove(); photoSentinel = null; }
+
+  grid.innerHTML = '';
+  grid.className = `cols-${gridCols}`;
+
+  // Sync top padding to header height
+  const headerH = document.getElementById('header').offsetHeight;
+  grid.style.paddingTop = headerH + 'px';
+
+  const photos = getPhotoArticles();
+
+  if (!photos.length) {
+    grid.innerHTML = '<div style="padding:60px 20px;font-family:var(--font-ui);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.3);text-align:center">No images available</div>';
+    return;
+  }
+
+  const PHOTO_BATCH = 30;
+  let rendered = 0;
+
+  function renderPhotoBatch() {
+    const batch = photos.slice(rendered, rendered + PHOTO_BATCH);
+    batch.forEach(a => grid.appendChild(makePhotoCell(a)));
+    rendered += batch.length;
+
+    if (rendered >= photos.length) return;
+
+    if (photoSentinel) photoSentinel.remove();
+    photoSentinel = document.createElement('div');
+    photoSentinel.style.height = '1px';
+    grid.appendChild(photoSentinel);
+
+    photoObserver = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) {
+        photoObserver.disconnect();
+        photoObserver = null;
+        renderPhotoBatch();
+      }
+    }, { root: imagesView, rootMargin: '400px' });
+
+    photoObserver.observe(photoSentinel);
+  }
+
+  renderPhotoBatch();
+}
+
+// Re-render photos when source filter changes
+// (handled by calling renderPhotos() inside render() below)
+
+// ─────────────────────────────────────────────────────────────────────────────
+
+let lastScrollY = 0;
+
+
 let lastLoad = Date.now();
 function loadFeedsThrottled() {
   const now = Date.now();
@@ -1125,7 +1610,7 @@ if (articles.length > 0) {
   buildSourceBar();
   buildInfoPanel();
   document.getElementById('status').style.display = 'none';
-  document.getElementById('bottom-bar').style.display = 'block';
+  document.getElementById('tab-bar').style.display = 'block';
   render();
 }
 
@@ -1147,6 +1632,8 @@ document.getElementById('source-bar').addEventListener('wheel', (e) => {
 function syncHeaderPad() {
   const h = document.getElementById('header').offsetHeight;
   document.getElementById('main').style.paddingTop = h + 'px';
+  const grid = document.getElementById('photo-grid');
+  if (grid) grid.style.paddingTop = h + 'px';
 }
 syncHeaderPad();
 window.addEventListener('resize', syncHeaderPad);
@@ -1166,22 +1653,26 @@ window.addEventListener('scroll', () => {
     }, 300);
   }
 }, { passive: true });
-let lastScrollY = 0;
-window.addEventListener('scroll', () => {
-  const currentScrollY = window.scrollY;
+function handleScroll(currentScrollY) {
   const header = document.getElementById('header');
   if (currentScrollY > lastScrollY && currentScrollY > 80) {
-    header.style.transform = 'translateY(-100%)';
+    header.classList.add('hide');
   } else {
-    header.style.transform = 'translateY(0)';
+    header.classList.remove('hide');
   }
   lastScrollY = currentScrollY;
+}
+window.addEventListener('scroll', () => {
+  handleScroll(window.scrollY);
+}, { passive: true });
+document.getElementById('images-view').addEventListener('scroll', function() {
+  handleScroll(this.scrollTop);
 }, { passive: true });
 
 const ZONES = [
   { id: 'nyc', tz: 'America/New_York' },
   { id: 'lon', tz: 'Europe/London' },
-  { id: 'fra', tz: 'Europe/Berlin' },
+  { id: 'fra', tz: 'Europe/Moscow' },
   { id: 'tyo', tz: 'Asia/Tokyo' },
 ];
 

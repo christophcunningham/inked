@@ -12,6 +12,26 @@ It runs entirely in the browser. There is no backend, no database, no login. A C
 
 ---
 
+## Views
+
+### Feed
+
+The default view. A chronological river of headlines grouped by date. Filter by source using the chip bar at the top. Outlets marked `••` include full article text in their RSS feed — tap **Read** to expand inline. Paywalled outlets show an **Archive** button linking to archive.ph.
+
+### Images
+
+A continuous stream of photojournalism pulled from the same sources. Switch to it via the **Images** tab in the bottom bar.
+
+- **Layouts:** single column (4:5 portrait) or grid at 3, 5, or 9 columns — toggle with the density buttons in the header
+- **Caption:** tap the dot `·` in the corner of any image to reveal a caption where available; tap the caption to dismiss
+- **Open article:** tap the image itself to open the source article in a new tab
+- **Source filter:** the same chip bar applies — filter to a single outlet in either view
+- Images are pulled from RSS enclosures, `media:content`, `media:thumbnail`, and inline `<img>` tags. Broken or missing images are dropped silently.
+
+The header collapses in Images mode to a single slim bar with frosted glass, giving photos maximum space.
+
+---
+
 ## Sources
 
 | Outlet | Category |
@@ -83,7 +103,7 @@ Browser (index.html)
                                     └── Return { status, items[] }
 ```
 
-**`index.html`** — The entire front-end. Self-contained, no build step, no dependencies. Fetches all feeds in parallel on load, merges with a 3-day localStorage cache, deduplicates, sorts chronologically, and renders with lazy DOM loading (20 articles at a time as you scroll).
+**`index.html`** — The entire front-end. Self-contained, no build step, no dependencies. Fetches all feeds in parallel on load, merges with a 3-day localStorage cache, deduplicates, sorts chronologically, and renders with lazy DOM loading (20 articles / 30 photos at a time as you scroll).
 
 **`inked-worker.js`** — The Cloudflare Worker source code, included here for reference. This file is **not served from this repository** — it must be deployed separately via the Cloudflare Workers dashboard (see below). Cloudflare runs it on their infrastructure independently of this repo.
 
@@ -147,7 +167,7 @@ Outlets whose RSS includes full article text can be added to `FULL_TEXT_FEEDS`:
 const FULL_TEXT_FEEDS = new Set(['propublica', 'intercept', 'dropsite', ...]);
 ```
 
-These will display a `••` indicator and a **Read** button that expands the article inline.
+These will display a `••` indicator and a **Read** button that expands the article inline. They will also contribute images to the Images view where their RSS includes image tags.
 
 Paywalled outlets can be added to `PAYWALLED`:
 
@@ -166,6 +186,13 @@ Articles are stored in `localStorage` for up to 3 days (2MB cap). This means:
 - The cache trims automatically — oldest articles are removed first if the size limit is reached
 - Articles older than 10 months are filtered out globally regardless of cache
 - Cache is per-browser and per-device; clearing browser data will reset it
+- Image URLs and captions are stored alongside article metadata in the cache
+
+---
+
+## Clocks
+
+The header displays analogue clocks for four time zones: **NYC** (America/New_York), **LON** (Europe/London), **MSK** (Europe/Moscow), and **TYO** (Asia/Tokyo). To change a clock, update the `ZONES` array in the script and the corresponding `.clock-label` span in the HTML.
 
 ---
 
