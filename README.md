@@ -6,7 +6,7 @@ Built for those who want to stay on top of the news cycle without ads, algorithm
 
 ## What it is
 
-Inked is a single HTML file that pulls live RSS feeds from 50 news sources and renders them as a clean chronological headline stream. Articles are cached locally for up to 3 days so content doesn't disappear as feeds roll over. Articles older than 10 months are filtered out globally.
+Inked is a single HTML file that pulls live RSS feeds from 63 news sources and renders them as a clean chronological headline stream. Articles are cached locally for up to 3 days so content doesn't disappear as feeds roll over. Articles older than 10 months are filtered out globally.
 
 It runs entirely in the browser. There is no backend, no database, no login. A Cloudflare Worker acts as a lightweight RSS proxy to handle cross-origin fetching.
 
@@ -37,8 +37,12 @@ The header collapses in Images mode to a single slim bar with frosted glass, giv
 | Outlet | Category |
 |---|---|
 | AP (via Bluesky) | Wire |
+| AP Photography | Wire / Photo |
 | Reuters (via Google News) | Wire |
+| EFE | Wire / Latin America |
+| Xinhua | Wire / China (state) |
 | BBC | International Broadcast |
+| BBC In Pictures | Photo |
 | BBC Science | Science |
 | Al Jazeera | International Broadcast |
 | DW | International Broadcast |
@@ -47,6 +51,9 @@ The header collapses in Images mode to a single slim bar with frosted glass, giv
 | Guardian | Quality General |
 | Global Voices | Citizen Journalism |
 | South China Morning Post | Asia / China |
+| China Digital Times | China (independent) |
+| Arab News | Middle East / Gulf |
+| Tehran Times | Middle East / Iran (state-aligned) |
 | The Economist | Policy / Analysis |
 | Foreign Affairs | Policy / Analysis |
 | Foreign Policy | Policy / Analysis |
@@ -74,8 +81,10 @@ The header collapses in Images mode to a single slim bar with frosted glass, giv
 | MIT Technology Review | Technology |
 | New Scientist | Science |
 | Quanta | Science / Physics |
-| NASA | Space |
-| Unusual Whales | Markets / Policy |
+| NASA Breaking News | Space |
+| NASA Image of the Day | Space / Photo |
+| APOD | Astronomy / Photo |
+| British Journal of Photography | Photography |
 | CBC | Canadian Broadcast |
 | Globe and Mail | Canadian Press |
 | The Narwhal | Canadian Investigative |
@@ -89,6 +98,8 @@ Paywalled outlets show an **Archive** button linking to archive.ph. Outlets mark
 Some sources (AP, ISW, WSJ, DiEM25) are fetched via Bluesky RSS feeds due to direct feed blocks on Cloudflare Worker IPs. The Worker extracts the original article URL from the post body automatically.
 
 The Economist pulls from four section feeds (Leaders, International, Business, Science & Technology) but appears as a single source throughout the app.
+
+**A note on state-aligned sources:** Xinhua and Tehran Times are included to represent Chinese and Iranian perspectives directly. Both are state-aligned and should be read with the same editorial awareness applied to any outlet with a known institutional position.
 
 ---
 
@@ -203,3 +214,4 @@ GPL-3.0 — see [LICENSE](LICENSE) for details.
 ---
 
 *Designed and built by [C. Cunningham](https://github.com/christophcunningham), 2026.*
+

@@ -978,7 +978,11 @@ html, body {
 
 <script>
 const FEEDS = [
-  { id: 'ap',          name: 'AP',             url: 'https://bsky.app/profile/apnews.com/rss',                                          home: 'https://apnews.com' },
+  { id: 'bbc_pics',   name: 'BBC In Pictures',  url: 'https://feeds.bbci.co.uk/news/in_pictures/rss.xml',                                          home: 'https://bbc.com/news/in_pictures' },
+  { id: 'nasa_iotd',  name: 'NASA Image',       url: 'https://www.nasa.gov/feeds/iotd-feed',                                                       home: 'https://www.nasa.gov/image-of-the-day/' },
+  { id: 'apod',       name: 'APOD',             url: 'https://apod.nasa.gov/apod.rss',                                                             home: 'https://apod.nasa.gov/apod/' },
+  { id: 'bjp',        name: 'Brit. J. Photo',   url: 'https://1854.photography/feed',                                                              home: 'https://1854.photography' },
+  { id: 'ap_photos',  name: 'AP Photography',   url: 'https://news.google.com/rss/search?q=when:24h+allinurl:apnews.com/photography&ceid=US:en&hl=en-US&gl=US', home: 'https://apnews.com/photography' },
   { id: 'reuters',     name: 'Reuters',        url: 'https://news.google.com/rss/search?q=when:24h+allinurl:reuters.com&ceid=US:en&hl=en-US&gl=US', home: 'https://reuters.com' },
   { id: 'bbc',         name: 'BBC',            url: 'https://feeds.bbci.co.uk/news/rss.xml',                                              home: 'https://bbc.com/news' },
   { id: 'guardian',    name: 'Guardian',       url: 'https://www.theguardian.com/world/rss',                                              home: 'https://theguardian.com' },
@@ -1024,7 +1028,12 @@ const FEEDS = [
   { id: 'novara',      name: 'Novara Media',   url: 'https://novaramedia.com/feed/',                                                      home: 'https://novaramedia.com' },
   { id: 'dispatch',    name: 'The Dispatch',   url: 'https://thedispatch.com/feed',                                                       home: 'https://thedispatch.com' },
   { id: 'npr',         name: 'NPR',            url: 'https://feeds.npr.org/1001/rss.xml',                                                 home: 'https://npr.org' },
-  { id: 'scmp',        name: 'South China MP', url: 'https://www.scmp.com/rss/91/feed',                                                   home: 'https://scmp.com' },
+  { id: 'xinhua',    name: 'Xinhua',            url: 'https://english.news.cn/rss/index.htm',                                               home: 'https://english.news.cn' },
+  { id: 'cdt',       name: 'China Digital Times',url: 'https://chinadigitaltimes.net/feed',                                                home: 'https://chinadigitaltimes.net' },
+  { id: 'efe',       name: 'EFE',               url: 'https://www.efe.com/efe/english/4/rss',                                              home: 'https://www.efe.com/efe/english' },
+  { id: 'arabnews',  name: 'Arab News',          url: 'https://www.arabnews.com/rss.xml',                                                   home: 'https://www.arabnews.com' },
+  { id: 'tehrantimes',name: 'Tehran Times',      url: 'https://www.tehrantimes.com/rss',                                                    home: 'https://www.tehrantimes.com' },
+  { id: 'scmp',      name: 'South China MP',     url: 'https://www.scmp.com/rss/91/feed',                                                   home: 'https://scmp.com' },
   { id: 'bellingcat',  name: 'Bellingcat',     url: 'https://www.bellingcat.com/feed',                                                    home: 'https://bellingcat.com' },
   { id: 'mittr',       name: 'MIT Tech Review',url: 'https://www.technologyreview.com/topnews.rss',                                       home: 'https://technologyreview.com' },
   { id: 'ft',          name: 'Financial Times', url: 'https://www.ft.com/rss/home/international',                                        home: 'https://ft.com' },
@@ -1046,7 +1055,7 @@ articles = loadCache();
 const PAYWALLED = new Set(['wsj','nyt','economist','foreignaff','newyorker','newscientist','foreignpol','ft','dispatch']);
 
 // Feeds that include full article text in RSS
-const FULL_TEXT_FEEDS = new Set(['propublica','intercept','dropsite','nation','occrp','arst','savageminds']);
+const FULL_TEXT_FEEDS = new Set(['propublica','intercept','dropsite','nation','occrp','arst','savageminds','apod','nasa_iotd','bjp','bbc_pics']);
 
 async function fetchFeed(feed) {
   try {
