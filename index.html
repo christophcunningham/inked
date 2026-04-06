@@ -1073,7 +1073,11 @@ async function fetchFeed(feed) {
       // Reject articles older than 10 months
       if (pubDate.getTime() < tenMonthsAgo) return null;
 
-      const title = (item.title || item.description || '').trim();
+      const rawTitle = (item.title || item.description || '').trim();
+      // Strip any HTML tags from the title — some feeds (e.g. APOD) put raw HTML here
+      const title = stripHtml(rawTitle);
+      // Reject items whose title is empty or suspiciously short after stripping
+      if (!title || title.length < 4) return null;
       // Filter Economist non-article entries (charts, cartoons, etc.)
       if (feed.id === 'economist' && (!title || title.toLowerCase().includes('cartoon') || title.toLowerCase().includes('chart'))) return null;
 
@@ -1283,6 +1287,10 @@ function decodeEntities(str) {
     .replace(/&apos;/g, "'")
     .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)))
     .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCharCode(parseInt(h, 16)));
+}
+
+function stripHtml(str) {
+  return decodeEntities(str.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim());
 }
 
 function esc(s) {
