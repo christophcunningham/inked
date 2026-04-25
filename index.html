@@ -1534,24 +1534,10 @@ function saveDisabled(set) {
 }
 
 let manualDisabledSources = loadDisabled();
-// disabledSources = union of manual + theme — rebuilt on load below
+// disabledSources = union of manual + theme — rebuilt after theme filter is initialised below
 let disabledSources = new Set(manualDisabledSources);
 // Sources disabled purely by theme filter
 let themeDisabledSources = new Set();
-
-// Re-apply saved theme filter on load
-if (infoThemeFilter) {
-  const seen = new Set();
-  FEEDS.forEach(f => {
-    if (seen.has(f.id)) return;
-    seen.add(f.id);
-    const meta = SOURCE_META[f.id] || { themes: [] };
-    if (!meta.themes.includes(infoThemeFilter) && !manualDisabledSources.has(f.id)) {
-      disabledSources.add(f.id);
-      themeDisabledSources.add(f.id);
-    }
-  });
-}
 
 function isEnabled(sourceId) {
   return !disabledSources.has(sourceId);
@@ -1705,6 +1691,20 @@ function saveThemeFilter(val) {
 // (declared at top of disabled sources section)
 
 let infoThemeFilter = loadThemeFilter();
+
+// Re-apply saved theme filter on load — must run after FEEDS, SOURCE_META, and all sets are declared
+if (infoThemeFilter) {
+  const seen = new Set();
+  FEEDS.forEach(f => {
+    if (seen.has(f.id)) return;
+    seen.add(f.id);
+    const meta = SOURCE_META[f.id] || { themes: [] };
+    if (!meta.themes.includes(infoThemeFilter) && !manualDisabledSources.has(f.id)) {
+      disabledSources.add(f.id);
+      themeDisabledSources.add(f.id);
+    }
+  });
+}
 
 function applyThemeFilter(theme) {
   infoThemeFilter = theme;
