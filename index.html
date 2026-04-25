@@ -490,7 +490,7 @@ html, body {
   z-index: 200;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding: calc(var(--safe-top) + 24px) var(--pad) calc(var(--safe-bottom) + 40px);
+  padding: calc(var(--safe-top) + 24px) var(--pad) calc(var(--safe-bottom) + 80px);
   scrollbar-width: none;
 }
 #info-overlay::-webkit-scrollbar { display: none; }
@@ -513,20 +513,7 @@ html, body {
   color: var(--ink);
 }
 
-#info-close {
-  font-family: var(--font-ui);
-  font-size: 9px;
-  font-weight: 400;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  padding: 5px 14px;
-  border: 1px solid var(--ink);
-  background: transparent;
-  color: var(--ink);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-#info-close:active { background: var(--ink); color: var(--paper); }
+
 
 #sources-list {
   display: flex;
@@ -721,6 +708,7 @@ html, body {
 #header.dark #src-scroll-right { color: rgba(255,255,255,0.35); }
 #header.dark .grid-btn      { color: rgba(255,255,255,0.5); border-color: rgba(255,255,255,0.2); }
 #header.dark .grid-btn.active { background: rgba(255,255,255,0.9); color: #282828; border-color: rgba(255,255,255,0.9); }
+#header.dark #grid-controls span { color: rgba(255,255,255,0.35); }
 
 /* ── TAB BAR ── */
 #tab-bar {
@@ -728,7 +716,7 @@ html, body {
   bottom: 0;
   left: 0; right: 0;
   background: var(--paper);
-  z-index: 150;
+  z-index: 250;
   display: none;
 }
 
@@ -911,6 +899,56 @@ html, body {
   animation: shimmer 1.4s ease-in-out infinite;
 }
 
+/* ── INFO FILTER ROW (shown in tab bar when info overlay is open) ── */
+#info-filter-theme {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-top: 14px;
+  flex: 1;
+  min-width: 0;
+}
+#info-filter-theme::-webkit-scrollbar { display: none; }
+
+#bottom-right-info {
+  display: flex;
+  align-items: center;
+  padding-top: 14px;
+  padding-left: 8px;
+  flex-shrink: 0;
+}
+
+.info-filter-btn {
+  flex-shrink: 0;
+  font-family: var(--font-ui);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border: 1px solid var(--rule-heavy);
+  background: transparent;
+  color: var(--ink-mid);
+  cursor: pointer;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.1s;
+}
+.info-filter-btn.active {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+.info-filter-btn:active { opacity: 0.7; }
+
+#tab-bar-feed-mode {
+  display: flex;
+  align-items: center;
+  padding-top: 14px;
+}
+
 /* ── TAB BAR DARK MODE ── */
 #tab-bar.dark {
   background: rgba(40, 40, 40, 0.93);
@@ -1011,6 +1049,7 @@ html, body {
         <button class="sort-btn" id="sort-source" onclick="setSort('source')">Source</button>
       </div>
       <div id="grid-controls">
+        <span style="font-family:'Geist','Helvetica Neue',Arial,sans-serif;font-size:8px;font-weight:400;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-light);user-select:none">Grid</span>
         <button class="grid-btn active" id="grid-1" onclick="setGrid(1)">1</button>
         <button class="grid-btn" id="grid-3" onclick="setGrid(3)">3</button>
         <button class="grid-btn" id="grid-5" onclick="setGrid(5)">5</button>
@@ -1042,14 +1081,29 @@ html, body {
 </main>
 
 <div id="tab-bar">
-  <div class="bottom-bar-inner">
+  <!-- Feed/Images mode -->
+  <div class="bottom-bar-inner" id="tab-bar-feed-mode">
     <div class="tab-nav">
       <button class="tab-btn active" id="tab-feed" onclick="switchTab('feed')">Feed</button>
       <button class="tab-btn" id="tab-images" onclick="switchTab('images')">Images</button>
     </div>
     <div id="bottom-right">
       <button class="bar-btn" id="refresh-btn" onclick="loadFeeds()">↻ Refresh</button>
-      <button class="bar-btn bar-btn-fill" onclick="openInfo()">Info</button>
+      <button class="bar-btn bar-btn-fill" id="info-btn" onclick="toggleInfo()">Info</button>
+    </div>
+  </div>
+  <!-- Info mode: single row of theme chips + Close -->
+  <div class="bottom-bar-inner" id="tab-bar-info-mode" style="display:none">
+    <div id="info-filter-theme">
+      <button class="info-filter-btn active" data-theme="" onclick="setThemeFilter(this,'')">All</button>
+      <button class="info-filter-btn" data-theme="politics" onclick="setThemeFilter(this,'politics')">Politics</button>
+      <button class="info-filter-btn" data-theme="investigations" onclick="setThemeFilter(this,'investigations')">Investigations</button>
+      <button class="info-filter-btn" data-theme="techscience" onclick="setThemeFilter(this,'techscience')">Tech & Science</button>
+      <button class="info-filter-btn" data-theme="business" onclick="setThemeFilter(this,'business')">Business</button>
+      <button class="info-filter-btn" data-theme="war" onclick="setThemeFilter(this,'war')">War</button>
+    </div>
+    <div id="bottom-right-info">
+      <button class="bar-btn bar-btn-fill" id="info-btn-close" onclick="toggleInfo()">Close</button>
     </div>
   </div>
 </div>
@@ -1061,7 +1115,6 @@ html, body {
 <div id="info-overlay">
   <div id="info-header">
     <span id="info-title">Sources</span>
-    <button id="info-close" onclick="closeInfo()">Close</button>
   </div>
   <div id="sources-toggle-row">
     <span id="sources-toggle-label">Sources</span>
@@ -1083,6 +1136,7 @@ const FEEDS = [
   { id: 'bbc_pics',   name: 'BBC In Pictures',          url: 'https://feeds.bbci.co.uk/news/in_pictures/rss.xml',                                          home: 'https://bbc.com/news/in_pictures' },
   { id: 'nasa_iotd',  name: 'NASA Image of the Day',    url: 'https://www.nasa.gov/feeds/iotd-feed',                                                       home: 'https://www.nasa.gov/image-of-the-day/' },
   { id: 'bjp',        name: 'British Journal of Photography', url: 'https://1854.photography/feed',                                                         home: 'https://1854.photography' },
+  { id: 'ap',         name: 'AP News',                  url: 'https://bsky.app/profile/apnews.com/rss',                                                              home: 'https://apnews.com' },
   { id: 'ap_photos',  name: 'AP Photography',           url: 'https://news.google.com/rss/search?q=when:24h+allinurl:apnews.com/photography&ceid=US:en&hl=en-US&gl=US', home: 'https://apnews.com/photography' },
   { id: 'reuters',     name: 'Reuters',                 url: 'https://news.google.com/rss/search?q=when:24h+allinurl:reuters.com&ceid=US:en&hl=en-US&gl=US', home: 'https://reuters.com' },
   { id: 'bbc',         name: 'BBC',                    url: 'https://feeds.bbci.co.uk/news/rss.xml',                                              home: 'https://bbc.com/news' },
@@ -1135,9 +1189,20 @@ const FEEDS = [
   { id: 'arabnews',    name: 'Arab News',              url: 'https://www.arabnews.com/rss.xml',                                                   home: 'https://www.arabnews.com' },
   { id: 'tehrantimes', name: 'Tehran Times',           url: 'https://www.tehrantimes.com/rss',                                                    home: 'https://www.tehrantimes.com' },
   { id: 'scmp',        name: 'South China Morning Post', url: 'https://www.scmp.com/rss/91/feed',                                                 home: 'https://scmp.com' },
-  { id: 'bellingcat',  name: 'Bellingcat',             url: 'https://www.bellingcat.com/feed',                                                    home: 'https://bellingcat.com' },
-  { id: 'mittr',       name: 'MIT Technology Review',  url: 'https://www.technologyreview.com/topnews.rss',                                       home: 'https://technologyreview.com' },
-  { id: 'ft',          name: 'Financial Times',        url: 'https://www.ft.com/rss/home/international',                                        home: 'https://ft.com' },
+  { id: 'bellingcat',  name: 'Bellingcat',                       url: 'https://www.bellingcat.com/feed',                                                    home: 'https://bellingcat.com' },
+  { id: 'mittr',       name: 'MIT Technology Review',            url: 'https://www.technologyreview.com/topnews.rss',                                       home: 'https://technologyreview.com' },
+  { id: 'ft',          name: 'Financial Times',                  url: 'https://www.ft.com/rss/home/international',                                          home: 'https://ft.com' },
+  { id: 'hackernews',  name: 'Hacker News',                      url: 'https://news.ycombinator.com/rss',                                                   home: 'https://news.ycombinator.com' },
+  { id: 'elpais',      name: 'El País',                          url: 'https://bsky.app/profile/elpais.com/rss',                                            home: 'https://elpais.com' },
+  { id: 'thewire',     name: 'The Wire',                         url: 'https://thewire.in/feed',                                                            home: 'https://thewire.in' },
+  { id: 'scrollin',    name: 'Scroll.in',                        url: 'https://feeds.feedburner.com/ScrollinArticles.rss',                                  home: 'https://scroll.in' },
+  { id: 'dawn',        name: 'Dawn',                             url: 'https://www.dawn.com/feeds/home',                                                    home: 'https://dawn.com' },
+  { id: 'restofworld', name: 'Rest of World',                    url: 'https://restofworld.org/feed/latest',                                                home: 'https://restofworld.org' },
+  { id: 'media404',    name: '404 Media',                        url: 'https://www.404media.co/feed',                                                       home: 'https://www.404media.co' },
+  { id: 'animalpol',   name: 'Animal Político',                  url: 'https://www.animalpolitico.com/feed',                                                home: 'https://animalpolitico.com' },
+  { id: 'ojopublico',  name: 'OjoPúblico',                       url: 'https://ojo-publico.com/feed',                                                       home: 'https://ojo-publico.com' },
+  { id: 'aqlatam',     name: 'Americas Quarterly',               url: 'https://www.americasquarterly.org/feed',                                             home: 'https://americasquarterly.org' },
+  { id: 'latam21',     name: 'Latinoamérica21',                  url: 'https://latinoamerica21.com/feed',                                                   home: 'https://latinoamerica21.com' },
 ];
 
 // ── Replace this URL with your deployed Worker URL ──────────────────────────
@@ -1333,6 +1398,7 @@ const SOURCE_GEO = {
   bbc_pics:     { flag: '🇬🇧', geo: 'UK' },
   nasa_iotd:    { flag: '🇺🇸', geo: 'US' },
   bjp:          { flag: '🇬🇧', geo: 'UK' },
+  ap:           { flag: '🇺🇸', geo: 'US' },
   ap_photos:    { flag: '🇺🇸', geo: 'US' },
   reuters:      { flag: '🇬🇧', geo: 'UK' },
   bbc:          { flag: '🇬🇧', geo: 'UK' },
@@ -1385,6 +1451,90 @@ const SOURCE_GEO = {
   bellingcat:   { flag: '🇳🇱', geo: 'NL' },
   mittr:        { flag: '🇺🇸', geo: 'US' },
   ft:           { flag: '🇬🇧', geo: 'UK' },
+  hackernews:   { flag: '🇺🇸', geo: 'US' },
+  elpais:       { flag: '🇪🇸', geo: 'ES' },
+  thewire:      { flag: '🇮🇳', geo: 'IN' },
+  scrollin:     { flag: '🇮🇳', geo: 'IN' },
+  dawn:         { flag: '🇵🇰', geo: 'PK' },
+  restofworld:  { flag: '🌐', geo: 'INTL' },
+  media404:     { flag: '🇺🇸', geo: 'US' },
+  animalpol:    { flag: '🇲🇽', geo: 'MX' },
+  ojopublico:   { flag: '🇵🇪', geo: 'PE' },
+  aqlatam:      { flag: '🌎', geo: 'LATAM' },
+  latam21:      { flag: '🌎', geo: 'LATAM' },
+};
+
+// ── Source metadata: region + theme tags for info page filtering ──────────────
+// regions: americas | europe | middleeast | asia | global
+// themes:  politics | tech | science | war
+const SOURCE_META = {
+  bbc_pics:    { regions: ['europe'],     themes: [] },
+  nasa_iotd:   { regions: ['americas'],   themes: ['techscience'] },
+  bjp:         { regions: ['europe'],     themes: [] },
+  ap:          { regions: ['global'],     themes: [] },
+  ap_photos:   { regions: ['global'],     themes: [] },
+  reuters:     { regions: ['global'],     themes: [] },
+  bbc:         { regions: ['europe'],     themes: [] },
+  guardian:    { regions: ['europe'],     themes: [] },
+  aljazeera:   { regions: ['global'],     themes: ['war'] },
+  dw:          { regions: ['europe'],     themes: [] },
+  bbc_sci:     { regions: ['europe'],     themes: ['techscience'] },
+  dropsite:    { regions: ['americas'],   themes: ['investigations', 'war'] },
+  intercept:   { regions: ['americas'],   themes: ['investigations', 'war'] },
+  propublica:  { regions: ['americas'],   themes: ['investigations'] },
+  nation:      { regions: ['americas'],   themes: ['politics'] },
+  politico:    { regions: ['americas'],   themes: ['politics'] },
+  wsj:         { regions: ['americas'],   themes: ['politics', 'business'] },
+  arst:        { regions: ['americas'],   themes: ['techscience'] },
+  newscientist:{ regions: ['europe'],     themes: ['techscience'] },
+  economist:   { regions: ['europe'],     themes: ['politics', 'business'] },
+  foreignaff:  { regions: ['americas'],   themes: ['politics', 'war'] },
+  newyorker:   { regions: ['americas'],   themes: ['politics'] },
+  thehill:     { regions: ['americas'],   themes: ['politics'] },
+  foreignpol:  { regions: ['americas'],   themes: ['politics', 'war'] },
+  spiegel:     { regions: ['europe'],     themes: ['politics'] },
+  france24:    { regions: ['europe'],     themes: [] },
+  mee:         { regions: ['middleeast'], themes: ['war'] },
+  occrp:       { regions: ['europe'],     themes: ['investigations', 'war'] },
+  savageminds: { regions: ['americas'],   themes: ['politics'] },
+  bulwark:     { regions: ['americas'],   themes: ['politics'] },
+  isw:         { regions: ['americas'],   themes: ['war'] },
+  unusualwhales:{ regions: ['americas'],  themes: ['business', 'politics'] },
+  nyt:         { regions: ['americas'],   themes: ['politics'] },
+  hellgate:    { regions: ['americas'],   themes: ['politics'] },
+  thecity:     { regions: ['americas'],   themes: ['investigations'] },
+  nypd:        { regions: ['americas'],   themes: [] },
+  cbc:         { regions: ['americas'],   themes: [] },
+  globemail:   { regions: ['americas'],   themes: [] },
+  narwhal:     { regions: ['americas'],   themes: ['investigations'] },
+  breach:      { regions: ['americas'],   themes: ['investigations'] },
+  quanta:      { regions: ['americas'],   themes: ['techscience'] },
+  nasa:        { regions: ['americas'],   themes: ['techscience'] },
+  globalvoices:{ regions: ['global'],     themes: ['investigations'] },
+  diem25:      { regions: ['europe'],     themes: ['politics'] },
+  novara:      { regions: ['europe'],     themes: ['politics'] },
+  dispatch:    { regions: ['americas'],   themes: ['politics'] },
+  npr:         { regions: ['americas'],   themes: ['politics'] },
+  xinhua:      { regions: ['asia'],       themes: ['politics'] },
+  cdt:         { regions: ['asia'],       themes: ['politics'] },
+  efe:         { regions: ['europe'],     themes: [] },
+  arabnews:    { regions: ['middleeast'], themes: [] },
+  tehrantimes: { regions: ['middleeast'], themes: ['politics'] },
+  scmp:        { regions: ['asia'],       themes: ['politics', 'business'] },
+  bellingcat:  { regions: ['global'],     themes: ['investigations', 'war'] },
+  mittr:       { regions: ['americas'],   themes: ['techscience'] },
+  ft:          { regions: ['europe'],     themes: ['business'] },
+  hackernews:  { regions: ['americas'],   themes: ['techscience'] },
+  elpais:      { regions: ['europe'],     themes: ['politics'] },
+  thewire:     { regions: ['asia'],       themes: ['politics', 'investigations'] },
+  scrollin:    { regions: ['asia'],       themes: ['politics'] },
+  dawn:        { regions: ['asia'],       themes: ['politics'] },
+  restofworld: { regions: ['global'],     themes: ['techscience', 'business'] },
+  media404:    { regions: ['americas'],   themes: ['techscience', 'investigations'] },
+  animalpol:   { regions: ['americas'],   themes: ['politics', 'investigations'] },
+  ojopublico:  { regions: ['americas'],   themes: ['investigations', 'war'] },
+  aqlatam:     { regions: ['americas'],   themes: ['politics'] },
+  latam21:     { regions: ['americas'],   themes: ['politics'] },
 };
 
 // ── Disabled sources (persisted in localStorage) ─────────────────────────────
@@ -1529,8 +1679,51 @@ function buildInfoPanel() {
   }
 }
 
-function openInfo()  { document.getElementById('info-overlay').classList.add('open'); }
-function closeInfo() { document.getElementById('info-overlay').classList.remove('open'); }
+// ── Info page theme filter state ─────────────────────────────────────────────
+let infoThemeFilter = '';   // '' = all
+
+function setThemeFilter(btn, val) {
+  infoThemeFilter = val;
+  document.querySelectorAll('#info-filter-theme .info-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filterSourcesList();
+}
+
+function filterSourcesList() {
+  document.querySelectorAll('.source-entry').forEach(row => {
+    const id = row.dataset.sourceId;
+    const meta = SOURCE_META[id] || { regions: [], themes: [] };
+    const themeOk = !infoThemeFilter || meta.themes.includes(infoThemeFilter);
+    row.style.display = themeOk ? '' : 'none';
+  });
+}
+
+function toggleInfo() {
+  const overlay = document.getElementById('info-overlay');
+  if (overlay.classList.contains('open')) {
+    closeInfo();
+  } else {
+    openInfo();
+  }
+}
+
+function openInfo() {
+  document.getElementById('info-overlay').classList.add('open');
+  document.getElementById('tab-bar-feed-mode').style.display = 'none';
+  document.getElementById('tab-bar-info-mode').style.display = 'flex';
+  document.getElementById('refresh-btn') && (document.getElementById('refresh-btn').style.display = 'none');
+}
+
+function closeInfo() {
+  document.getElementById('info-overlay').classList.remove('open');
+  document.getElementById('tab-bar-feed-mode').style.display = 'flex';
+  document.getElementById('tab-bar-info-mode').style.display = 'none';
+  document.getElementById('refresh-btn') && (document.getElementById('refresh-btn').style.display = '');
+  // Reset theme filter
+  infoThemeFilter = '';
+  document.querySelectorAll('#info-filter-theme .info-filter-btn').forEach((b,i) => b.classList.toggle('active', i===0));
+  filterSourcesList();
+}
 
 function getVisible() {
   let base = articles.filter(a => isEnabled(a.sourceId));
