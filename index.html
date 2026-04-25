@@ -946,7 +946,6 @@ html, body {
 #tab-bar-feed-mode {
   display: flex;
   align-items: center;
-  padding-top: 14px;
 }
 
 /* ── TAB BAR DARK MODE ── */
@@ -1530,19 +1529,41 @@ function loadDisabled() {
 }
 
 function saveDisabled(set) {
-  try { localStorage.setItem(DISABLED_KEY, JSON.stringify([...set])); } catch {}
+  // Only persist manual toggles, not theme-driven disables
+  try { localStorage.setItem(DISABLED_KEY, JSON.stringify([...manualDisabledSources])); } catch {}
 }
 
-let disabledSources = loadDisabled();
+let manualDisabledSources = loadDisabled();
+// disabledSources = union of manual + theme — rebuilt on load below
+let disabledSources = new Set(manualDisabledSources);
+// Sources disabled purely by theme filter
+let themeDisabledSources = new Set();
+
+// Re-apply saved theme filter on load
+if (infoThemeFilter) {
+  const seen = new Set();
+  FEEDS.forEach(f => {
+    if (seen.has(f.id)) return;
+    seen.add(f.id);
+    const meta = SOURCE_META[f.id] || { themes: [] };
+    if (!meta.themes.includes(infoThemeFilter) && !manualDisabledSources.has(f.id)) {
+      disabledSources.add(f.id);
+      themeDisabledSources.add(f.id);
+    }
+  });
+}
 
 function isEnabled(sourceId) {
   return !disabledSources.has(sourceId);
 }
 
 function toggleSource(sourceId) {
-  if (disabledSources.has(sourceId)) {
-    disabledSources.delete(sourceId);
+  if (manualDisabledSources.has(sourceId)) {
+    manualDisabledSources.delete(sourceId);
+    // Only re-enable in combined set if not theme-disabled
+    if (!themeDisabledSources.has(sourceId)) disabledSources.delete(sourceId);
   } else {
+    manualDisabledSources.add(sourceId);
     disabledSources.add(sourceId);
   }
   saveDisabled(disabledSources);
@@ -1555,22 +1576,27 @@ function toggleSource(sourceId) {
 function toggleAllSources() {
   const seen = new Set();
   const uniqueIds = FEEDS.filter(f => { if (seen.has(f.id)) return false; seen.add(f.id); return true; }).map(f => f.id);
-  const allEnabled = uniqueIds.every(id => !disabledSources.has(id));
+  // Only consider sources visible in the current filtered list
+  const visibleIds = uniqueIds.filter(id => {
+    const meta = SOURCE_META[id] || { themes: [] };
+    return !infoThemeFilter || meta.themes.includes(infoThemeFilter);
+  });
+  const allEnabled = visibleIds.every(id => !manualDisabledSources.has(id));
   if (allEnabled) {
-    // Deselect all
-    uniqueIds.forEach(id => disabledSources.add(id));
+    visibleIds.forEach(id => { manualDisabledSources.add(id); disabledSources.add(id); });
   } else {
-    // Select all
-    disabledSources.clear();
+    visibleIds.forEach(id => {
+      manualDisabledSources.delete(id);
+      if (!themeDisabledSources.has(id)) disabledSources.delete(id);
+    });
   }
   saveDisabled(disabledSources);
   updateToggleBtn();
-  // Re-render the list rows
   document.querySelectorAll('.source-entry').forEach(row => {
     const id = row.dataset.sourceId;
     const cb = row.querySelector('.source-entry-check');
     if (id) {
-      const enabled = !disabledSources.has(id);
+      const enabled = !manualDisabledSources.has(id);
       if (cb) cb.checked = enabled;
       row.classList.toggle('disabled', !enabled);
     }
@@ -1585,7 +1611,11 @@ function updateToggleBtn() {
   if (!btn) return;
   const seen = new Set();
   const uniqueIds = FEEDS.filter(f => { if (seen.has(f.id)) return false; seen.add(f.id); return true; }).map(f => f.id);
-  const allEnabled = uniqueIds.every(id => !disabledSources.has(id));
+  const visibleIds = uniqueIds.filter(id => {
+    const meta = SOURCE_META[id] || { themes: [] };
+    return !infoThemeFilter || meta.themes.includes(infoThemeFilter);
+  });
+  const allEnabled = visibleIds.every(id => !manualDisabledSources.has(id));
   btn.textContent = allEnabled ? 'Deselect All' : 'Select All';
 }
 
@@ -1598,7 +1628,7 @@ function buildInfoPanel() {
     if (seen.has(feed.id)) return;
     seen.add(feed.id);
     const count = articles.filter(a => a.sourceId === feed.id).length;
-    const enabled = !disabledSources.has(feed.id);
+    const enabled = !manualDisabledSources.has(feed.id);
     const geo = SOURCE_GEO[feed.id] || { flag: '', geo: '' };
 
     const el = document.createElement('div');
@@ -1662,19 +1692,61 @@ function buildInfoPanel() {
 }
 
 // ── Info page theme filter state ─────────────────────────────────────────────
-let infoThemeFilter = '';   // '' = all
+const THEME_KEY = 'inked_theme_filter';
+
+function loadThemeFilter() {
+  try { return localStorage.getItem(THEME_KEY) || ''; } catch { return ''; }
+}
+function saveThemeFilter(val) {
+  try { localStorage.setItem(THEME_KEY, val); } catch {}
+}
+
+// Sources disabled purely by theme filter (not by manual toggle)
+// (declared at top of disabled sources section)
+
+let infoThemeFilter = loadThemeFilter();
+
+function applyThemeFilter(theme) {
+  infoThemeFilter = theme;
+  saveThemeFilter(theme);
+
+  // Restore sources that were only theme-disabled
+  themeDisabledSources.forEach(id => {
+    if (!manualDisabledSources.has(id)) disabledSources.delete(id);
+  });
+  themeDisabledSources.clear();
+
+  if (theme) {
+    // Disable sources not matching the theme
+    const seen = new Set();
+    FEEDS.forEach(f => {
+      if (seen.has(f.id)) return;
+      seen.add(f.id);
+      const meta = SOURCE_META[f.id] || { themes: [] };
+      if (!meta.themes.includes(theme) && !manualDisabledSources.has(f.id)) {
+        disabledSources.add(f.id);
+        themeDisabledSources.add(f.id);
+      }
+    });
+  }
+
+  saveDisabled(disabledSources);
+  buildSourceBar();
+  render();
+  if (activeTab === 'images') renderPhotos();
+}
 
 function setThemeFilter(btn, val) {
-  infoThemeFilter = val;
   document.querySelectorAll('#info-filter-theme .info-filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+  applyThemeFilter(val);
   filterSourcesList();
 }
 
 function filterSourcesList() {
   document.querySelectorAll('.source-entry').forEach(row => {
     const id = row.dataset.sourceId;
-    const meta = SOURCE_META[id] || { regions: [], themes: [] };
+    const meta = SOURCE_META[id] || { themes: [] };
     const themeOk = !infoThemeFilter || meta.themes.includes(infoThemeFilter);
     row.style.display = themeOk ? '' : 'none';
   });
@@ -1690,14 +1762,14 @@ function toggleInfo() {
 }
 
 function openInfo() {
-  // Reset theme filter to All on every open
-  infoThemeFilter = '';
-  document.querySelectorAll('#info-filter-theme .info-filter-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
   document.getElementById('info-overlay').classList.add('open');
   document.getElementById('tab-bar-feed-mode').style.display = 'none';
   document.getElementById('tab-bar-info-mode').style.display = 'flex';
   document.getElementById('refresh-btn') && (document.getElementById('refresh-btn').style.display = 'none');
-  // Apply filter after panel is populated
+  // Restore active theme chip to match persisted state
+  document.querySelectorAll('#info-filter-theme .info-filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.theme === infoThemeFilter);
+  });
   filterSourcesList();
 }
 
