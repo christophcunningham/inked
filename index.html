@@ -1186,15 +1186,14 @@ const FEEDS = [
   { id: 'mittr',       name: 'MIT Technology Review',            url: 'https://www.technologyreview.com/topnews.rss',                                       home: 'https://technologyreview.com' },
   { id: 'ft',          name: 'Financial Times',                  url: 'https://www.ft.com/rss/home/international',                                          home: 'https://ft.com' },
   { id: 'hackernews',  name: 'Hacker News',                      url: 'https://news.ycombinator.com/rss',                                                   home: 'https://news.ycombinator.com' },
-  { id: 'elpais',      name: 'El País',                          url: 'https://bsky.app/profile/elpais.com/rss',                                            home: 'https://elpais.com' },
-  { id: 'thewire',     name: 'The Wire',                         url: 'https://thewire.in/feed',                                                            home: 'https://thewire.in' },
+  { id: 'elpais',      name: 'El País',                          url: 'https://feeds.elpais.com/mrss-s/pages/ep/site/english.elpais.com/portada',           home: 'https://english.elpais.com' },
+  { id: 'thewire',     name: 'The Wire',                         url: 'https://bsky.app/profile/thewire.in/rss',                                            home: 'https://thewire.in' },
   { id: 'scrollin',    name: 'Scroll.in',                        url: 'https://feeds.feedburner.com/ScrollinArticles.rss',                                  home: 'https://scroll.in' },
   { id: 'dawn',        name: 'Dawn',                             url: 'https://www.dawn.com/feeds/home',                                                    home: 'https://dawn.com' },
   { id: 'restofworld', name: 'Rest of World',                    url: 'https://restofworld.org/feed/latest',                                                home: 'https://restofworld.org' },
   { id: 'media404',    name: '404 Media',                        url: 'https://www.404media.co/feed',                                                       home: 'https://www.404media.co' },
-  { id: 'animalpol',   name: 'Animal Político',                  url: 'https://www.animalpolitico.com/feed',                                                home: 'https://animalpolitico.com' },
-  { id: 'ojopublico',  name: 'OjoPúblico',                       url: 'https://ojo-publico.com/feed',                                                       home: 'https://ojo-publico.com' },
-  { id: 'aqlatam',     name: 'Americas Quarterly',               url: 'https://www.americasquarterly.org/feed',                                             home: 'https://americasquarterly.org' },
+  { id: 'animalpol',   name: 'Animal Político',                  url: 'https://bsky.app/profile/pajaropolitico.bsky.social/rss',                            home: 'https://animalpolitico.com' },
+  { id: 'aqlatam',     name: 'Americas Quarterly',               url: 'https://news.google.com/rss/search?q=when:7d+allinurl:americasquarterly.org&ceid=US:en&hl=en-US&gl=US', home: 'https://americasquarterly.org' },
   { id: 'latam21',     name: 'Latinoamérica21',                  url: 'https://latinoamerica21.com/feed',                                                   home: 'https://latinoamerica21.com' },
 ];
 
@@ -1446,7 +1445,6 @@ const SOURCE_GEO = {
   restofworld:  { flag: '🌐', geo: 'INTL' },
   media404:     { flag: '🇺🇸', geo: 'US' },
   animalpol:    { flag: '🇲🇽', geo: 'MX' },
-  ojopublico:   { flag: '🇵🇪', geo: 'PE' },
   aqlatam:      { flag: '🌎', geo: 'LATAM' },
   latam21:      { flag: '🌎', geo: 'LATAM' },
 };
@@ -1513,7 +1511,6 @@ const SOURCE_META = {
   restofworld: { regions: ['global'],     themes: ['techscience', 'business'] },
   media404:    { regions: ['americas'],   themes: ['techscience', 'investigations'] },
   animalpol:   { regions: ['americas'],   themes: ['politics', 'investigations'] },
-  ojopublico:  { regions: ['americas'],   themes: ['investigations', 'war'] },
   aqlatam:     { regions: ['americas'],   themes: ['politics'] },
   latam21:     { regions: ['americas'],   themes: ['politics'] },
 };
