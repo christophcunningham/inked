@@ -1,34 +1,14 @@
 # Inked
 
-Built for those who want to stay on top of the news cycle without ads, algorithms, or noise. A clean, chronological feed pulling from reputable wire services, broadcasters, investigative outlets, policy journals, science publications, and local press — spanning a wide range of viewpoints and perspectives. Filter by source or read everything in order. No affiliations. No sponsorships. No agenda.
+Built for those who want to stay on top of the news cycle without ads, algorithms, or noise. A clean, chronological feed pulling from reputable wire services, broadcasters, investigative outlets, policy journals, science publications, and local press — spanning a wide range of viewpoints and perspectives. Filter by source, theme, or read everything in order. No affiliations. No sponsorships. No ads. 
 
 ---
 
 ## What it is
 
-Inked is a single HTML file that pulls live RSS feeds from 63 news sources and renders them as a clean chronological headline stream. Articles are cached locally for up to 3 days so content doesn't disappear as feeds roll over. Articles older than 10 months are filtered out globally.
+Inked is a single HTML file that pulls live RSS feeds from 62 news sources and renders them as a clean chronological headline stream. Articles are cached locally for up to 3 days so content doesn't disappear as feeds roll over. Articles older than 10 months are filtered out globally.
 
 It runs entirely in the browser. There is no backend, no database, no login. A Cloudflare Worker acts as a lightweight RSS proxy to handle cross-origin fetching.
-
----
-
-## Views
-
-### Feed
-
-The default view. A chronological river of headlines grouped by date. Filter by source using the chip bar at the top. Outlets marked `••` include full article text in their RSS feed — tap **Read** to expand inline. Paywalled outlets show an **Archive** button linking to archive.ph.
-
-### Images
-
-A continuous stream of photojournalism pulled from the same sources. Switch to it via the **Images** tab in the bottom bar.
-
-- **Layouts:** single column (4:5 portrait) or grid at 3, 5, or 9 columns — toggle with the density buttons in the header
-- **Caption:** tap the dot `·` in the corner of any image to reveal a caption where available; tap the caption to dismiss
-- **Open article:** tap the image itself to open the source article in a new tab
-- **Source filter:** the same chip bar applies — filter to a single outlet in either view
-- Images are pulled from RSS enclosures, `media:content`, `media:thumbnail`, and inline `<img>` tags. Broken or missing images are dropped silently.
-
-The header collapses in Images mode to a single slim bar with frosted glass, giving photos maximum space.
 
 ---
 
@@ -36,55 +16,57 @@ The header collapses in Images mode to a single slim bar with frosted glass, giv
 
 | Outlet | Category |
 |---|---|
-| AP (via Bluesky) | Wire |
-| AP Photography | Wire / Photo |
+| AP News (via Bluesky) | Wire |
 | Reuters (via Google News) | Wire |
-| EFE | Wire / Latin America |
-| Xinhua | Wire / China (state) |
 | BBC | International Broadcast |
-| BBC In Pictures | Photo |
 | BBC Science | Science |
 | Al Jazeera | International Broadcast |
-| DW | International Broadcast |
+| Deutsche Welle | International Broadcast |
 | France 24 | International Broadcast |
 | Der Spiegel | European Press |
+| El País (via Bluesky) | European Press |
 | Guardian | Quality General |
 | Global Voices | Citizen Journalism |
 | South China Morning Post | Asia / China |
-| China Digital Times | China (independent) |
-| Arab News | Middle East / Gulf |
-| Tehran Times | Middle East / Iran (state-aligned) |
+| The Japan Times | Japan |
+| China Digital Times | China / Independent |
 | The Economist | Policy / Analysis |
 | Foreign Affairs | Policy / Analysis |
 | Foreign Policy | Policy / Analysis |
 | Financial Times | Business / Economics |
-| ISW (via Bluesky) | Defense / Conflict |
-| NYT | US Legacy |
-| WSJ (via Bluesky) | US Legacy |
+| Wall Street Journal (via Bluesky) | US Legacy |
+| New York Times | US Legacy |
+| NPR | US Public Radio |
 | Politico | US Politics |
 | The Hill | US Politics |
 | The Bulwark | US Politics |
 | The Dispatch | Centre-Right / US Politics |
-| NPR | US Public Radio |
-| The Intercept | Investigative |
-| ProPublica | Investigative |
-| Drop Site | Investigative |
-| OCCRP | Investigative |
-| Bellingcat | Open-Source Investigation |
-| Middle East Eye | Middle East |
 | The Nation | Left / Opinion |
-| New Yorker | Long-form / Culture |
+| The New Yorker | Long-form / Culture |
 | Savage Minds | Culture / Politics |
 | DiEM25 (via Bluesky) | European Left |
 | Novara Media | Left / UK |
+| Institute for the Study of War (via Bluesky) | Defense / Conflict |
+| Middle East Eye | Middle East |
+| Arab News | Middle East |
+| Tehran Times | Iran State Media |
+| The Intercept | Investigative |
+| ProPublica | Investigative |
+| Drop Site | Investigative |
+| Organized Crime and Corruption Reporting Project | Investigative |
+| Bellingcat | Open-Source Investigation |
+| The Wire | India / Investigative |
+| Scroll.in | India |
+| Dawn | Pakistan |
 | Ars Technica | Technology / Science |
 | MIT Technology Review | Technology |
 | New Scientist | Science |
-| Quanta | Science / Physics |
-| NASA Breaking News | Space |
-| NASA Image of the Day | Space / Photo |
-| APOD | Astronomy / Photo |
-| British Journal of Photography | Photography |
+| Quanta Magazine | Science / Physics |
+| NASA | Space |
+| Hacker News | Technology |
+| 404 Media | Technology / Investigative |
+| Rest of World | Technology / Global |
+| Unusual Whales | Markets / Policy |
 | CBC | Canadian Broadcast |
 | Globe and Mail | Canadian Press |
 | The Narwhal | Canadian Investigative |
@@ -92,14 +74,16 @@ The header collapses in Images mode to a single slim bar with frosted glass, giv
 | Hell Gate | NYC Local |
 | The City | NYC Local |
 | NYPD (via Google News) | NYC |
+| Animal Político | Mexico / Investigative |
+| OjoPúblico | Peru / Investigative |
+| Americas Quarterly | Latin America |
+| Latinoamérica21 | Latin America |
 
 Paywalled outlets show an **Archive** button linking to archive.ph. Outlets marked `••` support in-app full-text reading where RSS content is available.
 
-Some sources (AP, ISW, WSJ, DiEM25) are fetched via Bluesky RSS feeds due to direct feed blocks on Cloudflare Worker IPs. The Worker extracts the original article URL from the post body automatically.
+Some sources (AP News, ISW, WSJ, DiEM25, El País) are fetched via Bluesky RSS feeds due to direct feed blocks on Cloudflare Worker IPs. The Worker extracts the original article URL from the post body automatically.
 
 The Economist pulls from four section feeds (Leaders, International, Business, Science & Technology) but appears as a single source throughout the app.
-
-**A note on state-aligned sources:** Xinhua and Tehran Times are included to represent Chinese and Iranian perspectives directly. Both are state-aligned and should be read with the same editorial awareness applied to any outlet with a known institutional position.
 
 ---
 
@@ -114,9 +98,19 @@ Browser (index.html)
                                     └── Return { status, items[] }
 ```
 
-**`index.html`** — The entire front-end. Self-contained, no build step, no dependencies. Fetches all feeds in parallel on load, merges with a 3-day localStorage cache, deduplicates, sorts chronologically, and renders with lazy DOM loading (20 articles / 30 photos at a time as you scroll).
+**`index.html`** — The entire front-end. Self-contained, no build step, no dependencies. Fetches all feeds in parallel on load, merges with a 3-day localStorage cache, deduplicates, sorts chronologically, and renders with lazy DOM loading (20 articles at a time as you scroll).
 
 **`inked-worker.js`** — The Cloudflare Worker source code, included here for reference. This file is **not served from this repository** — it must be deployed separately via the Cloudflare Workers dashboard (see below). Cloudflare runs it on their infrastructure independently of this repo.
+
+---
+
+## Features
+
+**Feed tab** — Chronological headline stream across all sources. Filter to a single source using the chip bar at the top. Tap a headline to open the article. Outlets with full RSS text show a `••` indicator and an inline **Read** button. Paywalled outlets show an **Archive** button.
+
+**Images tab** — Continuous photo grid pulling images from all RSS sources. Configurable column density (1 / 3 / 5 / 9). Tap any image to open the source article. Tap the dot in the corner to reveal a caption. Header and footer collapse to slim frosted-glass bars when scrolling.
+
+**Sources page (Info)** — Full list of all sources with article counts, country flags, and geographic codes. Toggle individual sources on or off to exclude them from the feed and filter bar — preference is saved in localStorage. Use the **Select All / Deselect All** button to bulk toggle. Filter the list by theme using the footer chips: **Politics · Investigations · Tech & Science · Business · War**.
 
 ---
 
@@ -170,7 +164,19 @@ All feeds are defined in the `FEEDS` array near the top of the script in `index.
 { id: 'unique_id', name: 'Display Name', url: 'https://feed.url/rss', home: 'https://outlet.com' }
 ```
 
-Multiple entries can share the same `id` to merge feeds under a single source chip (e.g. Economist pulls from four section feeds but appears as one). The sources page and filter bar deduplicate by `id` automatically.
+Multiple entries can share the same `id` to merge feeds under a single source chip (e.g. The Economist pulls from four section feeds but appears as one). The sources page and filter bar deduplicate by `id` automatically.
+
+When adding a new source, also add its geo and theme metadata in two places:
+
+```js
+// SOURCE_GEO — flag emoji and short geo code shown on the Sources page
+SOURCE_GEO['my_id'] = { flag: '🇺🇸', geo: 'US' };
+
+// SOURCE_META — region and theme tags for Sources page filtering
+// regions: americas | europe | middleeast | asia | global
+// themes:  politics | investigations | techscience | business | war
+SOURCE_META['my_id'] = { regions: ['americas'], themes: ['politics'] };
+```
 
 Outlets whose RSS includes full article text can be added to `FULL_TEXT_FEEDS`:
 
@@ -178,7 +184,7 @@ Outlets whose RSS includes full article text can be added to `FULL_TEXT_FEEDS`:
 const FULL_TEXT_FEEDS = new Set(['propublica', 'intercept', 'dropsite', ...]);
 ```
 
-These will display a `••` indicator and a **Read** button that expands the article inline. They will also contribute images to the Images view where their RSS includes image tags.
+These will display a `••` indicator and a **Read** button that expands the article inline.
 
 Paywalled outlets can be added to `PAYWALLED`:
 
@@ -197,13 +203,8 @@ Articles are stored in `localStorage` for up to 3 days (2MB cap). This means:
 - The cache trims automatically — oldest articles are removed first if the size limit is reached
 - Articles older than 10 months are filtered out globally regardless of cache
 - Cache is per-browser and per-device; clearing browser data will reset it
-- Image URLs and captions are stored alongside article metadata in the cache
 
----
-
-## Clocks
-
-The header displays analogue clocks for four time zones: **NYC** (America/New_York), **LON** (Europe/London), **MSK** (Europe/Moscow), and **TYO** (Asia/Tokyo). To change a clock, update the `ZONES` array in the script and the corresponding `.clock-label` span in the HTML.
+Source on/off preferences are stored separately in `localStorage` under `inked_disabled_sources` and persist across sessions.
 
 ---
 
@@ -214,4 +215,3 @@ GPL-3.0 — see [LICENSE](LICENSE) for details.
 ---
 
 *Designed and built by [C. Cunningham](https://github.com/christophcunningham), 2026.*
-

@@ -1133,11 +1133,7 @@ html, body {
 
 <script>
 const FEEDS = [
-  { id: 'bbc_pics',   name: 'BBC In Pictures',          url: 'https://feeds.bbci.co.uk/news/in_pictures/rss.xml',                                          home: 'https://bbc.com/news/in_pictures' },
-  { id: 'nasa_iotd',  name: 'NASA Image of the Day',    url: 'https://www.nasa.gov/feeds/iotd-feed',                                                       home: 'https://www.nasa.gov/image-of-the-day/' },
-  { id: 'bjp',        name: 'British Journal of Photography', url: 'https://1854.photography/feed',                                                         home: 'https://1854.photography' },
   { id: 'ap',         name: 'AP News',                  url: 'https://bsky.app/profile/apnews.com/rss',                                                              home: 'https://apnews.com' },
-  { id: 'ap_photos',  name: 'AP Photography',           url: 'https://news.google.com/rss/search?q=when:24h+allinurl:apnews.com/photography&ceid=US:en&hl=en-US&gl=US', home: 'https://apnews.com/photography' },
   { id: 'reuters',     name: 'Reuters',                 url: 'https://news.google.com/rss/search?q=when:24h+allinurl:reuters.com&ceid=US:en&hl=en-US&gl=US', home: 'https://reuters.com' },
   { id: 'bbc',         name: 'BBC',                    url: 'https://feeds.bbci.co.uk/news/rss.xml',                                              home: 'https://bbc.com/news' },
   { id: 'guardian',    name: 'Guardian',               url: 'https://www.theguardian.com/world/rss',                                              home: 'https://theguardian.com' },
@@ -1183,9 +1179,8 @@ const FEEDS = [
   { id: 'novara',      name: 'Novara Media',           url: 'https://novaramedia.com/feed/',                                                      home: 'https://novaramedia.com' },
   { id: 'dispatch',    name: 'The Dispatch',           url: 'https://thedispatch.com/feed',                                                       home: 'https://thedispatch.com' },
   { id: 'npr',         name: 'NPR',                    url: 'https://feeds.npr.org/1001/rss.xml',                                                 home: 'https://npr.org' },
-  { id: 'xinhua',      name: 'Xinhua',                 url: 'https://english.news.cn/rss/index.htm',                                               home: 'https://english.news.cn' },
+  { id: 'japantimes', name: 'The Japan Times',           url: 'https://japantimes.co.jp/feed',                                                      home: 'https://japantimes.co.jp' },
   { id: 'cdt',         name: 'China Digital Times',    url: 'https://chinadigitaltimes.net/feed',                                                home: 'https://chinadigitaltimes.net' },
-  { id: 'efe',         name: 'EFE News Agency',        url: 'https://www.efe.com/efe/english/4/rss',                                              home: 'https://www.efe.com/efe/english' },
   { id: 'arabnews',    name: 'Arab News',              url: 'https://www.arabnews.com/rss.xml',                                                   home: 'https://www.arabnews.com' },
   { id: 'tehrantimes', name: 'Tehran Times',           url: 'https://www.tehrantimes.com/rss',                                                    home: 'https://www.tehrantimes.com' },
   { id: 'scmp',        name: 'South China Morning Post', url: 'https://www.scmp.com/rss/91/feed',                                                 home: 'https://scmp.com' },
@@ -1221,7 +1216,7 @@ articles = loadCache();
 const PAYWALLED = new Set(['wsj','nyt','economist','foreignaff','newyorker','newscientist','foreignpol','ft','dispatch']);
 
 // Feeds that include full article text in RSS
-const FULL_TEXT_FEEDS = new Set(['propublica','intercept','dropsite','nation','occrp','arst','savageminds','nasa_iotd','bjp','bbc_pics']);
+const FULL_TEXT_FEEDS = new Set(['propublica','intercept','dropsite','nation','occrp','arst','savageminds']);
 
 async function fetchFeed(feed) {
   try {
@@ -1395,11 +1390,7 @@ function updateSourceBar() {
 
 // ── Source geo metadata ──────────────────────────────────────────────────────
 const SOURCE_GEO = {
-  bbc_pics:     { flag: '🇬🇧', geo: 'UK' },
-  nasa_iotd:    { flag: '🇺🇸', geo: 'US' },
-  bjp:          { flag: '🇬🇧', geo: 'UK' },
   ap:           { flag: '🇺🇸', geo: 'US' },
-  ap_photos:    { flag: '🇺🇸', geo: 'US' },
   reuters:      { flag: '🇬🇧', geo: 'UK' },
   bbc:          { flag: '🇬🇧', geo: 'UK' },
   guardian:     { flag: '🇬🇧', geo: 'UK' },
@@ -1442,9 +1433,8 @@ const SOURCE_GEO = {
   novara:       { flag: '🇬🇧', geo: 'UK' },
   dispatch:     { flag: '🇺🇸', geo: 'US' },
   npr:          { flag: '🇺🇸', geo: 'US' },
-  xinhua:       { flag: '🇨🇳', geo: 'CN' },
+  japantimes:   { flag: '🇯🇵', geo: 'JP' },
   cdt:          { flag: '🇺🇸', geo: 'US' },
-  efe:          { flag: '🇪🇸', geo: 'ES' },
   arabnews:     { flag: '🇸🇦', geo: 'SA' },
   tehrantimes:  { flag: '🇮🇷', geo: 'IR' },
   scmp:         { flag: '🇭🇰', geo: 'HK' },
@@ -1468,11 +1458,7 @@ const SOURCE_GEO = {
 // regions: americas | europe | middleeast | asia | global
 // themes:  politics | tech | science | war
 const SOURCE_META = {
-  bbc_pics:    { regions: ['europe'],     themes: [] },
-  nasa_iotd:   { regions: ['americas'],   themes: ['techscience'] },
-  bjp:         { regions: ['europe'],     themes: [] },
   ap:          { regions: ['global'],     themes: [] },
-  ap_photos:   { regions: ['global'],     themes: [] },
   reuters:     { regions: ['global'],     themes: [] },
   bbc:         { regions: ['europe'],     themes: [] },
   guardian:    { regions: ['europe'],     themes: [] },
@@ -1515,9 +1501,8 @@ const SOURCE_META = {
   novara:      { regions: ['europe'],     themes: ['politics'] },
   dispatch:    { regions: ['americas'],   themes: ['politics'] },
   npr:         { regions: ['americas'],   themes: ['politics'] },
-  xinhua:      { regions: ['asia'],       themes: ['politics'] },
+  japantimes:  { regions: ['asia'],       themes: ['politics'] },
   cdt:         { regions: ['asia'],       themes: ['politics'] },
-  efe:         { regions: ['europe'],     themes: [] },
   arabnews:    { regions: ['middleeast'], themes: [] },
   tehrantimes: { regions: ['middleeast'], themes: ['politics'] },
   scmp:        { regions: ['asia'],       themes: ['politics', 'business'] },
