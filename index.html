@@ -535,12 +535,23 @@ html, body {
 
 .source-entry {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  padding: 7px 0;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
   border-bottom: 1px solid var(--rule);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
-.source-entry:last-child { padding-bottom: 7px; }
+.source-entry:last-child { padding-bottom: 8px; }
+.source-entry:active { opacity: 0.6; }
+
+.source-entry-left {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex: 1;
+  min-width: 0;
+}
 
 .source-entry-name {
   font-family: var(--font-ui);
@@ -548,15 +559,102 @@ html, body {
   font-weight: 400;
   color: var(--ink);
   text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+  width: 220px;
+  transition: color 0.15s;
 }
 .source-entry-name:active { opacity: 0.5; }
+.source-entry.disabled .source-entry-name {
+  text-decoration: line-through;
+  color: var(--ink-light);
+}
+
+.source-entry-geo {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  color: var(--ink-light);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.source-entry.disabled .source-entry-geo { opacity: 0.5; }
 
 .source-entry-count {
   font-family: var(--font-ui);
   font-size: 10px;
   font-weight: 400;
   color: var(--ink-light);
+  width: 24px;
+  text-align: right;
+  flex-shrink: 0;
 }
+.source-entry.disabled .source-entry-count { opacity: 0.4; }
+
+.source-entry-check {
+  flex-shrink: 0;
+  width: 13px;
+  height: 13px;
+  border: 1px solid var(--rule-heavy);
+  background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  position: relative;
+  margin: 0;
+  transition: background 0.12s, border-color 0.12s;
+}
+.source-entry-check:checked {
+  background: var(--ink);
+  border-color: var(--ink);
+}
+.source-entry-check:checked::after {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 0px;
+  width: 5px;
+  height: 8px;
+  border: 1.5px solid var(--paper);
+  border-top: none;
+  border-left: none;
+  transform: rotate(40deg);
+}
+
+/* Select All / Deselect All row */
+#sources-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0 12px;
+  border-bottom: 1px solid var(--rule-heavy);
+  margin-bottom: 4px;
+}
+#sources-toggle-label {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+}
+#sources-toggle-btn {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border: 1px solid var(--rule-heavy);
+  background: transparent;
+  color: var(--ink-mid);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+#sources-toggle-btn:active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 #info-description {
   margin-top: 24px;
   font-family: var(--font-body);
@@ -965,6 +1063,10 @@ html, body {
     <span id="info-title">Sources</span>
     <button id="info-close" onclick="closeInfo()">Close</button>
   </div>
+  <div id="sources-toggle-row">
+    <span id="sources-toggle-label">Sources</span>
+    <button id="sources-toggle-btn" onclick="toggleAllSources()">Deselect All</button>
+  </div>
   <div id="sources-list"></div>
   <div id="info-description" style="margin-top:24px">Built for those who want to stay on top of the news cycle without ads, algorithms, or noise. A clean, chronological feed pulling from reputable wire services, broadcasters, investigative outlets, policy journals, science publications, and local press — spanning a wide range of viewpoints and perspectives. Filter by source or read everything in order. No affiliations. No sponsorships. No agenda.</div>
   <hr style="border:none;border-top:1px solid var(--rule);margin:20px 0 0">
@@ -978,65 +1080,64 @@ html, body {
 
 <script>
 const FEEDS = [
-  { id: 'bbc_pics',   name: 'BBC In Pictures',  url: 'https://feeds.bbci.co.uk/news/in_pictures/rss.xml',                                          home: 'https://bbc.com/news/in_pictures' },
-  { id: 'nasa_iotd',  name: 'NASA Image',       url: 'https://www.nasa.gov/feeds/iotd-feed',                                                       home: 'https://www.nasa.gov/image-of-the-day/' },
-  { id: 'apod',       name: 'APOD',             url: 'https://apod.nasa.gov/apod.rss',                                                             home: 'https://apod.nasa.gov/apod/' },
-  { id: 'bjp',        name: 'Brit. J. Photo',   url: 'https://1854.photography/feed',                                                              home: 'https://1854.photography' },
-  { id: 'ap_photos',  name: 'AP Photography',   url: 'https://news.google.com/rss/search?q=when:24h+allinurl:apnews.com/photography&ceid=US:en&hl=en-US&gl=US', home: 'https://apnews.com/photography' },
-  { id: 'reuters',     name: 'Reuters',        url: 'https://news.google.com/rss/search?q=when:24h+allinurl:reuters.com&ceid=US:en&hl=en-US&gl=US', home: 'https://reuters.com' },
-  { id: 'bbc',         name: 'BBC',            url: 'https://feeds.bbci.co.uk/news/rss.xml',                                              home: 'https://bbc.com/news' },
-  { id: 'guardian',    name: 'Guardian',       url: 'https://www.theguardian.com/world/rss',                                              home: 'https://theguardian.com' },
-  { id: 'aljazeera',   name: 'Al Jazeera',     url: 'https://www.aljazeera.com/xml/rss/all.xml',                                          home: 'https://aljazeera.com' },
-  { id: 'dw',          name: 'DW',             url: 'https://rss.dw.com/rdf/rss-en-all',                                                  home: 'https://dw.com/en' },
-  { id: 'bbc_sci',     name: 'BBC Science',    url: 'https://feeds.bbci.co.uk/news/science_and_environment/rss.xml',                      home: 'https://bbc.com/news/science_and_environment' },
-  { id: 'dropsite',    name: 'Drop Site',      url: 'https://www.dropsitenews.com/feed',                                                  home: 'https://www.dropsitenews.com' },
-  { id: 'intercept',   name: 'Intercept',      url: 'https://theintercept.com/feed/?lang=en',                                             home: 'https://theintercept.com' },
-  { id: 'propublica',  name: 'ProPublica',     url: 'https://feeds.propublica.org/propublica/main',                                       home: 'https://propublica.org' },
-  { id: 'nation',      name: 'The Nation',     url: 'https://www.thenation.com/feed/?post_type=article',                                  home: 'https://thenation.com' },
-  { id: 'politico',    name: 'Politico',       url: 'https://www.politico.com/rss/politicopicks.xml',                                     home: 'https://politico.com' },
-  { id: 'wsj',         name: 'WSJ',            url: 'https://bsky.app/profile/wsj.com/rss',                                             home: 'https://wsj.com' },
-  { id: 'arst',        name: 'Ars Technica',   url: 'https://feeds.arstechnica.com/arstechnica/index',                                   home: 'https://arstechnica.com' },
-  { id: 'newscientist',name: 'New Scientist',  url: 'https://www.newscientist.com/feed/home',                                             home: 'https://newscientist.com' },
-  { id: 'economist',   name: 'Economist',      url: 'https://www.economist.com/leaders/rss.xml',                                          home: 'https://economist.com' },
-  { id: 'economist',   name: 'Economist',      url: 'https://www.economist.com/international/rss.xml',                                    home: 'https://economist.com' },
-  { id: 'economist',   name: 'Economist',      url: 'https://www.economist.com/business/rss.xml',                                         home: 'https://economist.com' },
-  { id: 'economist',   name: 'Economist',      url: 'https://www.economist.com/science-and-technology/rss.xml',                           home: 'https://economist.com' },
-  { id: 'foreignaff',  name: 'Foreign Affairs',url: 'https://www.foreignaffairs.com/rss.xml',                                             home: 'https://foreignaffairs.com' },
-  { id: 'newyorker',   name: 'New Yorker',     url: 'https://www.newyorker.com/feed/everything',                                          home: 'https://newyorker.com' },
-  { id: 'thehill',     name: 'The Hill',       url: 'https://thehill.com/feed/',                                                          home: 'https://thehill.com' },
-  { id: 'foreignpol',  name: 'Foreign Policy', url: 'https://foreignpolicy.com/feed/',                                                   home: 'https://foreignpolicy.com' },
-  { id: 'spiegel',     name: 'Der Spiegel',    url: 'https://www.spiegel.de/international/index.rss',                                    home: 'https://spiegel.de/international' },
-  { id: 'france24',    name: 'France 24',      url: 'https://www.france24.com/en/rss',                                                   home: 'https://france24.com/en' },
-  { id: 'mee',         name: 'Middle East Eye',url: 'https://www.middleeasteye.net/rss',                                                  home: 'https://middleeasteye.net' },
-  { id: 'occrp',       name: 'OCCRP',          url: 'https://occrp.org/en/feed',                                                         home: 'https://occrp.org' },
-  { id: 'savageminds', name: 'Savage Minds',   url: 'https://savageminds.substack.com/feed',                                             home: 'https://savageminds.substack.com' },
-  { id: 'bulwark',     name: 'The Bulwark',    url: 'https://thebulwark.substack.com/feed',                                             home: 'https://www.thebulwark.com' },
-  { id: 'isw',         name: 'ISW',            url: 'https://bsky.app/profile/thestudyofwar.bsky.social/rss',                           home: 'https://www.iswresearch.org' },
-  { id: 'unusualwhales',name: 'Unusual Whales',url: 'https://unusualwhales.substack.com/feed',                                         home: 'https://unusualwhales.com' },
-  { id: 'nyt',         name: 'NYT',            url: 'https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml',                        home: 'https://nytimes.com' },
-  { id: 'hellgate',    name: 'Hell Gate',      url: 'https://hellgatenyc.com/all-posts/rss/',                                             home: 'https://hellgatenyc.com' },
-  { id: 'thecity',     name: 'The City',       url: 'https://www.thecity.nyc/feed/',                                                    home: 'https://www.thecity.nyc' },
-  { id: 'nypd',        name: 'NYPD',           url: 'https://news.google.com/rss/search?q=when:7d+NYPD+press+release+site:nyc.gov&ceid=US:en&hl=en-US&gl=US', home: 'https://www.nyc.gov/site/nypd/news/news.page' },
-  { id: 'cbc',         name: 'CBC',            url: 'https://www.cbc.ca/cmlink/rss-topstories',                                           home: 'https://www.cbc.ca/news' },
-  { id: 'globemail',   name: 'Globe and Mail', url: 'https://www.theglobeandmail.com/arc/outboundfeeds/rss/category/canada/',             home: 'https://theglobeandmail.com' },
-  { id: 'narwhal',     name: 'The Narwhal',    url: 'https://thenarwhal.ca/feed/',                                                        home: 'https://thenarwhal.ca' },
-  { id: 'breach',      name: 'The Breach',     url: 'https://breachmedia.ca/feed/',                                                       home: 'https://breachmedia.ca' },
-  { id: 'quanta',      name: 'Quanta',         url: 'https://www.quantamagazine.org/feed/',                                               home: 'https://www.quantamagazine.org' },
-  { id: 'nasa',        name: 'NASA',           url: 'https://www.nasa.gov/rss/dyn/breaking_news.rss',                                     home: 'https://www.nasa.gov/news' },
-  { id: 'globalvoices',name: 'Global Voices', url: 'https://globalvoices.org/feed/',                                                     home: 'https://globalvoices.org' },
-  { id: 'diem25',      name: 'DiEM25',         url: 'https://bsky.app/profile/did:plc:kzcwyilg6zrk7d5dqplkr6yf/rss',                    home: 'https://diem25.org' },
-  { id: 'novara',      name: 'Novara Media',   url: 'https://novaramedia.com/feed/',                                                      home: 'https://novaramedia.com' },
-  { id: 'dispatch',    name: 'The Dispatch',   url: 'https://thedispatch.com/feed',                                                       home: 'https://thedispatch.com' },
-  { id: 'npr',         name: 'NPR',            url: 'https://feeds.npr.org/1001/rss.xml',                                                 home: 'https://npr.org' },
-  { id: 'xinhua',    name: 'Xinhua',            url: 'https://english.news.cn/rss/index.htm',                                               home: 'https://english.news.cn' },
-  { id: 'cdt',       name: 'China Digital Times',url: 'https://chinadigitaltimes.net/feed',                                                home: 'https://chinadigitaltimes.net' },
-  { id: 'efe',       name: 'EFE',               url: 'https://www.efe.com/efe/english/4/rss',                                              home: 'https://www.efe.com/efe/english' },
-  { id: 'arabnews',  name: 'Arab News',          url: 'https://www.arabnews.com/rss.xml',                                                   home: 'https://www.arabnews.com' },
-  { id: 'tehrantimes',name: 'Tehran Times',      url: 'https://www.tehrantimes.com/rss',                                                    home: 'https://www.tehrantimes.com' },
-  { id: 'scmp',      name: 'South China MP',     url: 'https://www.scmp.com/rss/91/feed',                                                   home: 'https://scmp.com' },
-  { id: 'bellingcat',  name: 'Bellingcat',     url: 'https://www.bellingcat.com/feed',                                                    home: 'https://bellingcat.com' },
-  { id: 'mittr',       name: 'MIT Tech Review',url: 'https://www.technologyreview.com/topnews.rss',                                       home: 'https://technologyreview.com' },
-  { id: 'ft',          name: 'Financial Times', url: 'https://www.ft.com/rss/home/international',                                        home: 'https://ft.com' },
+  { id: 'bbc_pics',   name: 'BBC In Pictures',          url: 'https://feeds.bbci.co.uk/news/in_pictures/rss.xml',                                          home: 'https://bbc.com/news/in_pictures' },
+  { id: 'nasa_iotd',  name: 'NASA Image of the Day',    url: 'https://www.nasa.gov/feeds/iotd-feed',                                                       home: 'https://www.nasa.gov/image-of-the-day/' },
+  { id: 'bjp',        name: 'British Journal of Photography', url: 'https://1854.photography/feed',                                                         home: 'https://1854.photography' },
+  { id: 'ap_photos',  name: 'AP Photography',           url: 'https://news.google.com/rss/search?q=when:24h+allinurl:apnews.com/photography&ceid=US:en&hl=en-US&gl=US', home: 'https://apnews.com/photography' },
+  { id: 'reuters',     name: 'Reuters',                 url: 'https://news.google.com/rss/search?q=when:24h+allinurl:reuters.com&ceid=US:en&hl=en-US&gl=US', home: 'https://reuters.com' },
+  { id: 'bbc',         name: 'BBC',                    url: 'https://feeds.bbci.co.uk/news/rss.xml',                                              home: 'https://bbc.com/news' },
+  { id: 'guardian',    name: 'Guardian',               url: 'https://www.theguardian.com/world/rss',                                              home: 'https://theguardian.com' },
+  { id: 'aljazeera',   name: 'Al Jazeera',             url: 'https://www.aljazeera.com/xml/rss/all.xml',                                          home: 'https://aljazeera.com' },
+  { id: 'dw',          name: 'Deutsche Welle',         url: 'https://rss.dw.com/rdf/rss-en-all',                                                  home: 'https://dw.com/en' },
+  { id: 'bbc_sci',     name: 'BBC Science',            url: 'https://feeds.bbci.co.uk/news/science_and_environment/rss.xml',                      home: 'https://bbc.com/news/science_and_environment' },
+  { id: 'dropsite',    name: 'Drop Site',              url: 'https://www.dropsitenews.com/feed',                                                  home: 'https://www.dropsitenews.com' },
+  { id: 'intercept',   name: 'The Intercept',          url: 'https://theintercept.com/feed/?lang=en',                                             home: 'https://theintercept.com' },
+  { id: 'propublica',  name: 'ProPublica',             url: 'https://feeds.propublica.org/propublica/main',                                       home: 'https://propublica.org' },
+  { id: 'nation',      name: 'The Nation',             url: 'https://www.thenation.com/feed/?post_type=article',                                  home: 'https://thenation.com' },
+  { id: 'politico',    name: 'Politico',               url: 'https://www.politico.com/rss/politicopicks.xml',                                     home: 'https://politico.com' },
+  { id: 'wsj',         name: 'Wall Street Journal',    url: 'https://bsky.app/profile/wsj.com/rss',                                             home: 'https://wsj.com' },
+  { id: 'arst',        name: 'Ars Technica',           url: 'https://feeds.arstechnica.com/arstechnica/index',                                   home: 'https://arstechnica.com' },
+  { id: 'newscientist',name: 'New Scientist',          url: 'https://www.newscientist.com/feed/home',                                             home: 'https://newscientist.com' },
+  { id: 'economist',   name: 'The Economist',          url: 'https://www.economist.com/leaders/rss.xml',                                          home: 'https://economist.com' },
+  { id: 'economist',   name: 'The Economist',          url: 'https://www.economist.com/international/rss.xml',                                    home: 'https://economist.com' },
+  { id: 'economist',   name: 'The Economist',          url: 'https://www.economist.com/business/rss.xml',                                         home: 'https://economist.com' },
+  { id: 'economist',   name: 'The Economist',          url: 'https://www.economist.com/science-and-technology/rss.xml',                           home: 'https://economist.com' },
+  { id: 'foreignaff',  name: 'Foreign Affairs',        url: 'https://www.foreignaffairs.com/rss.xml',                                             home: 'https://foreignaffairs.com' },
+  { id: 'newyorker',   name: 'The New Yorker',         url: 'https://www.newyorker.com/feed/everything',                                          home: 'https://newyorker.com' },
+  { id: 'thehill',     name: 'The Hill',               url: 'https://thehill.com/feed/',                                                          home: 'https://thehill.com' },
+  { id: 'foreignpol',  name: 'Foreign Policy',         url: 'https://foreignpolicy.com/feed/',                                                   home: 'https://foreignpolicy.com' },
+  { id: 'spiegel',     name: 'Der Spiegel',            url: 'https://www.spiegel.de/international/index.rss',                                    home: 'https://spiegel.de/international' },
+  { id: 'france24',    name: 'France 24',              url: 'https://www.france24.com/en/rss',                                                   home: 'https://france24.com/en' },
+  { id: 'mee',         name: 'Middle East Eye',        url: 'https://www.middleeasteye.net/rss',                                                  home: 'https://middleeasteye.net' },
+  { id: 'occrp',       name: 'Organized Crime and Corruption Reporting Project', url: 'https://occrp.org/en/feed',                               home: 'https://occrp.org' },
+  { id: 'savageminds', name: 'Savage Minds',           url: 'https://savageminds.substack.com/feed',                                             home: 'https://savageminds.substack.com' },
+  { id: 'bulwark',     name: 'The Bulwark',            url: 'https://thebulwark.substack.com/feed',                                             home: 'https://www.thebulwark.com' },
+  { id: 'isw',         name: 'Institute for the Study of War', url: 'https://bsky.app/profile/thestudyofwar.bsky.social/rss',                   home: 'https://www.iswresearch.org' },
+  { id: 'unusualwhales',name: 'Unusual Whales',        url: 'https://unusualwhales.substack.com/feed',                                         home: 'https://unusualwhales.com' },
+  { id: 'nyt',         name: 'New York Times',         url: 'https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml',                        home: 'https://nytimes.com' },
+  { id: 'hellgate',    name: 'Hell Gate',              url: 'https://hellgatenyc.com/all-posts/rss/',                                             home: 'https://hellgatenyc.com' },
+  { id: 'thecity',     name: 'The City',               url: 'https://www.thecity.nyc/feed/',                                                    home: 'https://www.thecity.nyc' },
+  { id: 'nypd',        name: 'NYPD',                   url: 'https://news.google.com/rss/search?q=when:7d+NYPD+press+release+site:nyc.gov&ceid=US:en&hl=en-US&gl=US', home: 'https://www.nyc.gov/site/nypd/news/news.page' },
+  { id: 'cbc',         name: 'CBC',                    url: 'https://www.cbc.ca/cmlink/rss-topstories',                                           home: 'https://www.cbc.ca/news' },
+  { id: 'globemail',   name: 'Globe and Mail',         url: 'https://www.theglobeandmail.com/arc/outboundfeeds/rss/category/canada/',             home: 'https://theglobeandmail.com' },
+  { id: 'narwhal',     name: 'The Narwhal',            url: 'https://thenarwhal.ca/feed/',                                                        home: 'https://thenarwhal.ca' },
+  { id: 'breach',      name: 'The Breach',             url: 'https://breachmedia.ca/feed/',                                                       home: 'https://breachmedia.ca' },
+  { id: 'quanta',      name: 'Quanta Magazine',        url: 'https://www.quantamagazine.org/feed/',                                               home: 'https://www.quantamagazine.org' },
+  { id: 'nasa',        name: 'NASA',                   url: 'https://www.nasa.gov/rss/dyn/breaking_news.rss',                                     home: 'https://www.nasa.gov/news' },
+  { id: 'globalvoices',name: 'Global Voices',          url: 'https://globalvoices.org/feed/',                                                     home: 'https://globalvoices.org' },
+  { id: 'diem25',      name: 'DiEM25',                 url: 'https://bsky.app/profile/did:plc:kzcwyilg6zrk7d5dqplkr6yf/rss',                    home: 'https://diem25.org' },
+  { id: 'novara',      name: 'Novara Media',           url: 'https://novaramedia.com/feed/',                                                      home: 'https://novaramedia.com' },
+  { id: 'dispatch',    name: 'The Dispatch',           url: 'https://thedispatch.com/feed',                                                       home: 'https://thedispatch.com' },
+  { id: 'npr',         name: 'NPR',                    url: 'https://feeds.npr.org/1001/rss.xml',                                                 home: 'https://npr.org' },
+  { id: 'xinhua',      name: 'Xinhua',                 url: 'https://english.news.cn/rss/index.htm',                                               home: 'https://english.news.cn' },
+  { id: 'cdt',         name: 'China Digital Times',    url: 'https://chinadigitaltimes.net/feed',                                                home: 'https://chinadigitaltimes.net' },
+  { id: 'efe',         name: 'EFE News Agency',        url: 'https://www.efe.com/efe/english/4/rss',                                              home: 'https://www.efe.com/efe/english' },
+  { id: 'arabnews',    name: 'Arab News',              url: 'https://www.arabnews.com/rss.xml',                                                   home: 'https://www.arabnews.com' },
+  { id: 'tehrantimes', name: 'Tehran Times',           url: 'https://www.tehrantimes.com/rss',                                                    home: 'https://www.tehrantimes.com' },
+  { id: 'scmp',        name: 'South China Morning Post', url: 'https://www.scmp.com/rss/91/feed',                                                 home: 'https://scmp.com' },
+  { id: 'bellingcat',  name: 'Bellingcat',             url: 'https://www.bellingcat.com/feed',                                                    home: 'https://bellingcat.com' },
+  { id: 'mittr',       name: 'MIT Technology Review',  url: 'https://www.technologyreview.com/topnews.rss',                                       home: 'https://technologyreview.com' },
+  { id: 'ft',          name: 'Financial Times',        url: 'https://www.ft.com/rss/home/international',                                        home: 'https://ft.com' },
 ];
 
 // ── Replace this URL with your deployed Worker URL ──────────────────────────
@@ -1055,7 +1156,7 @@ articles = loadCache();
 const PAYWALLED = new Set(['wsj','nyt','economist','foreignaff','newyorker','newscientist','foreignpol','ft','dispatch']);
 
 // Feeds that include full article text in RSS
-const FULL_TEXT_FEEDS = new Set(['propublica','intercept','dropsite','nation','occrp','arst','savageminds','apod','nasa_iotd','bjp','bbc_pics']);
+const FULL_TEXT_FEEDS = new Set(['propublica','intercept','dropsite','nation','occrp','arst','savageminds','nasa_iotd','bjp','bbc_pics']);
 
 async function fetchFeed(feed) {
   try {
@@ -1177,6 +1278,7 @@ function buildSourceBar() {
     .filter(f => {
       if (seen.has(f.id)) return false;
       if (!articles.some(a => a.sourceId === f.id)) return false;
+      if (!isEnabled(f.id)) return false;
       seen.add(f.id);
       return true;
     })
@@ -1226,6 +1328,135 @@ function updateSourceBar() {
   }
 }
 
+// ── Source geo metadata ──────────────────────────────────────────────────────
+const SOURCE_GEO = {
+  bbc_pics:     { flag: '🇬🇧', geo: 'UK' },
+  nasa_iotd:    { flag: '🇺🇸', geo: 'US' },
+  bjp:          { flag: '🇬🇧', geo: 'UK' },
+  ap_photos:    { flag: '🇺🇸', geo: 'US' },
+  reuters:      { flag: '🇬🇧', geo: 'UK' },
+  bbc:          { flag: '🇬🇧', geo: 'UK' },
+  guardian:     { flag: '🇬🇧', geo: 'UK' },
+  aljazeera:    { flag: '🇶🇦', geo: 'QA' },
+  dw:           { flag: '🇩🇪', geo: 'DE' },
+  bbc_sci:      { flag: '🇬🇧', geo: 'UK' },
+  dropsite:     { flag: '🇺🇸', geo: 'US' },
+  intercept:    { flag: '🇺🇸', geo: 'US' },
+  propublica:   { flag: '🇺🇸', geo: 'US' },
+  nation:       { flag: '🇺🇸', geo: 'US' },
+  politico:     { flag: '🇺🇸', geo: 'US' },
+  wsj:          { flag: '🇺🇸', geo: 'US' },
+  arst:         { flag: '🇺🇸', geo: 'US' },
+  newscientist: { flag: '🇬🇧', geo: 'UK' },
+  economist:    { flag: '🇬🇧', geo: 'UK' },
+  foreignaff:   { flag: '🇺🇸', geo: 'US' },
+  newyorker:    { flag: '🇺🇸', geo: 'US' },
+  thehill:      { flag: '🇺🇸', geo: 'US' },
+  foreignpol:   { flag: '🇺🇸', geo: 'US' },
+  spiegel:      { flag: '🇩🇪', geo: 'DE' },
+  france24:     { flag: '🇫🇷', geo: 'FR' },
+  mee:          { flag: '🇬🇧', geo: 'UK' },
+  occrp:        { flag: '🇳🇱', geo: 'NL' },
+  savageminds:  { flag: '🇺🇸', geo: 'US' },
+  bulwark:      { flag: '🇺🇸', geo: 'US' },
+  isw:          { flag: '🇺🇸', geo: 'US' },
+  unusualwhales:{ flag: '🇺🇸', geo: 'US' },
+  nyt:          { flag: '🇺🇸', geo: 'US' },
+  hellgate:     { flag: '🇺🇸', geo: 'NYC' },
+  thecity:      { flag: '🇺🇸', geo: 'NYC' },
+  nypd:         { flag: '🇺🇸', geo: 'NYC' },
+  cbc:          { flag: '🇨🇦', geo: 'CA' },
+  globemail:    { flag: '🇨🇦', geo: 'CA' },
+  narwhal:      { flag: '🇨🇦', geo: 'CA' },
+  breach:       { flag: '🇨🇦', geo: 'CA' },
+  quanta:       { flag: '🇺🇸', geo: 'US' },
+  nasa:         { flag: '🇺🇸', geo: 'US' },
+  globalvoices: { flag: '🌐', geo: 'INTL' },
+  diem25:       { flag: '🇪🇺', geo: 'EU' },
+  novara:       { flag: '🇬🇧', geo: 'UK' },
+  dispatch:     { flag: '🇺🇸', geo: 'US' },
+  npr:          { flag: '🇺🇸', geo: 'US' },
+  xinhua:       { flag: '🇨🇳', geo: 'CN' },
+  cdt:          { flag: '🇺🇸', geo: 'US' },
+  efe:          { flag: '🇪🇸', geo: 'ES' },
+  arabnews:     { flag: '🇸🇦', geo: 'SA' },
+  tehrantimes:  { flag: '🇮🇷', geo: 'IR' },
+  scmp:         { flag: '🇭🇰', geo: 'HK' },
+  bellingcat:   { flag: '🇳🇱', geo: 'NL' },
+  mittr:        { flag: '🇺🇸', geo: 'US' },
+  ft:           { flag: '🇬🇧', geo: 'UK' },
+};
+
+// ── Disabled sources (persisted in localStorage) ─────────────────────────────
+const DISABLED_KEY = 'inked_disabled_sources';
+
+function loadDisabled() {
+  try {
+    const raw = localStorage.getItem(DISABLED_KEY);
+    return raw ? new Set(JSON.parse(raw)) : new Set();
+  } catch { return new Set(); }
+}
+
+function saveDisabled(set) {
+  try { localStorage.setItem(DISABLED_KEY, JSON.stringify([...set])); } catch {}
+}
+
+let disabledSources = loadDisabled();
+
+function isEnabled(sourceId) {
+  return !disabledSources.has(sourceId);
+}
+
+function toggleSource(sourceId) {
+  if (disabledSources.has(sourceId)) {
+    disabledSources.delete(sourceId);
+  } else {
+    disabledSources.add(sourceId);
+  }
+  saveDisabled(disabledSources);
+  updateToggleBtn();
+  buildSourceBar();
+  render();
+  if (activeTab === 'images') renderPhotos();
+}
+
+function toggleAllSources() {
+  const seen = new Set();
+  const uniqueIds = FEEDS.filter(f => { if (seen.has(f.id)) return false; seen.add(f.id); return true; }).map(f => f.id);
+  const allEnabled = uniqueIds.every(id => !disabledSources.has(id));
+  if (allEnabled) {
+    // Deselect all
+    uniqueIds.forEach(id => disabledSources.add(id));
+  } else {
+    // Select all
+    disabledSources.clear();
+  }
+  saveDisabled(disabledSources);
+  updateToggleBtn();
+  // Re-render the list rows
+  document.querySelectorAll('.source-entry').forEach(row => {
+    const id = row.dataset.sourceId;
+    const cb = row.querySelector('.source-entry-check');
+    if (id) {
+      const enabled = !disabledSources.has(id);
+      if (cb) cb.checked = enabled;
+      row.classList.toggle('disabled', !enabled);
+    }
+  });
+  buildSourceBar();
+  render();
+  if (activeTab === 'images') renderPhotos();
+}
+
+function updateToggleBtn() {
+  const btn = document.getElementById('sources-toggle-btn');
+  if (!btn) return;
+  const seen = new Set();
+  const uniqueIds = FEEDS.filter(f => { if (seen.has(f.id)) return false; seen.add(f.id); return true; }).map(f => f.id);
+  const allEnabled = uniqueIds.every(id => !disabledSources.has(id));
+  btn.textContent = allEnabled ? 'Deselect All' : 'Select All';
+}
+
 function buildInfoPanel() {
   const list = document.getElementById('sources-list');
   list.innerHTML = '';
@@ -1235,11 +1466,63 @@ function buildInfoPanel() {
     if (seen.has(feed.id)) return;
     seen.add(feed.id);
     const count = articles.filter(a => a.sourceId === feed.id).length;
+    const enabled = !disabledSources.has(feed.id);
+    const geo = SOURCE_GEO[feed.id] || { flag: '', geo: '' };
+
     const el = document.createElement('div');
-    el.className = 'source-entry';
-    el.innerHTML = `<a class="source-entry-name" href="${feed.home}" target="_blank" rel="noopener noreferrer">${esc(feed.name)}</a><span class="source-entry-count">${count || '—'}</span>`;
+    el.className = 'source-entry' + (enabled ? '' : ' disabled');
+    el.dataset.sourceId = feed.id;
+
+    // Name (links to homepage, stops propagation so row click doesn't fire)
+    const nameEl = document.createElement('a');
+    nameEl.className = 'source-entry-name';
+    nameEl.href = feed.home;
+    nameEl.target = '_blank';
+    nameEl.rel = 'noopener noreferrer';
+    nameEl.textContent = feed.name;
+    nameEl.addEventListener('click', e => e.stopPropagation());
+
+    // Geo tag
+    const geoEl = document.createElement('span');
+    geoEl.className = 'source-entry-geo';
+    geoEl.textContent = geo.flag ? `${geo.flag} ${geo.geo}` : '';
+
+    // Article count
+    const countEl = document.createElement('span');
+    countEl.className = 'source-entry-count';
+    countEl.textContent = count || '—';
+
+    // Checkbox
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.className = 'source-entry-check';
+    cb.checked = enabled;
+    cb.addEventListener('click', e => e.stopPropagation());
+    cb.addEventListener('change', () => {
+      el.classList.toggle('disabled', !cb.checked);
+      toggleSource(feed.id);
+    });
+
+    // Row click toggles too
+    el.addEventListener('click', () => {
+      cb.checked = !cb.checked;
+      el.classList.toggle('disabled', !cb.checked);
+      toggleSource(feed.id);
+    });
+
+    const leftGroup = document.createElement('div');
+    leftGroup.className = 'source-entry-left';
+    leftGroup.appendChild(nameEl);
+    leftGroup.appendChild(geoEl);
+
+    el.appendChild(leftGroup);
+    el.appendChild(countEl);
+    el.appendChild(cb);
     list.appendChild(el);
   });
+
+  updateToggleBtn();
+
   if (lastUpdated) {
     document.getElementById('info-updated').textContent =
       'Last fetched ' + lastUpdated.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
@@ -1250,8 +1533,9 @@ function openInfo()  { document.getElementById('info-overlay').classList.add('op
 function closeInfo() { document.getElementById('info-overlay').classList.remove('open'); }
 
 function getVisible() {
-  if (activeFilter === null) return articles;
-  return articles.filter(a => a.sourceId === activeFilter);
+  let base = articles.filter(a => isEnabled(a.sourceId));
+  if (activeFilter === null) return base;
+  return base.filter(a => a.sourceId === activeFilter);
 }
 
 function formatAge(date) {
