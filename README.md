@@ -1,12 +1,12 @@
 # Inked
 
-Built for those who want to stay on top of the news cycle without ads, algorithms, or noise. A clean, chronological feed pulling from reputable wire services, broadcasters, investigative outlets, policy journals, science publications, and local press — spanning a wide range of viewpoints and perspectives. Filter by source, theme, or read everything in order. No affiliations. No sponsorships. No ads. 
+Built for those who want to stay on top of the news cycle without ads, algorithms, or noise. A clean, chronological feed pulling from reputable wire services, broadcasters, investigative outlets, policy journals, science publications, and local press — spanning a wide range of viewpoints and perspectives. Filter by source or read everything in order. No affiliations. No sponsorships.
 
 ---
 
 ## What it is
 
-Inked is a single HTML file that pulls live RSS feeds from 62 news sources and renders them as a clean chronological headline stream. Articles are cached locally for up to 3 days so content doesn't disappear as feeds roll over. Articles older than 10 months are filtered out globally.
+Inked is a single HTML file that pulls live RSS feeds from 61 news sources and renders them as a clean chronological headline stream. Articles are cached locally for up to 3 days so content doesn't disappear as feeds roll over. Articles older than 10 months are filtered out globally.
 
 It runs entirely in the browser. There is no backend, no database, no login. A Cloudflare Worker acts as a lightweight RSS proxy to handle cross-origin fetching.
 
@@ -40,7 +40,6 @@ It runs entirely in the browser. There is no backend, no database, no login. A C
 | Politico | US Politics |
 | The Hill | US Politics |
 | The Bulwark | US Politics |
-| The Dispatch | Centre-Right / US Politics |
 | The Nation | Left / Opinion |
 | The New Yorker | Long-form / Culture |
 | Savage Minds | Culture / Politics |
