@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Inked">
@@ -790,11 +790,11 @@ html, body {
 #search-input {
   flex: 1;
   font-family: var(--font-ui);
-  font-size: 9px;
+  font-size: 16px; /* must be ≥16px to prevent iOS auto-zoom on focus */
   font-weight: 400;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.01em;
   padding: 0 10px;
-  height: 27px; /* matches bar-btn rendered height: 9px font + 5px*2 padding + 1px*2 border */
+  height: 27px;
   border: 1px solid var(--ink);
   border-right: none;
   background: var(--paper);
@@ -1191,7 +1191,7 @@ html, body {
     </div>
     <!-- Search input row (shown when search is active) -->
     <div id="search-row">
-      <input id="search-input" type="search" placeholder="Search headlines…" autocomplete="off" autocorrect="off" spellcheck="false" oninput="onSearchInput(this.value)">
+      <input id="search-input" type="search" inputmode="search" placeholder="Search headlines…" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="search" oninput="onSearchInput(this.value)">
       <button id="search-clear" onclick="clearSearch()">✕</button>
       <span id="search-count"></span>
     </div>
@@ -2097,12 +2097,13 @@ let photoSentinel = null;
 // ── SEARCH ──────────────────────────────────────────────────────────────────
 function openSearch() {
   searchQuery = '';
-  document.getElementById('search-input').value = '';
+  const input = document.getElementById('search-input');
+  input.value = '';
   document.getElementById('search-count').textContent = '';
   document.getElementById('search-row').classList.add('visible');
   document.getElementById('tab-nav-btns').style.display = 'none';
   document.getElementById('bottom-right').style.display = 'none';
-  setTimeout(() => document.getElementById('search-input').focus(), 50);
+  input.focus();
 }
 
 function clearSearch() {
