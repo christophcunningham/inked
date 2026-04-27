@@ -753,6 +753,79 @@ html, body {
   border-color: var(--ink);
 }
 
+/* ── SEARCH ── */
+#search-row {
+  display: none; /* shown when search is active */
+  align-items: center;
+  gap: 0;
+  flex: 1;
+  padding-top: 14px;
+  min-width: 0;
+}
+#search-row.visible { display: flex; }
+
+#search-input {
+  flex: 1;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  padding: 5px 10px;
+  border: 1px solid var(--ink);
+  border-right: none;
+  background: var(--paper);
+  color: var(--ink);
+  outline: none;
+  min-width: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 0;
+}
+#search-input::placeholder {
+  color: var(--ink-light);
+  font-weight: 300;
+}
+
+#search-clear {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 400;
+  padding: 5px 10px;
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+  cursor: pointer;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+  line-height: 1;
+}
+#search-clear:active { opacity: 0.7; }
+
+#search-count {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: var(--ink-light);
+  padding-left: 10px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Tab bar dark mode: search */
+#tab-bar.dark #search-input {
+  background: transparent;
+  border-color: rgba(255,255,255,0.4);
+  color: rgba(255,255,255,0.9);
+}
+#tab-bar.dark #search-input::placeholder { color: rgba(255,255,255,0.3); }
+#tab-bar.dark #search-clear {
+  border-color: rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.9);
+}
+#tab-bar.dark #search-count { color: rgba(255,255,255,0.35); }
+
 /* ── IMAGES VIEW ── */
 #images-view {
   display: none;
@@ -1082,11 +1155,18 @@ html, body {
 <div id="tab-bar">
   <!-- Feed/Images mode -->
   <div class="bottom-bar-inner" id="tab-bar-feed-mode">
-    <div class="tab-nav">
+    <div class="tab-nav" id="tab-nav-btns">
       <button class="tab-btn active" id="tab-feed" onclick="switchTab('feed')">Feed</button>
       <button class="tab-btn" id="tab-images" onclick="switchTab('images')">Images</button>
     </div>
+    <!-- Search input row (shown when search is active) -->
+    <div id="search-row">
+      <input id="search-input" type="search" placeholder="Search headlines…" autocomplete="off" autocorrect="off" spellcheck="false" oninput="onSearchInput(this.value)">
+      <button id="search-clear" onclick="clearSearch()">✕</button>
+      <span id="search-count"></span>
+    </div>
     <div id="bottom-right">
+      <button class="bar-btn" id="search-btn" onclick="openSearch()">Search</button>
       <button class="bar-btn" id="refresh-btn" onclick="loadFeeds()">↻ Refresh</button>
       <button class="bar-btn bar-btn-fill" id="info-btn" onclick="toggleInfo()">Info</button>
     </div>
@@ -1759,6 +1839,10 @@ function toggleInfo() {
 }
 
 function openInfo() {
+  // Dismiss search if active
+  if (searchQuery || document.getElementById('search-row').classList.contains('visible')) {
+    clearSearch();
+  }
   document.getElementById('info-overlay').classList.add('open');
   document.getElementById('tab-bar-feed-mode').style.display = 'none';
   document.getElementById('tab-bar-info-mode').style.display = 'flex';
@@ -1974,12 +2058,79 @@ function render() {
 // ── IMAGES MODE ──────────────────────────────────────────────────────────────
 let activeTab = 'feed';   // 'feed' | 'images'
 let gridCols  = 1;
+let searchQuery = '';     // '' = no active search
 
 // Separate lazy-render state for photos
 let photoObserver = null;
 let photoSentinel = null;
 
+// ── SEARCH ──────────────────────────────────────────────────────────────────
+function openSearch() {
+  searchQuery = '';
+  document.getElementById('search-input').value = '';
+  document.getElementById('search-count').textContent = '';
+  document.getElementById('search-row').classList.add('visible');
+  document.getElementById('tab-nav-btns').style.display = 'none';
+  document.getElementById('bottom-right').style.display = 'none';
+  setTimeout(() => document.getElementById('search-input').focus(), 50);
+}
+
+function clearSearch() {
+  searchQuery = '';
+  document.getElementById('search-input').value = '';
+  document.getElementById('search-count').textContent = '';
+  document.getElementById('search-row').classList.remove('visible');
+  document.getElementById('tab-nav-btns').style.display = '';
+  document.getElementById('bottom-right').style.display = '';
+  render();
+}
+
+function onSearchInput(val) {
+  searchQuery = val.trim();
+  if (!searchQuery) {
+    document.getElementById('search-count').textContent = '';
+    render();
+    return;
+  }
+  renderSearch(searchQuery);
+}
+
+function renderSearch(query) {
+  const q = query.toLowerCase();
+  const list = document.getElementById('feed-list');
+  list.innerHTML = '';
+
+  // Clean up any lazy observer
+  if (observer) { observer.disconnect(); observer = null; }
+  sentinel = null;
+
+  const results = articles.filter(a => {
+    if (!isEnabled(a.sourceId)) return false;
+    if (activeFilter && a.sourceId !== activeFilter) return false;
+    const inTitle = a.title.toLowerCase().includes(q);
+    const inBody  = a.fullText ? a.fullText.toLowerCase().includes(q) : false;
+    return inTitle || inBody;
+  });
+
+  const countEl = document.getElementById('search-count');
+  countEl.textContent = results.length ? `${results.length}` : '0';
+
+  if (!results.length) {
+    list.innerHTML = '<div style="padding:40px 0;font-family:var(--font-ui);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-light)">No results</div>';
+    return;
+  }
+
+  // Render results lazily — always show source name in search results
+  lazyRender(list, results, a => makeCard(a, true));
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 function switchTab(tab) {
+  // Dismiss search when switching tabs
+  if (searchQuery || document.getElementById('search-row').classList.contains('visible')) {
+    clearSearch();
+  }
   activeTab = tab;
   const feedMain    = document.getElementById('main');
   const imagesView  = document.getElementById('images-view');
