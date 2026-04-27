@@ -2103,8 +2103,13 @@ function openSearch() {
   document.getElementById('search-row').classList.add('visible');
   document.getElementById('tab-nav-btns').style.display = 'none';
   document.getElementById('bottom-right').style.display = 'none';
-  document.body.style.overflow = 'hidden';
-  window.scrollTo(0, 0);
+  // iOS-safe scroll lock: freeze body in place so tab bar stays above keyboard
+  const scrollY = window.scrollY;
+  document.body.style.position = 'fixed';
+  document.body.style.top = `-${scrollY}px`;
+  document.body.style.left = '0';
+  document.body.style.right = '0';
+  document.body.dataset.scrollY = scrollY;
   input.focus();
 }
 
@@ -2115,7 +2120,13 @@ function clearSearch() {
   document.getElementById('search-row').classList.remove('visible');
   document.getElementById('tab-nav-btns').style.display = '';
   document.getElementById('bottom-right').style.display = '';
-  document.body.style.overflow = '';
+  // Restore scroll position
+  const scrollY = parseInt(document.body.dataset.scrollY || '0', 10);
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.left = '';
+  document.body.style.right = '';
+  window.scrollTo(0, scrollY);
   render();
 }
 
