@@ -2103,6 +2103,8 @@ function openSearch() {
   document.getElementById('search-row').classList.add('visible');
   document.getElementById('tab-nav-btns').style.display = 'none';
   document.getElementById('bottom-right').style.display = 'none';
+  document.body.style.overflow = 'hidden';
+  window.scrollTo(0, 0);
   input.focus();
 }
 
@@ -2113,6 +2115,7 @@ function clearSearch() {
   document.getElementById('search-row').classList.remove('visible');
   document.getElementById('tab-nav-btns').style.display = '';
   document.getElementById('bottom-right').style.display = '';
+  document.body.style.overflow = '';
   render();
 }
 
