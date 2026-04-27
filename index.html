@@ -1191,7 +1191,7 @@ html, body {
     </div>
     <!-- Search input row (shown when search is active) -->
     <div id="search-row">
-      <input id="search-input" type="search" inputmode="search" placeholder="Search headlines…" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="search" oninput="onSearchInput(this.value)">
+      <input id="search-input" type="search" inputmode="search" placeholder="Search headlines…" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="search" oninput="onSearchInput(this.value)" onkeydown="if(event.key==='Enter'){this.blur();}">
       <button id="search-clear" onclick="clearSearch()">✕</button>
       <span id="search-count"></span>
     </div>
@@ -2103,13 +2103,6 @@ function openSearch() {
   document.getElementById('search-row').classList.add('visible');
   document.getElementById('tab-nav-btns').style.display = 'none';
   document.getElementById('bottom-right').style.display = 'none';
-  // iOS-safe scroll lock: freeze body in place so tab bar stays above keyboard
-  const scrollY = window.scrollY;
-  document.body.style.position = 'fixed';
-  document.body.style.top = `-${scrollY}px`;
-  document.body.style.left = '0';
-  document.body.style.right = '0';
-  document.body.dataset.scrollY = scrollY;
   input.focus();
 }
 
@@ -2120,13 +2113,6 @@ function clearSearch() {
   document.getElementById('search-row').classList.remove('visible');
   document.getElementById('tab-nav-btns').style.display = '';
   document.getElementById('bottom-right').style.display = '';
-  // Restore scroll position
-  const scrollY = parseInt(document.body.dataset.scrollY || '0', 10);
-  document.body.style.position = '';
-  document.body.style.top = '';
-  document.body.style.left = '';
-  document.body.style.right = '';
-  window.scrollTo(0, scrollY);
   render();
 }
 
