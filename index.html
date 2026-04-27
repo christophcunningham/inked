@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Inked">
@@ -2433,6 +2433,29 @@ function updateClock() {
 
 updateClock();
 setInterval(updateClock, 1000);
+
+// ── Keep tab bar above iOS keyboard via visualViewport API ───────────────────
+if (window.visualViewport) {
+  function onViewportResize() {
+    const tabBar = document.getElementById('tab-bar');
+    if (!tabBar) return;
+    const keyboardHeight = window.innerHeight - window.visualViewport.height - window.visualViewport.offsetTop;
+    const isDesktop = window.innerWidth >= 1000;
+    const baseTransform = isDesktop ? 'translateX(-50%)' : '';
+    if (keyboardHeight > 50) {
+      const lift = Math.round(keyboardHeight);
+      tabBar.style.transform = isDesktop
+        ? `translateX(-50%) translateY(-${lift}px)`
+        : `translateY(-${lift}px)`;
+      tabBar.style.transition = 'transform 0.1s ease';
+    } else {
+      tabBar.style.transform = baseTransform;
+      tabBar.style.transition = 'transform 0.2s ease';
+    }
+  }
+  window.visualViewport.addEventListener('resize', onViewportResize);
+  window.visualViewport.addEventListener('scroll', onViewportResize);
+}
 </script>
 </body>
 </html>
