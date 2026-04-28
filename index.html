@@ -2045,6 +2045,7 @@ function lazyRender(list, articles, makeItem) {
 }
 
 function render() {
+  if (searchQuery) { renderSearch(searchQuery); return; }
   const visible = getVisible();
   const list = document.getElementById('feed-list');
   list.innerHTML = '';
