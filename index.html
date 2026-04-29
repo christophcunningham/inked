@@ -49,6 +49,123 @@ html, body {
   overscroll-behavior: none;
 }
 
+/* ── ANIMATIONS ── */
+@keyframes mastheadCollapse {
+  0%   { max-height: 40px; opacity: 1; padding-bottom: 10px; }
+  55%  { max-height: 40px; opacity: 1; padding-bottom: 10px; }
+  100% { max-height: 0;    opacity: 0; padding-bottom: 0; }
+}
+@keyframes mastheadWordmark {
+  0%   { font-size: 28px; letter-spacing: 0.05em; opacity: 0; }
+  72%  { font-size: 28px; letter-spacing: 0.05em; opacity: 1; }
+  100% { font-size: 16px; letter-spacing: -0.03em; opacity: 1; }
+}
+
+/* ── MASTHEAD GHOST ── */
+#masthead-ghost {
+  text-align: center;
+  overflow: hidden;
+  animation: mastheadCollapse 1.8s ease forwards;
+  max-height: 40px;
+  padding-bottom: 10px;
+}
+#masthead-ghost-inner {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.55em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  user-select: none;
+}
+#header.dark #masthead-ghost { display: none; }
+
+/* ── DATELINE ── */
+#wordmark-dateline {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  min-width: 180px;
+}
+#dateline-date {
+  font-family: var(--font-ui);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-align: right;
+}
+#dateline-rule {
+  display: block;
+  width: 100%;
+  height: 1px;
+  background: var(--rule-heavy);
+  opacity: 0.5;
+}
+#dateline-time {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 300;
+  color: var(--ink-mid);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+#header.dark #wordmark-dateline { display: none; }
+
+/* ── TICKER LINE ── */
+#ticker-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 10px;
+}
+.ticker-stat {
+  font-family: var(--font-ui);
+  font-size: 8px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+}
+.ticker-stat strong {
+  font-weight: 600;
+  color: var(--ink-mid);
+}
+.ticker-sep {
+  width: 1px;
+  height: 9px;
+  background: var(--rule-heavy);
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+.ticker-live {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-ui);
+  font-size: 8px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+}
+.ticker-pulse-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #4caf50;
+  animation: tickerPulse 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes tickerPulse {
+  0%,100% { opacity: 0.5; transform: scale(0.85); }
+  50%      { opacity: 1;   transform: scale(1.15); }
+}
+#header.dark #ticker-line { display: none; }
+
 /* ── HEADER ── */
 #header {
   position: fixed;
@@ -89,8 +206,8 @@ html, body {
 }
 
 .clock-face {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
 }
 
 .clock-circle {
@@ -99,11 +216,36 @@ html, body {
   stroke-width: 1;
 }
 
-.clock-hand {
+.clock-hand-hour {
   stroke: var(--ink);
-  stroke-width: 1.5;
+  stroke-width: 1.8;
   stroke-linecap: round;
-  transform-origin: 14px 14px;
+  transform-origin: 15px 15px;
+}
+.clock-hand-minute {
+  stroke: var(--ink);
+  stroke-width: 1.1;
+  stroke-linecap: round;
+  transform-origin: 15px 15px;
+}
+.clock-hand-second {
+  stroke: var(--ink-mid);
+  stroke-width: 0.65;
+  stroke-linecap: round;
+  opacity: 0.5;
+  transform-origin: 15px 15px;
+}
+.clock-tick-major {
+  stroke: var(--ink);
+  stroke-width: 1;
+  stroke-linecap: round;
+  opacity: 0.5;
+}
+.clock-tick-minor {
+  stroke: var(--ink);
+  stroke-width: 0.5;
+  stroke-linecap: round;
+  opacity: 0.25;
 }
 
 .clock-center {
@@ -173,19 +315,10 @@ html, body {
   line-height: 1;
   color: var(--ink);
   user-select: none;
+  animation: mastheadWordmark 1.5s ease forwards;
 }
 
-#wordmark-datetime {
-  font-family: var(--font-ui);
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  color: var(--ink-mid);
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-  min-width: 180px;
-  line-height: 1.5;
-}
+
 
 #source-bar-wrap {
   display: flex;
@@ -706,7 +839,6 @@ html, body {
   padding-bottom: 10px;
 }
 #header.dark #clocks-group { display: none; }
-#header.dark #wordmark-datetime { display: none; }
 #header.dark #wordmark {
   font-size: 13px;
   letter-spacing: 0.02em;
@@ -719,11 +851,14 @@ html, body {
 }
 
 #header.dark .clock-circle { stroke: rgba(255,255,255,0.6); }
-#header.dark .clock-hand   { stroke: rgba(255,255,255,0.9); }
+#header.dark .clock-hand-hour   { stroke: rgba(255,255,255,0.9); }
+#header.dark .clock-hand-minute { stroke: rgba(255,255,255,0.9); }
+#header.dark .clock-hand-second { stroke: rgba(255,255,255,0.5); }
+#header.dark .clock-tick-major  { stroke: rgba(255,255,255,0.4); }
+#header.dark .clock-tick-minor  { stroke: rgba(255,255,255,0.2); }
 #header.dark .clock-center { fill: rgba(255,255,255,0.9); }
 #header.dark .clock-label  { color: rgba(255,255,255,0.4); }
 #header.dark #wordmark     { color: rgba(255,255,255,0.9); }
-#header.dark #wordmark-datetime { color: rgba(255,255,255,0.4); }
 #header.dark .src-tag       { color: rgba(255,255,255,0.5); border-color: rgba(255,255,255,0.2); }
 #header.dark .src-tag.active { background: rgba(255,255,255,0.9); color: #282828; border-color: rgba(255,255,255,0.9); }
 #header.dark #src-scroll-left,
@@ -908,9 +1043,9 @@ html, body {
 .photo-cell .caption-dot {
   position: absolute;
   bottom: 7px;
-  right: 7px;
-  width: 18px;
-  height: 18px;
+  left: 7px;
+  width: 23px;
+  height: 23px;
   border-radius: 50%;
   background: rgba(0,0,0,0.55);
   display: flex;
@@ -921,12 +1056,20 @@ html, body {
   -webkit-tap-highlight-color: transparent;
   transition: background 0.15s;
 }
-#photo-grid.cols-5 .caption-dot,
-#photo-grid.cols-9 .caption-dot { display: none; } /* too small */
+.photo-caption-byline {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-top: 6px;
+}
 
 .caption-dot-inner {
-  width: 4px;
-  height: 4px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: rgba(255,255,255,0.75);
 }
@@ -938,7 +1081,7 @@ html, body {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding: 14px;
+  padding: 14px 14px 40px;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.18s;
@@ -950,13 +1093,12 @@ html, body {
 
 .photo-caption-text {
   font-family: var(--font-ui);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 400;
   line-height: 1.45;
   color: rgba(255,255,255,0.9);
   letter-spacing: 0.01em;
 }
-#photo-grid.cols-3 .photo-caption-text { font-size: 9px; }
 
 /* ── GRID DENSITY CONTROLS (shown in header when Images active) ── */
 #grid-controls {
@@ -1109,38 +1251,51 @@ html, body {
 <body>
 
 <header id="header">
+  <div id="masthead-ghost"><span id="masthead-ghost-inner">inked</span></div>
   <div id="header-row">
     <div id="header-left">
       <div id="clocks-group">
         <div class="clock-item">
-          <svg class="clock-face" id="clock-nyc" viewBox="0 0 28 28">
-            <circle class="clock-circle" cx="14" cy="14" r="12"/>
-            <line class="clock-hand" id="hand-nyc" x1="14" y1="14" x2="14" y2="4"/>
-            <circle class="clock-center" cx="14" cy="14" r="1.5"/>
+          <svg class="clock-face" id="clock-nyc" viewBox="0 0 30 30">
+            <circle class="clock-circle" cx="15" cy="15" r="13"/>
+            <g id="ticks-nyc"></g>
+            <line class="clock-hand-hour"   id="hr-nyc"  x1="15" y1="15" x2="15" y2="8"/>
+            <line class="clock-hand-minute" id="min-nyc" x1="15" y1="15" x2="15" y2="5"/>
+            <line class="clock-hand-second" id="sec-nyc" x1="15" y1="15" x2="15" y2="3.5"/>
+            <circle class="clock-center" cx="15" cy="15" r="1.5"/>
           </svg>
           <span class="clock-label">NYC</span>
         </div>
         <div class="clock-item">
-          <svg class="clock-face" id="clock-lon" viewBox="0 0 28 28">
-            <circle class="clock-circle" cx="14" cy="14" r="12"/>
-            <line class="clock-hand" id="hand-lon" x1="14" y1="14" x2="14" y2="4"/>
-            <circle class="clock-center" cx="14" cy="14" r="1.5"/>
+          <svg class="clock-face" id="clock-lon" viewBox="0 0 30 30">
+            <circle class="clock-circle" cx="15" cy="15" r="13"/>
+            <g id="ticks-lon"></g>
+            <line class="clock-hand-hour"   id="hr-lon"  x1="15" y1="15" x2="15" y2="8"/>
+            <line class="clock-hand-minute" id="min-lon" x1="15" y1="15" x2="15" y2="5"/>
+            <line class="clock-hand-second" id="sec-lon" x1="15" y1="15" x2="15" y2="3.5"/>
+            <circle class="clock-center" cx="15" cy="15" r="1.5"/>
           </svg>
           <span class="clock-label">LON</span>
         </div>
         <div class="clock-item">
-          <svg class="clock-face" id="clock-fra" viewBox="0 0 28 28">
-            <circle class="clock-circle" cx="14" cy="14" r="12"/>
-            <line class="clock-hand" id="hand-fra" x1="14" y1="14" x2="14" y2="4"/>
-            <circle class="clock-center" cx="14" cy="14" r="1.5"/>
+          <svg class="clock-face" id="clock-fra" viewBox="0 0 30 30">
+            <circle class="clock-circle" cx="15" cy="15" r="13"/>
+            <g id="ticks-fra"></g>
+            <line class="clock-hand-hour"   id="hr-fra"  x1="15" y1="15" x2="15" y2="8"/>
+            <line class="clock-hand-minute" id="min-fra" x1="15" y1="15" x2="15" y2="5"/>
+            <line class="clock-hand-second" id="sec-fra" x1="15" y1="15" x2="15" y2="3.5"/>
+            <circle class="clock-center" cx="15" cy="15" r="1.5"/>
           </svg>
           <span class="clock-label">MSK</span>
         </div>
         <div class="clock-item">
-          <svg class="clock-face" id="clock-tyo" viewBox="0 0 28 28">
-            <circle class="clock-circle" cx="14" cy="14" r="12"/>
-            <line class="clock-hand" id="hand-tyo" x1="14" y1="14" x2="14" y2="4"/>
-            <circle class="clock-center" cx="14" cy="14" r="1.5"/>
+          <svg class="clock-face" id="clock-tyo" viewBox="0 0 30 30">
+            <circle class="clock-circle" cx="15" cy="15" r="13"/>
+            <g id="ticks-tyo"></g>
+            <line class="clock-hand-hour"   id="hr-tyo"  x1="15" y1="15" x2="15" y2="8"/>
+            <line class="clock-hand-minute" id="min-tyo" x1="15" y1="15" x2="15" y2="5"/>
+            <line class="clock-hand-second" id="sec-tyo" x1="15" y1="15" x2="15" y2="3.5"/>
+            <circle class="clock-center" cx="15" cy="15" r="1.5"/>
           </svg>
           <span class="clock-label">TYO</span>
         </div>
@@ -1160,8 +1315,19 @@ html, body {
     </div>
     <div id="wordmark-group">
       <div id="wordmark">inked</div>
-      <div id="wordmark-datetime"></div>
+      <div id="wordmark-dateline">
+        <span id="dateline-date"></span>
+        <span id="dateline-rule"></span>
+        <span id="dateline-time"></span>
+      </div>
     </div>
+  </div>
+  <div id="ticker-line">
+    <div class="ticker-stat"><strong id="ticker-src-count">—</strong>&thinsp;sources</div>
+    <div class="ticker-sep"></div>
+    <div class="ticker-stat"><strong id="ticker-art-count">—</strong>&thinsp;articles</div>
+    <div class="ticker-sep"></div>
+    <div class="ticker-live"><div class="ticker-pulse-dot"></div><span>live</span></div>
   </div>
   <div id="source-bar-wrap">
     <button id="src-scroll-left" onclick="scrollSourceBar(-1)">‹</button>
@@ -1367,6 +1533,7 @@ async function fetchFeed(feed) {
           : null,
         imageUrl,
         imageCaption,
+        mediaCredit: (item.media_credit || item.dc_creator || '').trim() || null,
       };
     }).filter(a => a && a.title);
   } catch { return []; }
@@ -1432,6 +1599,7 @@ async function loadFeeds() {
   }
 
   btn.classList.remove('spinning');
+  updateTickerCounts();
 }
 
 let activeFilter = null; // null = all, string = isolated source id
@@ -1444,7 +1612,11 @@ function buildSourceBar() {
   const availableFeeds = FEEDS
     .filter(f => {
       if (seen.has(f.id)) return false;
-      if (!articles.some(a => a.sourceId === f.id)) return false;
+      if (activeTab === 'images') {
+        if (!articles.some(a => a.sourceId === f.id && a.imageUrl)) return false;
+      } else {
+        if (!articles.some(a => a.sourceId === f.id)) return false;
+      }
       if (!isEnabled(f.id)) return false;
       seen.add(f.id);
       return true;
@@ -2181,6 +2353,7 @@ function switchTab(tab) {
     header.classList.remove('hide');
     document.getElementById('tab-bar').classList.remove('dark');
     lastScrollY = 0;
+    buildSourceBar();
     // Small delay so CSS transition settles before measuring
     setTimeout(syncHeaderPad, 50);
   } else {
@@ -2194,6 +2367,7 @@ function switchTab(tab) {
     document.getElementById('tab-bar').classList.add('dark');
     lastScrollY = 0;
     imagesView.scrollTop = 0;
+    buildSourceBar();
     // Measure collapsed header height before rendering photos
     setTimeout(() => { syncHeaderPad(); renderPhotos(); }, 50);
   }
@@ -2233,11 +2407,22 @@ function makePhotoCell(a) {
 
   const caption = document.createElement('div');
   caption.className = 'photo-caption';
-  caption.innerHTML = `<span class="photo-caption-text">${esc(a.imageCaption || a.title)}</span>`;
+
+  const captionText = document.createElement('span');
+  captionText.className = 'photo-caption-text';
+  captionText.textContent = a.imageCaption || a.title;
+  caption.appendChild(captionText);
+
+  const bylineParts = [a.sourceName];
+  if (a.mediaCredit) bylineParts.push(a.mediaCredit);
+  const byline = document.createElement('span');
+  byline.className = 'photo-caption-byline';
+  byline.textContent = bylineParts.join(' · ');
+  caption.appendChild(byline);
 
   // Tap image → open article
   // Tap dot  → toggle caption
-  const hasCaptionDot = gridCols !== 5 && gridCols !== 9;
+  const hasCaptionDot = gridCols !== 9;
 
   if (hasCaptionDot && a.imageCaption) {
     const dot = document.createElement('div');
@@ -2345,6 +2530,7 @@ if (articles.length > 0) {
   document.getElementById('status').style.display = 'none';
   document.getElementById('tab-bar').style.display = 'block';
   render();
+  updateTickerCounts();
 }
 
 loadFeeds();
@@ -2409,11 +2595,39 @@ const ZONES = [
   { id: 'tyo', tz: 'Asia/Tokyo' },
 ];
 
+function drawTicks() {
+  const ns = 'http://www.w3.org/2000/svg';
+  ZONES.forEach(({ id }) => {
+    const g = document.getElementById(`ticks-${id}`);
+    if (!g) return;
+    for (let i = 0; i < 60; i++) {
+      const isMajor = i % 5 === 0;
+      const innerR = isMajor ? 10.8 : 12.1;
+      const outerR = 13;
+      const angle = (i / 60) * 2 * Math.PI - Math.PI / 2;
+      const x1 = 15 + innerR * Math.cos(angle);
+      const y1 = 15 + innerR * Math.sin(angle);
+      const x2 = 15 + outerR * Math.cos(angle);
+      const y2 = 15 + outerR * Math.sin(angle);
+      const line = document.createElementNS(ns, 'line');
+      line.setAttribute('x1', x1.toFixed(2));
+      line.setAttribute('y1', y1.toFixed(2));
+      line.setAttribute('x2', x2.toFixed(2));
+      line.setAttribute('y2', y2.toFixed(2));
+      line.setAttribute('class', isMajor ? 'clock-tick-major' : 'clock-tick-minor');
+      g.appendChild(line);
+    }
+  });
+}
+
 function updateClock() {
   const now = new Date();
-  const date = now.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric', year:'numeric' });
+  const date = now.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric', year:'numeric' }).toUpperCase();
   const time = now.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
-  document.getElementById('wordmark-datetime').innerHTML = `${date}<br>${time}`;
+  const dateEl = document.getElementById('dateline-date');
+  const timeEl = document.getElementById('dateline-time');
+  if (dateEl) dateEl.textContent = date;
+  if (timeEl) timeEl.textContent = time;
 
   ZONES.forEach(({ id, tz }) => {
     try {
@@ -2421,17 +2635,61 @@ function updateClock() {
         timeZone: tz,
         hour: 'numeric',
         minute: 'numeric',
+        second: 'numeric',
         hour12: false,
       }).formatToParts(now);
       const h = parseInt(parts.find(p => p.type === 'hour').value) % 12;
       const m = parseInt(parts.find(p => p.type === 'minute').value);
-      const deg = (h * 30) + (m * 0.5);
-      const hand = document.getElementById(`hand-${id}`);
-      if (hand) hand.setAttribute('transform', `rotate(${deg})`);
+      const s = parseInt(parts.find(p => p.type === 'second').value);
+      const hrDeg  = h * 30 + m * 0.5;
+      const minDeg = m * 6 + s * 0.1;
+      const secDeg = s * 6;
+      const hr  = document.getElementById(`hr-${id}`);
+      const min = document.getElementById(`min-${id}`);
+      const sec = document.getElementById(`sec-${id}`);
+      if (hr)  hr.setAttribute('transform',  `rotate(${hrDeg})`);
+      if (min) min.setAttribute('transform', `rotate(${minDeg})`);
+      if (sec) sec.setAttribute('transform', `rotate(${secDeg})`);
     } catch(e) {}
   });
 }
 
+let tickerAnimFrame = null;
+function updateTickerCounts() {
+  const seen = new Set();
+  let srcCount = 0;
+  let artCount = 0;
+  FEEDS.forEach(f => {
+    if (seen.has(f.id)) return;
+    seen.add(f.id);
+    if (!isEnabled(f.id)) return;
+    const cnt = articles.filter(a => a.sourceId === f.id).length;
+    if (cnt > 0) { srcCount++; artCount += cnt; }
+  });
+
+  const srcEl = document.getElementById('ticker-src-count');
+  const artEl = document.getElementById('ticker-art-count');
+  if (srcEl) srcEl.textContent = srcCount;
+
+  // Animate article count up
+  if (artEl) {
+    const start = parseInt(artEl.textContent) || 0;
+    const end = artCount;
+    if (start === end) return;
+    const duration = 600;
+    const startTime = performance.now();
+    if (tickerAnimFrame) cancelAnimationFrame(tickerAnimFrame);
+    function step(now) {
+      const t = Math.min((now - startTime) / duration, 1);
+      const eased = t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
+      artEl.textContent = Math.round(start + (end - start) * eased);
+      if (t < 1) tickerAnimFrame = requestAnimationFrame(step);
+    }
+    tickerAnimFrame = requestAnimationFrame(step);
+  }
+}
+
+drawTicks();
 updateClock();
 setInterval(updateClock, 1000);
 
