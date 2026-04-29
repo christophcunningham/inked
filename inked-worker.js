@@ -37,18 +37,17 @@ export default {
     if (rssItems.length > 0) {
       for (const raw of rssItems) {
         const item = raw.split(/<\/item>/i)[0];
-        const title   = decodeEntities(tag(item, 'title'));
-        const link    = linkTag(item) || tag(item, 'guid');
-        const pubDate = tag(item, 'pubDate') || tag(item, 'dc:date');
-        const content = tagNS(item, 'content:encoded') || tag(item, 'description');
+        const title    = decodeEntities(xmlTag(item, 'title'));
+        const link     = linkTag(item) || xmlTag(item, 'guid');
+        const pubDate  = xmlTag(item, 'pubDate') || xmlTag(item, 'dc:date');
+        const content  = xmlTagNS(item, 'content:encoded') || xmlTag(item, 'description');
 
-        // ── Media fields ────────────────────────────────────────────────────
-        const enclosure      = enclosureTag(item);
-        const media_content  = mediaAttr(item, 'media:content',   'url');
-        const media_thumbnail= mediaAttr(item, 'media:thumbnail', 'url');
-        const media_credit   = decodeEntities(tagNS(item, 'media:credit') || tag(item, 'media:credit'));
-        const media_description = decodeEntities(tagNS(item, 'media:description') || tag(item, 'media:description'));
-        const dc_creator     = decodeEntities(tag(item, 'dc:creator') || tag(item, 'author'));
+        const enclosure         = enclosureTag(item);
+        const media_content     = mediaAttr(item, 'media:content',     'url');
+        const media_thumbnail   = mediaAttr(item, 'media:thumbnail',   'url');
+        const media_credit      = decodeEntities(xmlTagNS(item, 'media:credit')      || xmlTag(item, 'media:credit'));
+        const media_description = decodeEntities(xmlTagNS(item, 'media:description') || xmlTag(item, 'media:description'));
+        const dc_creator        = decodeEntities(xmlTag(item, 'dc:creator') || xmlTag(item, 'author'));
 
         if (title) items.push({
           title, link, pubDate, content,
@@ -61,18 +60,17 @@ export default {
     if (atomItems.length > 0 && items.length === 0) {
       for (const raw of atomItems) {
         const entry = raw.split(/<\/entry>/i)[0];
-        const title   = decodeEntities(tag(entry, 'title'));
-        const link    = attr(entry, 'link', 'href') || tagInner(entry, 'link');
-        const pubDate = tag(entry, 'published') || tag(entry, 'updated');
-        const content = tag(entry, 'content') || tag(entry, 'summary');
+        const title    = decodeEntities(xmlTag(entry, 'title'));
+        const link     = xmlAttr(entry, 'link', 'href') || tagInner(entry, 'link');
+        const pubDate  = xmlTag(entry, 'published') || xmlTag(entry, 'updated');
+        const content  = xmlTag(entry, 'content') || xmlTag(entry, 'summary');
 
-        // ── Media fields ────────────────────────────────────────────────────
-        const enclosure      = enclosureTag(entry);
-        const media_content  = mediaAttr(entry, 'media:content',   'url');
-        const media_thumbnail= mediaAttr(entry, 'media:thumbnail', 'url');
-        const media_credit   = decodeEntities(tagNS(entry, 'media:credit') || tag(entry, 'media:credit'));
-        const media_description = decodeEntities(tagNS(entry, 'media:description') || tag(entry, 'media:description'));
-        const dc_creator     = decodeEntities(tag(entry, 'dc:creator') || tag(entry, 'author'));
+        const enclosure         = enclosureTag(entry);
+        const media_content     = mediaAttr(entry, 'media:content',     'url');
+        const media_thumbnail   = mediaAttr(entry, 'media:thumbnail',   'url');
+        const media_credit      = decodeEntities(xmlTagNS(entry, 'media:credit')      || xmlTag(entry, 'media:credit'));
+        const media_description = decodeEntities(xmlTagNS(entry, 'media:description') || xmlTag(entry, 'media:description'));
+        const dc_creator        = decodeEntities(xmlTag(entry, 'dc:creator') || xmlTag(entry, 'author'));
 
         if (title) items.push({
           title, link, pubDate, content,
@@ -99,7 +97,7 @@ function corsHeaders(contentType) {
 }
 
 // Standard tag — handles CDATA and plain text
-function tag(xml, tagName) {
+function xmlTag(xml, tagName) {
   const escaped = tagName.replace(':', '\\:');
   const cdata = xml.match(new RegExp(`<${escaped}[^>]*><!\\[CDATA\\[([\\s\\S]*?)\\]\\]>`, 'i'));
   if (cdata) return cdata[1].trim();
@@ -107,8 +105,8 @@ function tag(xml, tagName) {
   return plain ? plain[1].trim() : '';
 }
 
-// Namespaced tag like content:encoded — regex-safe colon handling
-function tagNS(xml, fullName) {
+// Namespaced tag like content:encoded
+function xmlTagNS(xml, fullName) {
   const escaped = fullName.replace(':', '\\:');
   const cdata = xml.match(new RegExp(`<${escaped}[^>]*><!\\[CDATA\\[([\\s\\S]*?)\\]\\]>`, 'i'));
   if (cdata) return cdata[1].trim();
@@ -129,7 +127,7 @@ function tagInner(xml, tagName) {
 }
 
 // Extract attribute value from a tag
-function attr(xml, tagName, attrName) {
+function xmlAttr(xml, tagName, attrName) {
   const m = xml.match(new RegExp(`<${tagName}[^>]*\\s${attrName}="([^"]*)"`, 'i'));
   return m ? m[1].trim() : '';
 }
@@ -142,12 +140,13 @@ function mediaAttr(xml, tagName, attrName) {
 }
 
 // Extract RSS enclosure tag as object { url, type }
+// Note: local variable named `raw` to avoid shadowing the outer `xmlTag` helper
 function enclosureTag(xml) {
   const m = xml.match(/<enclosure[^>]+>/i);
   if (!m) return null;
-  const tag = m[0];
-  const urlM  = tag.match(/url="([^"]*)"/i);
-  const typeM = tag.match(/type="([^"]*)"/i);
+  const raw = m[0];
+  const urlM  = raw.match(/url="([^"]*)"/i);
+  const typeM = raw.match(/type="([^"]*)"/i);
   if (!urlM) return null;
   return { url: urlM[1], type: typeM ? typeM[1] : '' };
 }
