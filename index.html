@@ -1896,7 +1896,8 @@ function buildInfoPanel() {
   const list = document.getElementById('sources-list');
   list.innerHTML = '';
   const seen = new Set();
-  const sorted = [...FEEDS].sort((a, b) => a.name.localeCompare(b.name));
+  const sortKey = name => name.replace(/^the\s+/i, '');
+  const sorted = [...FEEDS].sort((a, b) => sortKey(a.name).localeCompare(sortKey(b.name)));
   sorted.forEach(feed => {
     if (seen.has(feed.id)) return;
     seen.add(feed.id);
