@@ -393,6 +393,7 @@ html, body {
   display: block;
   padding: 22px 0 18px;
   border-bottom: 1px solid var(--rule);
+  position: relative;
 }
 .article:active { opacity: 0.55; }
 
@@ -568,7 +569,7 @@ html, body {
 #bottom-right {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 11px;
   padding-top: 14px;
 }
 
@@ -1192,6 +1193,156 @@ html, body {
 #tab-bar.dark #search-btn { color: rgba(255,255,255,0.45); }
 #tab-bar.dark .bar-btn.bar-btn-fill { background: rgba(255,255,255,0.9); color: #282828; border-color: rgba(255,255,255,0.9); }
 
+
+/* ── SWIPE-TO-FLAG ── */
+.article-swipe-wrap {
+  position: relative;
+  overflow: hidden;
+}
+.article-swipe-bg {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.article-swipe-bg.flag-bg {
+  background: var(--ink);
+  justify-content: flex-start;
+  padding-left: 22px;
+}
+.article-swipe-bg.unflag-bg {
+  background: #c0392b;
+  justify-content: flex-end;
+  padding-right: 22px;
+}
+.article-swipe-inner {
+  position: relative;
+  background: var(--paper);
+  transition: transform 0.25s ease;
+  will-change: transform;
+}
+.article-flag-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ink);
+  margin-left: 8px;
+  vertical-align: middle;
+  position: relative;
+  top: -2px;
+  flex-shrink: 0;
+}
+
+/* ── HOVER FLAG BUTTON (desktop) ── */
+.article-hover-flag {
+  position: absolute;
+  bottom: 18px;
+  right: 0;
+  width: 28px;
+  height: 28px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--ink-light);
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.15s;
+  z-index: 2;
+}
+.article-hover-flag:hover { color: var(--ink); }
+.article-hover-flag.flagged { color: var(--ink); display: flex; }
+/* Only show on non-touch devices */
+@media (hover: hover) and (pointer: fine) {
+  .article-swipe-inner:hover .article-hover-flag,
+  .article:hover .article-hover-flag {
+    display: flex;
+  }
+}
+
+/* ── FLAGGED OVERLAY ── */
+#flagged-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: var(--paper);
+  z-index: 200;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: calc(var(--safe-top) + 24px) var(--pad) calc(var(--safe-bottom) + 80px);
+  scrollbar-width: none;
+}
+#flagged-overlay::-webkit-scrollbar { display: none; }
+#flagged-overlay.open { display: block; }
+#flagged-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 12px;
+  margin-bottom: 0;
+}
+#flagged-title {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+#flagged-clear-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--rule-heavy);
+  margin-bottom: 4px;
+}
+#flagged-count-label {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+}
+#flagged-clear-btn {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border: 1px solid var(--rule-heavy);
+  background: transparent;
+  color: var(--ink-mid);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+#flagged-clear-btn:active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+#flagged-list { display: flex; flex-direction: column; }
+
+/* Flag button in tab bar */
+#flag-btn {
+  border: none;
+  background: transparent;
+  padding: 5px 4px;
+  color: var(--ink-mid);
+  display: flex;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+#flag-btn:active { opacity: 0.6; }
+#tab-bar.dark #flag-btn { color: rgba(255,255,255,0.45); }
+
 /* ── RESPONSIVE ── */
 @media (min-width: 640px) {
   :root { --pad: 40px; }
@@ -1215,7 +1366,7 @@ html, body {
     transform: translateX(-50%) translateY(-100%);
   }
 
-  #main, #info-overlay {
+  #main, #info-overlay, #flagged-overlay {
     max-width: 75%;
     margin-left: auto;
     margin-right: auto;
@@ -1371,6 +1522,7 @@ html, body {
     </div>
     <div id="bottom-right">
       <button class="bar-btn" id="search-btn" onclick="openSearch()" aria-label="Search"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block"><circle cx="5.5" cy="5.5" r="4.5" stroke="currentColor" stroke-width="1.25"/><line x1="9.5" y1="9.5" x2="13" y2="13" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></svg></button>
+      <button id="flag-btn" onclick="toggleFlagged()" aria-label="Flagged"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" style="display:block"><path fill="currentColor" d="M7 13v8q0 .425-.288.713T6 22t-.712-.288T5 21V4q0-.425.288-.712T6 3h13.525q.275 0 .488.125t.337.325t.162.438t-.062.487L19 8l1.45 3.625q.1.25.063.488t-.163.437t-.337.325t-.488.125zm0-2h11.05l-.9-2.25Q17 8.4 17 8t.15-.75l.9-2.25H7zm0 0V5z"/></svg></button>
       <button class="bar-btn" id="refresh-btn" onclick="loadFeeds()" aria-label="Refresh"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="display:block"><path d="M16 15L24 15 20 20zM8 9L0 9 4 4z"></path><path d="M21 6c0-1.654-1.346-3-3-3H7.161l1.6 2H18c.551 0 1 .448 1 1v10h2V6zM3 18c0 1.654 1.346 3 3 3h10.839l-1.6-2H6c-.551 0-1-.448-1-1V8H3V18z"></path></svg></button>
       <button class="bar-btn bar-btn-fill" id="info-btn" onclick="toggleInfo()">Info</button>
     </div>
@@ -1389,10 +1541,30 @@ html, body {
       <button class="bar-btn bar-btn-fill" id="info-btn-close" onclick="toggleInfo()">Close</button>
     </div>
   </div>
+  <!-- Flagged mode -->
+  <div class="bottom-bar-inner" id="tab-bar-flagged-mode" style="display:none">
+    <div style="flex:1;padding-top:14px;font-family:var(--font-ui);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-light)">Flagged articles</div>
+    <div style="padding-top:14px;flex-shrink:0">
+      <button class="bar-btn bar-btn-fill" onclick="toggleFlagged()">Close</button>
+    </div>
+  </div>
 </div>
 
 <div id="images-view">
   <div id="photo-grid" class="cols-1"></div>
+</div>
+
+<div id="flagged-overlay">
+  <div id="flagged-header">
+    <span id="flagged-title">Flagged</span>
+  </div>
+  <div id="flagged-clear-row">
+    <span id="flagged-count-label">0 articles</span>
+    <button id="flagged-clear-btn" onclick="clearAllFlagged()">Clear All</button>
+  </div>
+  <div id="flagged-list">
+    <div style="padding:48px 0;font-family:var(--font-ui);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-light)">No flagged articles</div>
+  </div>
 </div>
 
 <div id="info-overlay">
@@ -2121,7 +2293,8 @@ function esc(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-function makeCard(a, showSource) {
+// makeArticleEl: raw article DOM (no swipe wrap) — used by both makeCard and makeFlaggedCard
+function makeArticleEl(a, showSource) {
   const el = document.createElement('div');
   el.className = 'article';
 
@@ -2130,10 +2303,11 @@ function makeCard(a, showSource) {
     : formatAge(a.pubDate);
 
   const indicator = a.hasFullText ? '<span class="full-text-dot">••</span>' : '';
+  const flagDot = ''; // dot indicator removed — hover button serves as flag state
 
   el.innerHTML = `
     <a class="article-link" href="${a.link}" target="_blank" rel="noopener noreferrer">
-      <div class="article-headline">${esc(a.title)}${indicator}</div>
+      <div class="article-headline">${esc(a.title)}${indicator}${flagDot}</div>
       <div class="article-meta">${meta}${a.isPaywalled ? ' <span class="paywall-tag">paywalled</span>' : ''}</div>
     </a>
     ${a.isPaywalled ? `<a class="article-archive" href="https://archive.ph/newest/${encodeURIComponent(a.link)}" target="_blank" rel="noopener noreferrer">Archive</a>` : ''}
@@ -2151,7 +2325,59 @@ function makeCard(a, showSource) {
     };
   }
 
+  // Desktop hover flag button
+  const hoverBtn = document.createElement('button');
+  hoverBtn.className = 'article-hover-flag' + (isFlagged(a.id) ? ' flagged' : '');
+  hoverBtn.title = isFlagged(a.id) ? 'Unflag' : 'Flag';
+  hoverBtn.setAttribute('aria-label', isFlagged(a.id) ? 'Unflag' : 'Flag');
+  hoverBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"><path fill="currentColor" d="M7 13v8q0 .425-.288.713T6 22t-.712-.288T5 21V4q0-.425.288-.712T6 3h13.525q.275 0 .488.125t.337.325t.162.438t-.062.487L19 8l1.45 3.625q.1.25.063.488t-.163.437t-.337.325t-.488.125zm0-2h11.05l-.9-2.25Q17 8.4 17 8t.15-.75l.9-2.25H7zm0 0V5z"/></svg>`;
+  hoverBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isFlagged(a.id)) {
+      unflagArticle(a.id);
+      hoverBtn.classList.remove('flagged');
+      hoverBtn.title = 'Flag';
+    } else {
+      flagArticle(a);
+      hoverBtn.classList.add('flagged');
+      hoverBtn.title = 'Unflag';
+    }
+  });
+  el.appendChild(hoverBtn);
+
   return el;
+}
+
+// makeCard: wraps article in swipe container for flag gesture (feed use)
+function makeCard(a, showSource) {
+  const outer = document.createElement('div');
+  outer.className = 'article-swipe-wrap';
+
+  const bg = document.createElement('div');
+  bg.className = 'article-swipe-bg flag-bg';
+  bg.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><path fill="rgba(255,255,255,0.9)" d="M7 13v8q0 .425-.288.713T6 22t-.712-.288T5 21V4q0-.425.288-.712T6 3h13.525q.275 0 .488.125t.337.325t.162.438t-.062.487L19 8l1.45 3.625q.1.25.063.488t-.163.437t-.337.325t-.488.125zm0-2h11.05l-.9-2.25Q17 8.4 17 8t.15-.75l.9-2.25H7zm0 0V5z"/></svg>`;
+
+  const inner = document.createElement('div');
+  inner.className = 'article-swipe-inner';
+  inner.appendChild(makeArticleEl(a, showSource));
+
+  outer.appendChild(bg);
+  outer.appendChild(inner);
+
+  attachSwipe(outer, inner, bg,
+    // right swipe → flag
+    () => {
+      if (isFlagged(a.id)) return; // already flagged, no-op
+      flagArticle(a);
+      // Update hover button state
+      const hoverFlag = inner.querySelector('.article-hover-flag');
+      if (hoverFlag) { hoverFlag.classList.add('flagged'); hoverFlag.title = 'Unflag'; }
+    },
+    null // no left-swipe in feed
+  );
+
+  return outer;
 }
 
 // ── Article Cache (localStorage) ─────────────────────────────────────────────
@@ -2701,6 +2927,220 @@ function updateTickerCounts() {
 drawTicks();
 updateClock();
 setInterval(updateClock, 1000);
+
+
+// ── FLAGGED / READING LIST ────────────────────────────────────────────────────
+const FLAGGED_KEY = 'inked_flagged';
+
+function loadFlagged() {
+  try {
+    const raw = localStorage.getItem(FLAGGED_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+
+function saveFlagged(list) {
+  try { localStorage.setItem(FLAGGED_KEY, JSON.stringify(list)); } catch {}
+}
+
+function isFlagged(articleId) {
+  return loadFlagged().some(a => a.id === articleId);
+}
+
+function flagArticle(article) {
+  const list = loadFlagged();
+  if (!list.some(a => a.id === article.id)) {
+    list.unshift({
+      id: article.id,
+      sourceId: article.sourceId,
+      sourceName: article.sourceName,
+      title: article.title,
+      link: article.link,
+      pubDate: article.pubDate instanceof Date ? article.pubDate.getTime() : article.pubDate,
+      isPaywalled: article.isPaywalled || false,
+      hasFullText: article.hasFullText || false,
+      fullText: article.fullText || null,
+      flaggedAt: Date.now(),
+    });
+    saveFlagged(list);
+  }
+  updateFlagBadge();
+}
+
+function unflagArticle(articleId) {
+  const list = loadFlagged().filter(a => a.id !== articleId);
+  saveFlagged(list);
+  updateFlagBadge();
+  if (document.getElementById('flagged-overlay').classList.contains('open')) {
+    renderFlaggedList();
+  }
+}
+
+function clearAllFlagged() {
+  saveFlagged([]);
+  updateFlagBadge();
+  renderFlaggedList();
+}
+
+function updateFlagBadge() {} // badge removed
+
+function toggleFlagged() {
+  const overlay = document.getElementById('flagged-overlay');
+  if (overlay.classList.contains('open')) {
+    closeFlagged();
+  } else {
+    openFlagged();
+  }
+}
+
+function openFlagged() {
+  if (searchQuery || document.getElementById('search-row').classList.contains('visible')) {
+    clearSearch();
+  }
+  document.getElementById('flagged-overlay').classList.add('open');
+  document.getElementById('tab-bar-feed-mode').style.display = 'none';
+  document.getElementById('tab-bar-flagged-mode').style.display = 'flex';
+  renderFlaggedList();
+}
+
+function closeFlagged() {
+  document.getElementById('flagged-overlay').classList.remove('open');
+  document.getElementById('tab-bar-feed-mode').style.display = 'flex';
+  document.getElementById('tab-bar-flagged-mode').style.display = 'none';
+}
+
+function renderFlaggedList() {
+  const list = document.getElementById('flagged-list');
+  const countLabel = document.getElementById('flagged-count-label');
+  const flagged = loadFlagged();
+
+  list.innerHTML = '';
+  countLabel.textContent = flagged.length === 1 ? '1 article' : `${flagged.length} articles`;
+
+  if (!flagged.length) {
+    const emptyEl = document.createElement('div');
+    emptyEl.style.cssText = 'padding:48px 0;font-family:var(--font-ui);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-light)';
+    emptyEl.textContent = 'No flagged articles';
+    list.appendChild(emptyEl);
+    return;
+  }
+
+  flagged.forEach(raw => {
+    const a = { ...raw, pubDate: new Date(raw.pubDate) };
+    list.appendChild(makeFlaggedCard(a));
+  });
+}
+
+function makeFlaggedCard(a) {
+  const outer = document.createElement('div');
+  outer.className = 'article-swipe-wrap';
+
+  const bg = document.createElement('div');
+  bg.className = 'article-swipe-bg unflag-bg';
+  bg.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>`;
+
+  const inner = document.createElement('div');
+  inner.className = 'article-swipe-inner';
+  inner.appendChild(makeArticleEl(a, true));
+
+  outer.appendChild(bg);
+  outer.appendChild(inner);
+
+  attachSwipe(outer, inner, bg,
+    null, // no right-swipe in flagged overlay
+    () => {
+      // Animate out
+      const h = outer.offsetHeight;
+      outer.style.cssText += `;max-height:${h}px;overflow:hidden;transition:max-height 0.28s ease,opacity 0.28s ease`;
+      requestAnimationFrame(() => {
+        outer.style.maxHeight = '0';
+        outer.style.opacity = '0';
+      });
+      setTimeout(() => {
+        unflagArticle(a.id);
+        outer.remove();
+        const count = loadFlagged().length;
+        const countLabel = document.getElementById('flagged-count-label');
+        if (countLabel) countLabel.textContent = count === 1 ? '1 article' : `${count} articles`;
+        if (count === 0) {
+          const listEl = document.getElementById('flagged-list');
+          if (listEl) {
+            const emptyEl = document.createElement('div');
+            emptyEl.style.cssText = 'padding:48px 0;font-family:var(--font-ui);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-light)';
+            emptyEl.textContent = 'No flagged articles';
+            listEl.appendChild(emptyEl);
+          }
+        }
+        // Remove dot from feed if rendered
+        render();
+      }, 290);
+    }
+  );
+
+  return outer;
+}
+
+// ── Swipe gesture engine ──────────────────────────────────────────────────────
+function attachSwipe(outer, inner, bg, onRightSwipe, onLeftSwipe) {
+  let startX = 0, startY = 0, dx = 0;
+  let tracking = false, axis = null;
+  const THRESHOLD = 80;
+
+  function onStart(cx, cy) {
+    startX = cx; startY = cy; dx = 0;
+    tracking = true; axis = null;
+    inner.style.transition = 'none';
+    bg.style.transition = 'none';
+  }
+
+  function onMove(cx, cy) {
+    if (!tracking) return;
+    const rawDx = cx - startX;
+    const rawDy = cy - startY;
+    if (axis === null && (Math.abs(rawDx) > 6 || Math.abs(rawDy) > 6)) {
+      axis = Math.abs(rawDx) > Math.abs(rawDy) ? 'h' : 'v';
+    }
+    if (axis !== 'h') return;
+    dx = rawDx;
+
+    if (dx > 0 && onRightSwipe) {
+      inner.style.transform = `translateX(${Math.min(dx, THRESHOLD * 1.4)}px)`;
+      bg.className = 'article-swipe-bg flag-bg';
+      bg.style.opacity = Math.min(dx / THRESHOLD, 1);
+    } else if (dx < 0 && onLeftSwipe) {
+      inner.style.transform = `translateX(${Math.max(dx, -THRESHOLD * 1.4)}px)`;
+      bg.className = 'article-swipe-bg unflag-bg';
+      bg.style.opacity = Math.min(-dx / THRESHOLD, 1);
+    }
+  }
+
+  function onEnd() {
+    if (!tracking) return;
+    tracking = false;
+    inner.style.transition = 'transform 0.25s ease';
+    bg.style.transition = 'opacity 0.15s';
+    if (dx >= THRESHOLD && onRightSwipe)       { onRightSwipe(); }
+    else if (dx <= -THRESHOLD && onLeftSwipe)  { onLeftSwipe(); }
+    inner.style.transform = 'translateX(0)';
+    bg.style.opacity = '0';
+    dx = 0; axis = null;
+  }
+
+  outer.addEventListener('touchstart', e => onStart(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
+  outer.addEventListener('touchmove', e => {
+    onMove(e.touches[0].clientX, e.touches[0].clientY);
+    if (axis === 'h') e.preventDefault();
+  }, { passive: false });
+  outer.addEventListener('touchend', onEnd, { passive: true });
+
+  // Mouse fallback
+  outer.addEventListener('mousedown', e => onStart(e.clientX, e.clientY));
+  document.addEventListener('mousemove', e => { if (tracking) onMove(e.clientX, e.clientY); });
+  document.addEventListener('mouseup', () => { if (tracking) onEnd(); });
+}
+
+// Initialise badge on load
+updateFlagBadge();
 
 // ── Keep tab bar above iOS keyboard via visualViewport API ───────────────────
 if (window.visualViewport) {
