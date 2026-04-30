@@ -49,6 +49,7 @@ html, body {
   overscroll-behavior: none;
 }
 
+/* ── ANIMATIONS ── */
 /* ── MASTHEAD GHOST ── */
 #masthead-ghost { display: none; }
 
@@ -71,7 +72,7 @@ html, body {
 }
 #dateline-rule {
   display: block;
-  width: 100%;
+  width: 120px;
   height: 1px;
   background: var(--rule-heavy);
   opacity: 0.5;
@@ -135,7 +136,7 @@ html, body {
   0%,100% { opacity: 0.5; transform: scale(0.85); }
   50%      { opacity: 1;   transform: scale(1.15); }
 }
-#header.dark #ticker-line { display: none; }
+#header.dark #ticker-line { display: flex; }
 
 /* ── HEADER ── */
 #header {
@@ -147,6 +148,7 @@ html, body {
   background: var(--paper);
   padding: calc(var(--safe-top) + 20px) var(--pad) 0;
   transition: transform 0.3s ease;
+  box-shadow: 0 4px 6px -4px rgba(0,0,0,0.08);
 }
 #header.hide { transform: translateY(-100%); }
 
@@ -183,7 +185,7 @@ html, body {
 
 .clock-circle {
   fill: none;
-  stroke: var(--ink);
+  stroke: #8a8680;
   stroke-width: 1;
 }
 
@@ -223,6 +225,15 @@ html, body {
   fill: var(--ink);
 }
 
+
+/* ── CLOCK NIGHT MODE ── */
+.clock-item.night .clock-circle      { stroke: #8a8680; }
+.clock-item.night .clock-hand-hour   { stroke: #3a3830; }
+.clock-item.night .clock-hand-minute { stroke: #3a3830; }
+.clock-item.night .clock-hand-second { stroke: #5a5650; opacity: 0.5; }
+.clock-item.night .clock-tick-major  { stroke: #4a4840; opacity: 0.5; }
+.clock-item.night .clock-tick-minor  { stroke: #4a4840; opacity: 0.2; }
+.clock-item.night .clock-center      { fill: #3a3830; }
 .clock-label {
   font-family: var(--font-ui);
   font-size: 7px;
@@ -806,17 +817,21 @@ html, body {
 /* Collapsed header row in images mode */
 #header.dark #header-row {
   align-items: center;
-  padding-bottom: 10px;
+  padding-bottom: 14px;
 }
 #header.dark #clocks-group { display: none; }
 #header.dark #wordmark {
-  font-size: 13px;
+  font-size: 17px;
   letter-spacing: 0.02em;
 }
 #header.dark #wordmark-group {
   gap: 0;
 }
 #header.dark #source-bar-wrap {
+  padding-bottom: 10px;
+}
+#header.dark #ticker-line {
+  padding-top: 2px;
   padding-bottom: 10px;
 }
 
@@ -829,6 +844,10 @@ html, body {
 #header.dark .clock-center { fill: rgba(255,255,255,0.9); }
 #header.dark .clock-label  { color: rgba(255,255,255,0.4); }
 #header.dark #wordmark     { color: rgba(255,255,255,0.9); }
+#header.dark .ticker-stat  { color: rgba(255,255,255,0.35); }
+#header.dark .ticker-stat strong { color: rgba(255,255,255,0.6); }
+#header.dark .ticker-sep   { background: rgba(255,255,255,0.2); }
+#header.dark .ticker-live  { color: rgba(255,255,255,0.35); }
 #header.dark .src-tag       { color: rgba(255,255,255,0.5); border-color: rgba(255,255,255,0.2); }
 #header.dark .src-tag.active { background: rgba(255,255,255,0.9); color: #282828; border-color: rgba(255,255,255,0.9); }
 #header.dark #src-scroll-left,
@@ -1010,40 +1029,6 @@ html, body {
   transition: opacity 0.2s;
 }
 
-.photo-cell .caption-dot {
-  position: absolute;
-  bottom: 7px;
-  left: 7px;
-  width: 23px;
-  height: 23px;
-  border-radius: 50%;
-  background: rgba(0,0,0,0.55);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 5;
-  -webkit-tap-highlight-color: transparent;
-  transition: background 0.15s;
-}
-.photo-caption-byline {
-  font-family: var(--font-ui);
-  font-size: 9px;
-  font-weight: 400;
-  line-height: 1.4;
-  color: rgba(255,255,255,0.45);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  margin-top: 6px;
-}
-
-.caption-dot-inner {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.75);
-}
-
 .photo-caption {
   position: absolute;
   inset: 0;
@@ -1051,7 +1036,7 @@ html, body {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding: 14px 14px 40px;
+  padding: 14px 14px 14px;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.18s;
@@ -1068,6 +1053,32 @@ html, body {
   line-height: 1.45;
   color: rgba(255,255,255,0.9);
   letter-spacing: 0.01em;
+}
+
+.photo-caption-byline {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+
+.photo-caption-link {
+  display: inline-block;
+  margin-top: 10px;
+  font-family: var(--font-ui);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.6);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255,255,255,0.25);
+  padding-bottom: 1px;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* ── GRID DENSITY CONTROLS (shown in header when Images active) ── */
@@ -1221,12 +1232,18 @@ html, body {
 <body>
 
 <header id="header">
-  <div id="masthead-ghost"><span id="masthead-ghost-inner">inked</span></div>
   <div id="header-row">
     <div id="header-left">
       <div id="clocks-group">
         <div class="clock-item">
           <svg class="clock-face" id="clock-nyc" viewBox="0 0 30 30">
+            <defs>
+              <radialGradient id="night-grad-nyc" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#dedad4"/>
+                <stop offset="100%" stop-color="#bab6b0"/>
+              </radialGradient>
+            </defs>
+            <circle id="face-nyc" cx="15" cy="15" r="13" fill="transparent"/>
             <circle class="clock-circle" cx="15" cy="15" r="13"/>
             <g id="ticks-nyc"></g>
             <line class="clock-hand-hour"   id="hr-nyc"  x1="15" y1="15" x2="15" y2="8"/>
@@ -1238,6 +1255,13 @@ html, body {
         </div>
         <div class="clock-item">
           <svg class="clock-face" id="clock-lon" viewBox="0 0 30 30">
+            <defs>
+              <radialGradient id="night-grad-lon" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#dedad4"/>
+                <stop offset="100%" stop-color="#bab6b0"/>
+              </radialGradient>
+            </defs>
+            <circle id="face-lon" cx="15" cy="15" r="13" fill="transparent"/>
             <circle class="clock-circle" cx="15" cy="15" r="13"/>
             <g id="ticks-lon"></g>
             <line class="clock-hand-hour"   id="hr-lon"  x1="15" y1="15" x2="15" y2="8"/>
@@ -1248,18 +1272,32 @@ html, body {
           <span class="clock-label">LON</span>
         </div>
         <div class="clock-item">
-          <svg class="clock-face" id="clock-fra" viewBox="0 0 30 30">
+          <svg class="clock-face" id="clock-bey" viewBox="0 0 30 30">
+            <defs>
+              <radialGradient id="night-grad-bey" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#dedad4"/>
+                <stop offset="100%" stop-color="#bab6b0"/>
+              </radialGradient>
+            </defs>
+            <circle id="face-bey" cx="15" cy="15" r="13" fill="transparent"/>
             <circle class="clock-circle" cx="15" cy="15" r="13"/>
-            <g id="ticks-fra"></g>
-            <line class="clock-hand-hour"   id="hr-fra"  x1="15" y1="15" x2="15" y2="8"/>
-            <line class="clock-hand-minute" id="min-fra" x1="15" y1="15" x2="15" y2="5"/>
-            <line class="clock-hand-second" id="sec-fra" x1="15" y1="15" x2="15" y2="3.5"/>
+            <g id="ticks-bey"></g>
+            <line class="clock-hand-hour"   id="hr-bey"  x1="15" y1="15" x2="15" y2="8"/>
+            <line class="clock-hand-minute" id="min-bey" x1="15" y1="15" x2="15" y2="5"/>
+            <line class="clock-hand-second" id="sec-bey" x1="15" y1="15" x2="15" y2="3.5"/>
             <circle class="clock-center" cx="15" cy="15" r="1.5"/>
           </svg>
-          <span class="clock-label">MSK</span>
+          <span class="clock-label">BEY</span>
         </div>
         <div class="clock-item">
           <svg class="clock-face" id="clock-tyo" viewBox="0 0 30 30">
+            <defs>
+              <radialGradient id="night-grad-tyo" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#dedad4"/>
+                <stop offset="100%" stop-color="#bab6b0"/>
+              </radialGradient>
+            </defs>
+            <circle id="face-tyo" cx="15" cy="15" r="13" fill="transparent"/>
             <circle class="clock-circle" cx="15" cy="15" r="13"/>
             <g id="ticks-tyo"></g>
             <line class="clock-hand-hour"   id="hr-tyo"  x1="15" y1="15" x2="15" y2="8"/>
@@ -1277,8 +1315,8 @@ html, body {
       </div>
       <div id="grid-controls">
         <span style="font-family:'Geist','Helvetica Neue',Arial,sans-serif;font-size:8px;font-weight:400;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-light);user-select:none">Grid</span>
-        <button class="grid-btn active" id="grid-1" onclick="setGrid(1)">1</button>
-        <button class="grid-btn" id="grid-3" onclick="setGrid(3)">3</button>
+        <button class="grid-btn" id="grid-1" onclick="setGrid(1)">1</button>
+        <button class="grid-btn active" id="grid-3" onclick="setGrid(3)">3</button>
         <button class="grid-btn" id="grid-5" onclick="setGrid(5)">5</button>
         <button class="grid-btn" id="grid-9" onclick="setGrid(9)">9</button>
       </div>
@@ -1368,7 +1406,7 @@ html, body {
   <div id="sources-list"></div>
   <div id="info-description" style="margin-top:24px">A chronological RSS reader pulling from ~60 sources across wire services, broadcasters, investigative outlets, policy journals, and local press. No ads, no algorithms, no affiliations.</div>
   <hr style="border:none;border-top:1px solid var(--rule);margin:20px 0 0">
-  <div id="info-description" style="margin-top:16px">Switch to Images via the tab bar to browse a photo grid from the same sources. Tap an image to open the article. Tap the dot to reveal a caption. Adjust column density (1 / 3 / 5 / 9) using the Grid control in the header.</div>
+  <div id="info-description" style="margin-top:16px">Switch to Images via the tab bar to browse a photo grid from the same sources. Tap an image to reveal the caption and article link. Adjust column density (1 / 3 / 5 / 9) using the Grid control in the header.</div>
   <hr style="border:none;border-top:1px solid var(--rule);margin:20px 0 0">
   <div id="info-description" style="margin-top:16px">To install: on iOS, open in Safari → Share → Add to Home Screen. On Android, open in Chrome → menu → Add to Home Screen.</div>
   <hr style="border:none;border-top:1px solid var(--rule);margin:20px 0 0">
@@ -2230,7 +2268,7 @@ function render() {
 
 // ── IMAGES MODE ──────────────────────────────────────────────────────────────
 let activeTab = 'feed';   // 'feed' | 'images'
-let gridCols  = 1;
+let gridCols  = 3;
 let searchQuery = '';     // '' = no active search
 
 // Separate lazy-render state for photos
@@ -2375,6 +2413,7 @@ function makePhotoCell(a) {
 
   img.src = a.imageUrl;
 
+  // Build caption overlay
   const caption = document.createElement('div');
   caption.className = 'photo-caption';
 
@@ -2390,34 +2429,25 @@ function makePhotoCell(a) {
   byline.textContent = bylineParts.join(' · ');
   caption.appendChild(byline);
 
-  // Tap image → open article
-  // Tap dot  → toggle caption
-  const hasCaptionDot = gridCols !== 9;
-
-  if (hasCaptionDot && a.imageCaption) {
-    const dot = document.createElement('div');
-    dot.className = 'caption-dot';
-    dot.innerHTML = '<div class="caption-dot-inner"></div>';
-    dot.addEventListener('click', (e) => {
-      e.stopPropagation();
-      caption.classList.toggle('visible');
-    });
-    cell.appendChild(dot);
-
-    // Tap caption area to dismiss
-    caption.addEventListener('click', (e) => {
-      e.stopPropagation();
-      caption.classList.remove('visible');
-    });
-    cell.appendChild(caption);
+  // Article link inside caption
+  if (a.link && a.link !== '#') {
+    const link = document.createElement('a');
+    link.className = 'photo-caption-link';
+    link.href = a.link;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.textContent = 'Open article ↗';
+    link.addEventListener('click', e => e.stopPropagation());
+    caption.appendChild(link);
   }
 
-  // Tap image → open article link
-  img.addEventListener('click', () => {
-    if (a.link && a.link !== '#') window.open(a.link, '_blank', 'noopener,noreferrer');
+  // First tap: show caption. Second tap: dismiss.
+  cell.addEventListener('click', () => {
+    caption.classList.toggle('visible');
   });
 
   cell.appendChild(img);
+  cell.appendChild(caption);
   return cell;
 }
 
@@ -2561,7 +2591,7 @@ document.getElementById('images-view').addEventListener('scroll', function() {
 const ZONES = [
   { id: 'nyc', tz: 'America/New_York' },
   { id: 'lon', tz: 'Europe/London' },
-  { id: 'fra', tz: 'Europe/Moscow' },
+  { id: 'bey', tz: 'Asia/Beirut' },
   { id: 'tyo', tz: 'Asia/Tokyo' },
 ];
 
@@ -2620,6 +2650,14 @@ function updateClock() {
       if (hr)  hr.setAttribute('transform',  `rotate(${hrDeg})`);
       if (min) min.setAttribute('transform', `rotate(${minDeg})`);
       if (sec) sec.setAttribute('transform', `rotate(${secDeg})`);
+
+      // Night mode: dim clock between 20:00 and 06:00 local time
+      const localH = parseInt(new Intl.DateTimeFormat('en-US', { timeZone: tz, hour: 'numeric', hour12: false }).format(now));
+      const isNight = localH >= 20 || localH < 6;
+      const clockItem = document.getElementById(`clock-${id}`)?.closest('.clock-item');
+      if (clockItem) clockItem.classList.toggle('night', isNight);
+      const faceEl = document.getElementById(`face-${id}`);
+      if (faceEl) faceEl.setAttribute('fill', isNight ? `url(#night-grad-${id})` : 'transparent');
     } catch(e) {}
   });
 }
