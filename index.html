@@ -490,7 +490,7 @@ html, body {
 .date-divider {
   padding: 20px 0 8px;
   font-family: var(--font-ui);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 900;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -1296,22 +1296,6 @@ html, body {
   text-transform: uppercase;
   color: var(--ink);
 }
-#flagged-clear-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--rule-heavy);
-  margin-bottom: 4px;
-}
-#flagged-count-label {
-  font-family: var(--font-ui);
-  font-size: 9px;
-  font-weight: 400;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink-light);
-}
 #flagged-clear-btn {
   font-family: var(--font-ui);
   font-size: 9px;
@@ -1557,9 +1541,6 @@ html, body {
 <div id="flagged-overlay">
   <div id="flagged-header">
     <span id="flagged-title">Flagged</span>
-  </div>
-  <div id="flagged-clear-row">
-    <span id="flagged-count-label">0 articles</span>
     <button id="flagged-clear-btn" onclick="clearAllFlagged()">Clear All</button>
   </div>
   <div id="flagged-list">
@@ -2330,6 +2311,7 @@ function makeArticleEl(a, showSource) {
   hoverBtn.className = 'article-hover-flag' + (isFlagged(a.id) ? ' flagged' : '');
   hoverBtn.title = isFlagged(a.id) ? 'Unflag' : 'Flag';
   hoverBtn.setAttribute('aria-label', isFlagged(a.id) ? 'Unflag' : 'Flag');
+  hoverBtn.dataset.articleId = a.id;
   hoverBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"><path fill="currentColor" d="M7 13v8q0 .425-.288.713T6 22t-.712-.288T5 21V4q0-.425.288-.712T6 3h13.525q.275 0 .488.125t.337.325t.162.438t-.062.487L19 8l1.45 3.625q.1.25.063.488t-.163.437t-.337.325t-.488.125zm0-2h11.05l-.9-2.25Q17 8.4 17 8t.15-.75l.9-2.25H7zm0 0V5z"/></svg>`;
   hoverBtn.addEventListener('click', (e) => {
     e.preventDefault();
@@ -2941,29 +2923,33 @@ function loadFlagged() {
 
 function saveFlagged(list) {
   try { localStorage.setItem(FLAGGED_KEY, JSON.stringify(list)); } catch {}
+  // Keep in-memory id set in sync
+  _flaggedIds = new Set(list.map(a => a.id));
 }
 
+// In-memory Set of flagged ids — avoids localStorage read on every card render
+let _flaggedIds = new Set(loadFlagged().map(a => a.id));
+
 function isFlagged(articleId) {
-  return loadFlagged().some(a => a.id === articleId);
+  return _flaggedIds.has(articleId);
 }
 
 function flagArticle(article) {
+  if (_flaggedIds.has(article.id)) return;
   const list = loadFlagged();
-  if (!list.some(a => a.id === article.id)) {
-    list.unshift({
-      id: article.id,
-      sourceId: article.sourceId,
-      sourceName: article.sourceName,
-      title: article.title,
-      link: article.link,
-      pubDate: article.pubDate instanceof Date ? article.pubDate.getTime() : article.pubDate,
-      isPaywalled: article.isPaywalled || false,
-      hasFullText: article.hasFullText || false,
-      fullText: article.fullText || null,
-      flaggedAt: Date.now(),
-    });
-    saveFlagged(list);
-  }
+  list.unshift({
+    id: article.id,
+    sourceId: article.sourceId,
+    sourceName: article.sourceName,
+    title: article.title,
+    link: article.link,
+    pubDate: article.pubDate instanceof Date ? article.pubDate.getTime() : article.pubDate,
+    isPaywalled: article.isPaywalled || false,
+    hasFullText: article.hasFullText || false,
+    fullText: article.fullText || null,
+    flaggedAt: Date.now(),
+  });
+  saveFlagged(list);
   updateFlagBadge();
 }
 
@@ -2971,15 +2957,44 @@ function unflagArticle(articleId) {
   const list = loadFlagged().filter(a => a.id !== articleId);
   saveFlagged(list);
   updateFlagBadge();
+  syncFeedHoverBtn(articleId, false);
   if (document.getElementById('flagged-overlay').classList.contains('open')) {
     renderFlaggedList();
   }
+}
+
+// Sync hover flag button state on a feed card without re-rendering the whole feed
+function syncFeedHoverBtn(articleId, flagged) {
+  document.querySelectorAll('.article-swipe-wrap').forEach(wrap => {
+    const btn = wrap.querySelector('.article-hover-flag');
+    if (!btn) return;
+    // Find the article id via the swipe right handler closure — use data attr instead
+    const inner = wrap.querySelector('.article-swipe-inner');
+    if (!inner) return;
+    const link = inner.querySelector('.article-link');
+    if (!link) return;
+    // Match by checking if this card's hover btn data-id matches
+    const dataId = btn.dataset.articleId;
+    if (dataId !== articleId) return;
+    if (flagged) {
+      btn.classList.add('flagged');
+      btn.title = 'Unflag';
+    } else {
+      btn.classList.remove('flagged');
+      btn.title = 'Flag';
+    }
+  });
 }
 
 function clearAllFlagged() {
   saveFlagged([]);
   updateFlagBadge();
   renderFlaggedList();
+  // Reset all hover buttons on feed cards
+  document.querySelectorAll('.article-hover-flag.flagged').forEach(btn => {
+    btn.classList.remove('flagged');
+    btn.title = 'Flag';
+  });
 }
 
 function updateFlagBadge() {} // badge removed
@@ -3011,11 +3026,9 @@ function closeFlagged() {
 
 function renderFlaggedList() {
   const list = document.getElementById('flagged-list');
-  const countLabel = document.getElementById('flagged-count-label');
   const flagged = loadFlagged();
 
   list.innerHTML = '';
-  countLabel.textContent = flagged.length === 1 ? '1 article' : `${flagged.length} articles`;
 
   if (!flagged.length) {
     const emptyEl = document.createElement('div');
@@ -3049,7 +3062,7 @@ function makeFlaggedCard(a) {
   attachSwipe(outer, inner, bg,
     null, // no right-swipe in flagged overlay
     () => {
-      // Animate out
+      // Animate out then remove from storage and re-render list
       const h = outer.offsetHeight;
       outer.style.cssText += `;max-height:${h}px;overflow:hidden;transition:max-height 0.28s ease,opacity 0.28s ease`;
       requestAnimationFrame(() => {
@@ -3057,22 +3070,12 @@ function makeFlaggedCard(a) {
         outer.style.opacity = '0';
       });
       setTimeout(() => {
-        unflagArticle(a.id);
-        outer.remove();
-        const count = loadFlagged().length;
-        const countLabel = document.getElementById('flagged-count-label');
-        if (countLabel) countLabel.textContent = count === 1 ? '1 article' : `${count} articles`;
-        if (count === 0) {
-          const listEl = document.getElementById('flagged-list');
-          if (listEl) {
-            const emptyEl = document.createElement('div');
-            emptyEl.style.cssText = 'padding:48px 0;font-family:var(--font-ui);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-light)';
-            emptyEl.textContent = 'No flagged articles';
-            listEl.appendChild(emptyEl);
-          }
-        }
-        // Remove dot from feed if rendered
-        render();
+        const list = loadFlagged().filter(x => x.id !== a.id);
+        saveFlagged(list);
+        updateFlagBadge();
+        renderFlaggedList();
+        // Update hover button on any matching feed card
+        syncFeedHoverBtn(a.id, false);
       }, 290);
     }
   );
