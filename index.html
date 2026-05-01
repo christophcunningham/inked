@@ -1573,7 +1573,7 @@ html, body {
     <button id="sources-toggle-btn" onclick="toggleAllSources()">Deselect All</button>
   </div>
   <div id="sources-list"></div>
-  <div id="info-description" style="margin-top:24px">A chronological RSS reader pulling from ~61 sources across wire services, broadcasters, investigative outlets, policy journals, and local press. No ads, no algorithms, no affiliations.</div>
+  <div id="info-description" style="margin-top:24px">A chronological RSS reader pulling from ~63 sources across wire services, broadcasters, investigative outlets, policy journals, and local press. No ads, no algorithms, no affiliations.</div>
   <hr style="border:none;border-top:1px solid var(--rule);margin:20px 0 0">
   <div id="info-description" style="margin-top:16px">Switch to Images via the tab bar to browse a photo grid from the same sources. Tap an image to reveal the caption and article link. Adjust column density (1 / 3 / 5 / 9) using the Grid control in the header.</div>
   <hr style="border:none;border-top:1px solid var(--rule);margin:20px 0 0">
@@ -1623,7 +1623,9 @@ const FEEDS = [
   { id: 'occrp',       name: 'Organized Crime and Corruption Reporting Project', url: 'https://occrp.org/en/feed',                               home: 'https://occrp.org' },
   { id: 'savageminds', name: 'Savage Minds',           url: 'https://savageminds.substack.com/feed',                                             home: 'https://savageminds.substack.com' },
   { id: 'bulwark',     name: 'The Bulwark',            url: 'https://thebulwark.substack.com/feed',                                             home: 'https://www.thebulwark.com' },
+  { id: 'prospect',   name: 'The American Prospect',  url: 'https://prospect.org/feed',                                                        home: 'https://prospect.org' },
   { id: 'isw',         name: 'Institute for the Study of War', url: 'https://bsky.app/profile/thestudyofwar.bsky.social/rss',                   home: 'https://www.iswresearch.org' },
+  { id: 'kyivindependent', name: 'Kyiv Independent',      url: 'https://bsky.app/profile/kyivindependent.com/rss',                              home: 'https://kyivindependent.com' },
   { id: 'unusualwhales',name: 'Unusual Whales',        url: 'https://unusualwhales.substack.com/feed',                                         home: 'https://unusualwhales.com' },
   { id: 'nyt',         name: 'New York Times',         url: 'https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml',                        home: 'https://nytimes.com' },
   { id: 'hellgate',    name: 'Hell Gate',              url: 'https://hellgatenyc.com/all-posts/rss/',                                             home: 'https://hellgatenyc.com' },
@@ -1701,6 +1703,8 @@ async function fetchFeed(feed) {
         ? stripHtml(rawTitle).replace(/\s+[-–]\s+[^-–]+$/, '').trim()
         : feed.id === 'wsj'
           ? stripHtml(rawTitle).replace(/\s+on\s+wsj\.com\/\S*/i, '').trim()
+          : feed.id === 'kyivindependent'
+          ? stripHtml(rawTitle).replace(/\s+kyivindependent\.com\/\S*/i, '').trim()
           : stripHtml(rawTitle);
       const title = cleanedTitle;
       // Reject items whose title is empty or suspiciously short after stripping
@@ -1888,7 +1892,9 @@ const SOURCE_GEO = {
   occrp:        { flag: '🇳🇱', geo: 'NL' },
   savageminds:  { flag: '🇺🇸', geo: 'US' },
   bulwark:      { flag: '🇺🇸', geo: 'US' },
+  prospect:     { flag: '🇺🇸', geo: 'US' },
   isw:          { flag: '🇺🇸', geo: 'US' },
+  kyivindependent: { flag: '🇺🇦', geo: 'UA' },
   unusualwhales:{ flag: '🇺🇸', geo: 'US' },
   nyt:          { flag: '🇺🇸', geo: 'US' },
   hellgate:     { flag: '🇺🇸', geo: 'NYC' },
@@ -1955,7 +1961,9 @@ const SOURCE_META = {
   occrp:       { regions: ['europe'],     themes: ['investigations', 'war'] },
   savageminds: { regions: ['americas'],   themes: ['politics'] },
   bulwark:     { regions: ['americas'],   themes: ['politics'] },
+  prospect:    { regions: ['americas'],   themes: ['politics', 'investigations'] },
   isw:         { regions: ['americas'],   themes: ['war'] },
+  kyivindependent: { regions: ['europe'], themes: ['war', 'investigations'] },
   unusualwhales:{ regions: ['americas'],  themes: ['business', 'politics'] },
   nyt:         { regions: ['americas'],   themes: ['politics'] },
   hellgate:    { regions: ['americas'],   themes: ['politics'] },

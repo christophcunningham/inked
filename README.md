@@ -1,12 +1,12 @@
 # Inked
 
-A chronological RSS reader pulling from ~61 sources across wire services, broadcasters, investigative outlets, policy journals, science publications, and local press. No ads, no algorithms, no affiliations.
+A chronological RSS reader pulling from ~63 sources across wire services, broadcasters, investigative outlets, policy journals, science publications, and local press. No ads, no algorithms, no affiliations.
 
 ---
 
 ## What it is
 
-Inked is a single HTML file that pulls live RSS feeds from 61 news sources and renders them as a clean chronological headline stream. Articles are cached locally for up to 3 days so content doesn't disappear as feeds roll over. Articles older than 10 months are filtered out globally.
+Inked is a single HTML file that pulls live RSS feeds from 63 news sources and renders them as a clean chronological headline stream. Articles are cached locally for up to 3 days so content doesn't disappear as feeds roll over. Articles older than 10 months are filtered out globally.
 
 It runs entirely in the browser. There is no backend, no database, no login. A Cloudflare Worker acts as a lightweight RSS proxy to handle cross-origin fetching.
 
@@ -40,12 +40,14 @@ It runs entirely in the browser. There is no backend, no database, no login. A C
 | Politico | US Politics |
 | The Hill | US Politics |
 | The Bulwark | US Politics |
+| The American Prospect | US Politics / Left |
 | The Nation | Left / Opinion |
 | The New Yorker | Long-form / Culture |
 | Savage Minds | Culture / Politics |
 | DiEM25 (via Bluesky) | European Left |
 | Novara Media | Left / UK |
 | Institute for the Study of War (via Bluesky) | Defense / Conflict |
+| Kyiv Independent (via Bluesky) | Ukraine / War |
 | Middle East Eye | Middle East |
 | Arab News | Middle East |
 | Tehran Times | Iran State Media |
@@ -80,7 +82,7 @@ It runs entirely in the browser. There is no backend, no database, no login. A C
 
 Paywalled outlets show an **Archive** button linking to archive.ph. Outlets marked `••` support in-app full-text reading where RSS content is available.
 
-Some sources (AP News, ISW, WSJ, DiEM25) are fetched via Bluesky RSS feeds due to direct feed blocks on Cloudflare Worker IPs. The Worker extracts the original article URL from the post body automatically.
+Some sources (AP News, ISW, WSJ, DiEM25, Kyiv Independent) are fetched via Bluesky RSS feeds due to direct feed blocks on Cloudflare Worker IPs. The Worker extracts the original article URL from the post body automatically.
 
 The Economist pulls from four section feeds (Leaders, International, Business, Science & Technology) but appears as a single source throughout the app.
 
