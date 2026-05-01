@@ -1,12 +1,12 @@
 # Inked
 
-A chronological RSS reader pulling from ~60 sources across wire services, broadcasters, investigative outlets, policy journals, science publications, and local press. No ads, no algorithms, no affiliations.
+A chronological RSS reader pulling from ~61 sources across wire services, broadcasters, investigative outlets, policy journals, science publications, and local press. No ads, no algorithms, no affiliations.
 
 ---
 
 ## What it is
 
-Inked is a single HTML file that pulls live RSS feeds from 60 news sources and renders them as a clean chronological headline stream. Articles are cached locally for up to 3 days so content doesn't disappear as feeds roll over. Articles older than 10 months are filtered out globally.
+Inked is a single HTML file that pulls live RSS feeds from 61 news sources and renders them as a clean chronological headline stream. Articles are cached locally for up to 3 days so content doesn't disappear as feeds roll over. Articles older than 10 months are filtered out globally.
 
 It runs entirely in the browser. There is no backend, no database, no login. A Cloudflare Worker acts as a lightweight RSS proxy to handle cross-origin fetching.
 
@@ -24,7 +24,7 @@ It runs entirely in the browser. There is no backend, no database, no login. A C
 | Deutsche Welle | International Broadcast |
 | France 24 | International Broadcast |
 | Der Spiegel | European Press |
-| El País (via Bluesky) | European Press |
+| El País | European Press |
 | Guardian | Quality General |
 | Global Voices | Citizen Journalism |
 | South China Morning Post | Asia / China |
@@ -54,8 +54,6 @@ It runs entirely in the browser. There is no backend, no database, no login. A C
 | Drop Site | Investigative |
 | Organized Crime and Corruption Reporting Project | Investigative |
 | Bellingcat | Open-Source Investigation |
-| The Wire | India / Investigative |
-| Scroll.in | India |
 | Dawn | Pakistan |
 | Ars Technica | Technology / Science |
 | MIT Technology Review | Technology |
@@ -72,14 +70,17 @@ It runs entirely in the browser. There is no backend, no database, no login. A C
 | The Breach | Canadian Investigative |
 | Hell Gate | NYC Local |
 | The City | NYC Local |
-| NYPD (via Google News) | NYC |
-| Animal Político | Mexico / Investigative |
-| Americas Quarterly | Latin America |
 | Latinoamérica21 | Latin America |
+| The Hankyoreh | South Korea / Independent |
+| Defense One | Defense / Policy |
+| Daily Maverick | South Africa / Investigative |
+| Sahara Reporters | Nigeria / Citizen Journalism |
+| Mada Masr | Egypt / Independent |
+| L'Orient Today | Lebanon |
 
 Paywalled outlets show an **Archive** button linking to archive.ph. Outlets marked `••` support in-app full-text reading where RSS content is available.
 
-Some sources (AP News, ISW, WSJ, DiEM25, The Wire, Animal Político) are fetched via Bluesky RSS feeds due to direct feed blocks on Cloudflare Worker IPs. The Worker extracts the original article URL from the post body automatically.
+Some sources (AP News, ISW, WSJ, DiEM25) are fetched via Bluesky RSS feeds due to direct feed blocks on Cloudflare Worker IPs. The Worker extracts the original article URL from the post body automatically.
 
 The Economist pulls from four section feeds (Leaders, International, Business, Science & Technology) but appears as a single source throughout the app.
 
@@ -104,11 +105,25 @@ Browser (index.html)
 
 ## Features
 
-**Feed tab** — Chronological headline stream across all sources. Filter to a single source using the chip bar at the top. Tap a headline to open the article. Outlets with full RSS text show a `••` indicator and an inline **Read** button. Paywalled outlets show an **Archive** button.
+**Feed tab** — Chronological headline stream across all sources. Filter to a single source using the chip bar at the top. Tap a headline to open the article. Outlets with full RSS text show a `••` indicator and an inline **Read** button. Paywalled outlets show an **Archive** button. Swipe right on any article to flag it for later.
 
-**Images tab** — Continuous photo grid pulling images from all RSS sources. Configurable column density (1 / 3 / 5 / 9). Tap any image to open the source article. Tap the dot in the corner to reveal a caption. Header and footer collapse to slim frosted-glass bars when scrolling.
+**Images tab** — Continuous photo grid pulling images from all RSS sources. Configurable column density (1 / 3 / 5 / 9). Tap any image to reveal the caption and article link. Header and footer collapse to slim frosted-glass bars when scrolling.
 
 **Sources page (Info)** — Full list of all sources with article counts, country flags, and geographic codes. Toggle individual sources on or off to exclude them from the feed and filter bar — preference is saved in localStorage. Use the **Select All / Deselect All** button to bulk toggle. Filter the list by theme using the footer chips: **Politics · Investigations · Tech & Science · Business · War**.
+
+**Flagged** — Save articles for later by swiping right (mobile) or using the hover flag button (desktop). Access via the flag icon in the footer. Swipe left on a flagged article to remove it.
+
+**Search** — Filter the feed by keyword across headlines and full-text articles. Tap the search icon or press `S` on desktop.
+
+**Desktop keyboard shortcuts** —
+
+| Key | Action |
+|---|---|
+| `F` | Feed |
+| `G` | Images |
+| `S` | Search |
+| `⇧F` | Flagged |
+| `,` | Info |
 
 ---
 
@@ -187,7 +202,7 @@ These will display a `••` indicator and a **Read** button that expands the a
 Paywalled outlets can be added to `PAYWALLED`:
 
 ```js
-const PAYWALLED = new Set(['wsj', 'nyt', 'economist', 'ft', 'dispatch', ...]);
+const PAYWALLED = new Set(['wsj', 'nyt', 'economist', 'ft', ...]);
 ```
 
 ---

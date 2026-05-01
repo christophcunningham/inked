@@ -154,7 +154,7 @@ html, body {
 
 #header-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   padding-bottom: 16px;
 }
@@ -548,13 +548,26 @@ html, body {
 }
 
 .bottom-bar-inner::before,
-.bottom-bar-inner::after {
+.bottom-bar-inner::after { content: none; }
+
+#tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0; right: 0;
+  background: var(--paper);
+  z-index: 250;
+  display: none;
+  padding-top: 5px;
+}
+#tab-bar::before,
+#tab-bar::after {
   content: '';
   position: absolute;
   left: var(--pad); right: var(--pad);
+  pointer-events: none;
 }
-.bottom-bar-inner::before { top: 0; height: 1px; background: var(--ink); }
-.bottom-bar-inner::after  { top: 3px; height: 1px; background: var(--ink); }
+#tab-bar::before { top: 5px; height: 1px; background: var(--ink); }
+#tab-bar::after  { top: 8px; height: 1px; background: var(--ink); }
 
 #rss-label {
   font-family: var(--font-ui);
@@ -570,7 +583,6 @@ html, body {
   display: flex;
   align-items: center;
   gap: 11px;
-  padding-top: 14px;
 }
 
 .bar-btn {
@@ -817,7 +829,6 @@ html, body {
 
 /* Collapsed header row in images mode */
 #header.dark #header-row {
-  align-items: center;
   padding-bottom: 14px;
 }
 #header.dark #clocks-group { display: none; }
@@ -866,27 +877,35 @@ html, body {
   z-index: 250;
   display: none;
   padding-top: 5px;
+  /* Fixed height: 5px top gap + 8px line area + 14px inner top pad + 27px buttons + 14px bottom pad + safe-bottom */
+  height: calc(68px + var(--safe-bottom));
 }
 
 #tab-bar .bottom-bar-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 0;
+  position: absolute;
+  left: var(--pad);
+  right: var(--pad);
+  top: 13px;
+  bottom: calc(var(--safe-bottom) + 14px);
+  overflow: hidden;
 }
 
 .tab-nav {
   display: flex;
   gap: 0;
-  padding-top: 14px;
 }
 
 .tab-btn {
   font-family: var(--font-ui);
   font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  font-weight: 400;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  padding: 5px 16px;
+  padding: 5px 14px;
   border: 1px solid var(--rule-heavy);
   background: transparent;
   color: var(--ink-mid);
@@ -907,7 +926,6 @@ html, body {
   align-items: center;
   gap: 0;
   flex: 1;
-  padding-top: 14px;
   min-width: 0;
 }
 #search-row.visible { display: flex; }
@@ -1132,7 +1150,6 @@ html, body {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  padding-top: 14px;
   flex: 1;
   min-width: 0;
 }
@@ -1141,8 +1158,6 @@ html, body {
 #bottom-right-info {
   display: flex;
   align-items: center;
-  padding-top: 14px;
-  padding-left: 8px;
   flex-shrink: 0;
 }
 
@@ -1151,9 +1166,9 @@ html, body {
   font-family: var(--font-ui);
   font-size: 9px;
   font-weight: 400;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  padding: 5px 12px;
+  padding: 5px 14px;
   border: 1px solid var(--rule-heavy);
   background: transparent;
   color: var(--ink-mid);
@@ -1184,8 +1199,8 @@ html, body {
   width: 100% !important;
   transform: none !important;
 }
-#tab-bar.dark .bottom-bar-inner::before,
-#tab-bar.dark .bottom-bar-inner::after { background: rgba(255,255,255,0.15); }
+#tab-bar.dark::before,
+#tab-bar.dark::after { background: rgba(255,255,255,0.15); }
 #tab-bar.dark .tab-btn { color: rgba(255,255,255,0.45); border-color: rgba(255,255,255,0.18); }
 #tab-bar.dark .tab-btn.active { background: rgba(255,255,255,0.9); color: #282828; border-color: rgba(255,255,255,0.9); }
 #tab-bar.dark .bar-btn { color: rgba(255,255,255,0.45); border-color: rgba(255,255,255,0.18); }
@@ -1223,6 +1238,7 @@ html, body {
   background: var(--paper);
   transition: transform 0.25s ease;
   will-change: transform;
+  box-shadow: -12px 0 0 0 var(--paper);
 }
 .article-flag-dot {
   display: inline-block;
@@ -1527,8 +1543,8 @@ html, body {
   </div>
   <!-- Flagged mode -->
   <div class="bottom-bar-inner" id="tab-bar-flagged-mode" style="display:none">
-    <div style="flex:1;padding-top:14px;font-family:var(--font-ui);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-light)">Flagged articles</div>
-    <div style="padding-top:14px;flex-shrink:0">
+    <div id="flagged-footer-label" style="flex:1;font-family:var(--font-ui);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-light)">Flagged articles</div>
+    <div style="flex-shrink:0">
       <button class="bar-btn bar-btn-fill" onclick="toggleFlagged()">Close</button>
     </div>
   </div>
@@ -1557,11 +1573,20 @@ html, body {
     <button id="sources-toggle-btn" onclick="toggleAllSources()">Deselect All</button>
   </div>
   <div id="sources-list"></div>
-  <div id="info-description" style="margin-top:24px">A chronological RSS reader pulling from ~60 sources across wire services, broadcasters, investigative outlets, policy journals, and local press. No ads, no algorithms, no affiliations.</div>
+  <div id="info-description" style="margin-top:24px">A chronological RSS reader pulling from ~61 sources across wire services, broadcasters, investigative outlets, policy journals, and local press. No ads, no algorithms, no affiliations.</div>
   <hr style="border:none;border-top:1px solid var(--rule);margin:20px 0 0">
   <div id="info-description" style="margin-top:16px">Switch to Images via the tab bar to browse a photo grid from the same sources. Tap an image to reveal the caption and article link. Adjust column density (1 / 3 / 5 / 9) using the Grid control in the header.</div>
   <hr style="border:none;border-top:1px solid var(--rule);margin:20px 0 0">
   <div id="info-description" style="margin-top:16px">To install: on iOS, open in Safari → Share → Add to Home Screen. On Android, open in Chrome → menu → Add to Home Screen.</div>
+  <hr style="border:none;border-top:1px solid var(--rule);margin:20px 0 0">
+  <div id="info-description" style="margin-top:16px">Desktop keyboard shortcuts:</div>
+  <table style="margin-top:10px;width:100%;border-collapse:collapse;font-family:var(--font-ui);font-size:11px;color:var(--ink-mid)">
+    <tr><td style="padding:5px 0;width:60px;color:var(--ink);font-weight:500">F</td><td style="padding:5px 0">Feed</td></tr>
+    <tr><td style="padding:5px 0;color:var(--ink);font-weight:500">G</td><td style="padding:5px 0">Images</td></tr>
+    <tr><td style="padding:5px 0;color:var(--ink);font-weight:500">S</td><td style="padding:5px 0">Search</td></tr>
+    <tr><td style="padding:5px 0;color:var(--ink);font-weight:500">⇧F</td><td style="padding:5px 0">Flagged</td></tr>
+    <tr><td style="padding:5px 0;color:var(--ink);font-weight:500">,</td><td style="padding:5px 0">Info</td></tr>
+  </table>
   <hr style="border:none;border-top:1px solid var(--rule);margin:20px 0 0">
   <div id="info-description" style="margin-top:16px">Designed and built by <a href="https://github.com/christophcunningham" target="_blank" rel="noopener noreferrer" style="color:var(--ink);text-decoration:underline">C. Cunningham</a>, 2026.</div>
   <div id="info-updated"></div>
@@ -1570,7 +1595,7 @@ html, body {
 <script>
 const FEEDS = [
   { id: 'ap',         name: 'AP News',                  url: 'https://bsky.app/profile/apnews.com/rss',                                                              home: 'https://apnews.com' },
-  { id: 'reuters',     name: 'Reuters',                 url: 'https://news.google.com/rss/search?q=when:24h+allinurl:reuters.com&ceid=US:en&hl=en-US&gl=US', home: 'https://reuters.com' },
+  { id: 'reuters',     name: 'Reuters',                 url: 'https://news.google.com/rss/search?q=when:7d+site:reuters.com&ceid=US:en&hl=en-US&gl=US',  home: 'https://reuters.com' },
   { id: 'bbc',         name: 'BBC',                    url: 'https://feeds.bbci.co.uk/news/rss.xml',                                              home: 'https://bbc.com/news' },
   { id: 'guardian',    name: 'Guardian',               url: 'https://www.theguardian.com/world/rss',                                              home: 'https://theguardian.com' },
   { id: 'aljazeera',   name: 'Al Jazeera',             url: 'https://www.aljazeera.com/xml/rss/all.xml',                                          home: 'https://aljazeera.com' },
@@ -1603,7 +1628,6 @@ const FEEDS = [
   { id: 'nyt',         name: 'New York Times',         url: 'https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml',                        home: 'https://nytimes.com' },
   { id: 'hellgate',    name: 'Hell Gate',              url: 'https://hellgatenyc.com/all-posts/rss/',                                             home: 'https://hellgatenyc.com' },
   { id: 'thecity',     name: 'The City',               url: 'https://www.thecity.nyc/feed/',                                                    home: 'https://www.thecity.nyc' },
-  { id: 'nypd',        name: 'NYPD',                   url: 'https://news.google.com/rss/search?q=when:7d+NYPD+press+release+site:nyc.gov&ceid=US:en&hl=en-US&gl=US', home: 'https://www.nyc.gov/site/nypd/news/news.page' },
   { id: 'cbc',         name: 'CBC',                    url: 'https://www.cbc.ca/cmlink/rss-topstories',                                           home: 'https://www.cbc.ca/news' },
   { id: 'globemail',   name: 'Globe and Mail',         url: 'https://www.theglobeandmail.com/arc/outboundfeeds/rss/category/canada/',             home: 'https://theglobeandmail.com' },
   { id: 'narwhal',     name: 'The Narwhal',            url: 'https://thenarwhal.ca/feed/',                                                        home: 'https://thenarwhal.ca' },
@@ -1624,14 +1648,16 @@ const FEEDS = [
   { id: 'ft',          name: 'Financial Times',                  url: 'https://www.ft.com/rss/home/international',                                          home: 'https://ft.com' },
   { id: 'hackernews',  name: 'Hacker News',                      url: 'https://news.ycombinator.com/rss',                                                   home: 'https://news.ycombinator.com' },
   { id: 'elpais',      name: 'El País',                          url: 'https://feeds.elpais.com/mrss-s/pages/ep/site/english.elpais.com/portada',           home: 'https://english.elpais.com' },
-  { id: 'thewire',     name: 'The Wire',                         url: 'https://bsky.app/profile/thewire.in/rss',                                            home: 'https://thewire.in' },
-  { id: 'scrollin',    name: 'Scroll.in',                        url: 'https://feeds.feedburner.com/ScrollinArticles.rss',                                  home: 'https://scroll.in' },
   { id: 'dawn',        name: 'Dawn',                             url: 'https://www.dawn.com/feeds/home',                                                    home: 'https://dawn.com' },
   { id: 'restofworld', name: 'Rest of World',                    url: 'https://restofworld.org/feed/latest',                                                home: 'https://restofworld.org' },
   { id: 'media404',    name: '404 Media',                        url: 'https://www.404media.co/feed',                                                       home: 'https://www.404media.co' },
-  { id: 'animalpol',   name: 'Animal Político',                  url: 'https://bsky.app/profile/pajaropolitico.bsky.social/rss',                            home: 'https://animalpolitico.com' },
-  { id: 'aqlatam',     name: 'Americas Quarterly',               url: 'https://news.google.com/rss/search?q=when:7d+allinurl:americasquarterly.org&ceid=US:en&hl=en-US&gl=US', home: 'https://americasquarterly.org' },
-  { id: 'latam21',     name: 'Latinoamérica21',                  url: 'https://latinoamerica21.com/feed',                                                   home: 'https://latinoamerica21.com' },
+  { id: 'latam21',     name: 'Latinoamérica21',                  url: 'https://latinoamerica21.com/en/feed',                                                                                      home: 'https://latinoamerica21.com/en' },
+  { id: 'hankyoreh',   name: 'The Hankyoreh',                    url: 'https://english.hani.co.kr/rss/english',                                                                                  home: 'https://english.hani.co.kr' },
+  { id: 'defenseone',  name: 'Defense One',                      url: 'https://defenseone.com/rss/all',                                                                                          home: 'https://defenseone.com' },
+  { id: 'dailymav',    name: 'Daily Maverick',                   url: 'https://dailymaverick.co.za/dmrss',                                                                                       home: 'https://dailymaverick.co.za' },
+  { id: 'saharareporters', name: 'Sahara Reporters',             url: 'https://saharareporters.com/articles/rss-feed',                                                                          home: 'https://saharareporters.com' },
+  { id: 'madamasr',    name: 'Mada Masr',                        url: 'https://madamasr.com/en/feed',                                                                                            home: 'https://madamasr.com/en' },
+  { id: 'lorienttoday',name: "L'Orient Today",                   url: 'https://news.google.com/rss/search?q=when:7d+site:today.lorientlejour.com&ceid=US:en&hl=en-US&gl=US',               home: 'https://today.lorientlejour.com' },
 ];
 
 // ── Replace this URL with your deployed Worker URL ──────────────────────────
@@ -1670,7 +1696,13 @@ async function fetchFeed(feed) {
 
       const rawTitle = (item.title || item.description || '').trim();
       // Strip any HTML tags from the title — some feeds (e.g. APOD) put raw HTML here
-      const title = stripHtml(rawTitle);
+      // Also strip trailing " - Source Name" appended by Google News proxies
+      const cleanedTitle = feed.url.includes('news.google.com')
+        ? stripHtml(rawTitle).replace(/\s+[-–]\s+[^-–]+$/, '').trim()
+        : feed.id === 'wsj'
+          ? stripHtml(rawTitle).replace(/\s+on\s+wsj\.com\/\S*/i, '').trim()
+          : stripHtml(rawTitle);
+      const title = cleanedTitle;
       // Reject items whose title is empty or suspiciously short after stripping
       if (!title || title.length < 4) return null;
       // Filter Economist non-article entries (charts, cartoons, etc.)
@@ -1782,7 +1814,7 @@ function buildSourceBar() {
       seen.add(f.id);
       return true;
     })
-    .sort((a, b) => a.name.localeCompare(b.name));
+    .sort((a, b) => a.name.replace(/^the\s+/i, '').localeCompare(b.name.replace(/^the\s+/i, '')));
 
   const allBtn = document.createElement('button');
   allBtn.id = 'src-all';
@@ -1861,7 +1893,6 @@ const SOURCE_GEO = {
   nyt:          { flag: '🇺🇸', geo: 'US' },
   hellgate:     { flag: '🇺🇸', geo: 'NYC' },
   thecity:      { flag: '🇺🇸', geo: 'NYC' },
-  nypd:         { flag: '🇺🇸', geo: 'NYC' },
   cbc:          { flag: '🇨🇦', geo: 'CA' },
   globemail:    { flag: '🇨🇦', geo: 'CA' },
   narwhal:      { flag: '🇨🇦', geo: 'CA' },
@@ -1882,14 +1913,16 @@ const SOURCE_GEO = {
   ft:           { flag: '🇬🇧', geo: 'UK' },
   hackernews:   { flag: '🇺🇸', geo: 'US' },
   elpais:       { flag: '🇪🇸', geo: 'ES' },
-  thewire:      { flag: '🇮🇳', geo: 'IN' },
-  scrollin:     { flag: '🇮🇳', geo: 'IN' },
-  dawn:         { flag: '🇵🇰', geo: 'PK' },
+  dawn:        { flag: '🇵🇰', geo: 'PK' },
   restofworld:  { flag: '🌐', geo: 'INTL' },
   media404:     { flag: '🇺🇸', geo: 'US' },
-  animalpol:    { flag: '🇲🇽', geo: 'MX' },
-  aqlatam:      { flag: '🌎', geo: 'LATAM' },
   latam21:      { flag: '🌎', geo: 'LATAM' },
+  hankyoreh:    { flag: '🇰🇷', geo: 'KR' },
+  defenseone:   { flag: '🇺🇸', geo: 'US' },
+  dailymav:     { flag: '🇿🇦', geo: 'ZA' },
+  saharareporters: { flag: '🇳🇬', geo: 'NG' },
+  madamasr:     { flag: '🇪🇬', geo: 'EG' },
+  lorienttoday: { flag: '🇱🇧', geo: 'LB' },
 };
 
 // ── Source metadata: region + theme tags for info page filtering ──────────────
@@ -1927,7 +1960,6 @@ const SOURCE_META = {
   nyt:         { regions: ['americas'],   themes: ['politics'] },
   hellgate:    { regions: ['americas'],   themes: ['politics'] },
   thecity:     { regions: ['americas'],   themes: ['investigations'] },
-  nypd:        { regions: ['americas'],   themes: [] },
   cbc:         { regions: ['americas'],   themes: [] },
   globemail:   { regions: ['americas'],   themes: [] },
   narwhal:     { regions: ['americas'],   themes: ['investigations'] },
@@ -1948,14 +1980,16 @@ const SOURCE_META = {
   ft:          { regions: ['europe'],     themes: ['business'] },
   hackernews:  { regions: ['americas'],   themes: ['techscience'] },
   elpais:      { regions: ['europe'],     themes: ['politics'] },
-  thewire:     { regions: ['asia'],       themes: ['politics', 'investigations'] },
-  scrollin:    { regions: ['asia'],       themes: ['politics'] },
   dawn:        { regions: ['asia'],       themes: ['politics'] },
   restofworld: { regions: ['global'],     themes: ['techscience', 'business'] },
   media404:    { regions: ['americas'],   themes: ['techscience', 'investigations'] },
-  animalpol:   { regions: ['americas'],   themes: ['politics', 'investigations'] },
-  aqlatam:     { regions: ['americas'],   themes: ['politics'] },
   latam21:     { regions: ['americas'],   themes: ['politics'] },
+  hankyoreh:   { regions: ['asia'],       themes: ['politics'] },
+  defenseone:  { regions: ['americas'],   themes: ['war'] },
+  dailymav:    { regions: ['global'],     themes: ['politics', 'investigations'] },
+  saharareporters: { regions: ['global'], themes: ['politics', 'investigations'] },
+  madamasr:    { regions: ['middleeast'], themes: ['politics', 'investigations'] },
+  lorienttoday:{ regions: ['middleeast'], themes: ['politics'] },
 };
 
 // ── Disabled sources (persisted in localStorage) ─────────────────────────────
@@ -3028,6 +3062,9 @@ function renderFlaggedList() {
   const list = document.getElementById('flagged-list');
   const flagged = loadFlagged();
 
+  const label = document.getElementById('flagged-footer-label');
+  if (label) label.textContent = flagged.length ? `${flagged.length} flagged` : 'Flagged articles';
+
   list.innerHTML = '';
 
   if (!flagged.length) {
@@ -3144,6 +3181,61 @@ function attachSwipe(outer, inner, bg, onRightSwipe, onLeftSwipe) {
 
 // Initialise badge on load
 updateFlagBadge();
+
+// ── Desktop keyboard hotkeys ──────────────────────────────────────────────────
+document.addEventListener('keydown', (e) => {
+  // Ignore when typing in an input/textarea
+  const tag = document.activeElement?.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+  // Ignore modifier combos except Shift
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+  switch (e.key) {
+    case 'f':
+    case 'F':
+      if (e.shiftKey) {
+        // Shift+F → Flagged
+        e.preventDefault();
+        const flaggedOpen = document.getElementById('flagged-overlay').classList.contains('open');
+        if (!flaggedOpen) {
+          if (document.getElementById('info-overlay').classList.contains('open')) closeInfo();
+          toggleFlagged();
+        } else {
+          closeFlagged();
+        }
+      } else {
+        // f → Feed tab
+        e.preventDefault();
+        if (document.getElementById('info-overlay').classList.contains('open')) closeInfo();
+        if (document.getElementById('flagged-overlay').classList.contains('open')) closeFlagged();
+        switchTab('feed');
+      }
+      break;
+    case 'g':
+    case 'G':
+      // g → Images tab
+      e.preventDefault();
+      if (document.getElementById('info-overlay').classList.contains('open')) closeInfo();
+      if (document.getElementById('flagged-overlay').classList.contains('open')) closeFlagged();
+      switchTab('images');
+      break;
+    case ',':
+      // , → Info page
+      e.preventDefault();
+      if (document.getElementById('flagged-overlay').classList.contains('open')) closeFlagged();
+      toggleInfo();
+      break;
+    case 's':
+    case 'S':
+      // s → Search (feed tab, open search bar and focus)
+      e.preventDefault();
+      if (document.getElementById('info-overlay').classList.contains('open')) closeInfo();
+      if (document.getElementById('flagged-overlay').classList.contains('open')) closeFlagged();
+      if (activeTab !== 'feed') switchTab('feed');
+      if (!document.getElementById('search-row').classList.contains('visible')) openSearch();
+      break;
+  }
+});
 
 // ── Keep tab bar above iOS keyboard via visualViewport API ───────────────────
 if (window.visualViewport) {
