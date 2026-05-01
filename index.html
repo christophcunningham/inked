@@ -1700,7 +1700,10 @@ async function fetchFeed(feed) {
       // Strip any HTML tags from the title — some feeds (e.g. APOD) put raw HTML here
       // Also strip trailing " - Source Name" appended by Google News proxies
       const cleanedTitle = feed.url.includes('news.google.com')
-        ? stripHtml(rawTitle).replace(/\s+[-–]\s+[^-–]+$/, '').trim()
+        ? stripHtml(rawTitle)
+            .replace(/\s+[-–—]\s+(?:Reuters|L['']Orient Le Jour|L['']Orient Today|[A-Z][^-–—]{0,40})$/, '')
+            .replace(/^(?:Reuters|[A-Z][^:]{0,40}):\s+/, '')
+            .trim()
         : feed.id === 'wsj'
           ? stripHtml(rawTitle).replace(/\s+on\s+wsj\.com\/\S*/i, '').trim()
           : feed.id === 'kyivindependent'
