@@ -1508,7 +1508,10 @@ html, body {
   <div class="bottom-bar-inner" id="tab-bar-info-mode" style="display:none">
     <div id="info-filter-theme">
       <button class="info-filter-btn active" data-theme="" onclick="setThemeFilter(this,'')">All</button>
-      <button class="info-filter-btn" data-theme="politics" onclick="setThemeFilter(this,'politics')">Politics</button>
+      <button class="info-filter-btn" data-theme="wire" onclick="setThemeFilter(this,'wire')">Wire</button>
+      <button class="info-filter-btn" data-theme="world" onclick="setThemeFilter(this,'world')">World</button>
+      <button class="info-filter-btn" data-theme="uspolitics" onclick="setThemeFilter(this,'uspolitics')">US Politics</button>
+      <button class="info-filter-btn" data-theme="newspapers" onclick="setThemeFilter(this,'newspapers')">Newspapers</button>
       <button class="info-filter-btn" data-theme="investigations" onclick="setThemeFilter(this,'investigations')">Investigations</button>
       <button class="info-filter-btn" data-theme="techscience" onclick="setThemeFilter(this,'techscience')">Tech & Science</button>
       <button class="info-filter-btn" data-theme="business" onclick="setThemeFilter(this,'business')">Business</button>
@@ -1550,7 +1553,7 @@ html, body {
     <button id="sources-toggle-btn" onclick="toggleAllSources()">Deselect All</button>
   </div>
   <div id="sources-list"></div>
-  <div id="info-description" style="margin-top:24px">A chronological RSS reader pulling from ~63 sources across wire services, broadcasters, investigative outlets, policy journals, and local press. No ads, no algorithms, no affiliations.</div>
+  <div id="info-description" style="margin-top:24px">A chronological RSS reader pulling from ~67 sources across wire services, broadcasters, investigative outlets, policy journals, and local press. No ads, no algorithms, no affiliations.</div>
   <hr style="border:none;border-top:1px solid var(--rule);margin:20px 0 0">
   <div id="info-description" style="margin-top:16px">Switch to Images via the tab bar to browse a photo grid from the same sources. Tap an image to reveal the caption and article link. Adjust column density (1 / 3 / 5 / 9) using the Grid control in the header.</div>
   <hr style="border:none;border-top:1px solid var(--rule);margin:20px 0 0">
@@ -1637,6 +1640,10 @@ const FEEDS = [
   { id: 'saharareporters', name: 'Sahara Reporters',             url: 'https://saharareporters.com/articles/rss-feed',                                                                          home: 'https://saharareporters.com' },
   { id: 'madamasr',    name: 'Mada Masr',                        url: 'https://madamasr.com/en/feed',                                                                                            home: 'https://madamasr.com/en' },
   { id: 'lorienttoday',name: "L'Orient Today",                   url: 'https://news.google.com/rss/search?q=when:7d+site:today.lorientlejour.com&ceid=US:en&hl=en-US&gl=US',               home: 'https://today.lorientlejour.com' },
+  { id: 'pbs',         name: 'PBS NewsHour',                     url: 'https://www.pbs.org/newshour/feeds/rss/headlines',                                                                        home: 'https://www.pbs.org/newshour' },
+  { id: 'semafor',     name: 'Semafor',                          url: 'https://semafor.com/rss.xml',                                                                                            home: 'https://semafor.com' },
+  { id: 'register',    name: 'The Register',                     url: 'https://www.theregister.com/headlines.atom',                                                                             home: 'https://www.theregister.com' },
+  { id: 'straitstimes',name: 'The Straits Times',                url: 'https://www.straitstimes.com/singapore/rss.xml',                                                                        home: 'https://www.straitstimes.com' },
 ];
 
 // ── Replace this URL with your deployed Worker URL ──────────────────────────
@@ -1652,7 +1659,7 @@ let lastUpdated = null;
 articles = loadCache();
 
 // Outlets known to be paywalled
-const PAYWALLED = new Set(['wsj','nyt','economist','foreignaff','newyorker','newscientist','foreignpol','ft']);
+const PAYWALLED = new Set(['wsj','nyt','economist','foreignaff','newyorker','newscientist','foreignpol','ft','straitstimes']);
 
 // Feeds that include full article text in RSS
 const FULL_TEXT_FEEDS = new Set(['propublica','intercept','dropsite','nation','occrp','arst','savageminds']);
@@ -1909,75 +1916,89 @@ const SOURCE_GEO = {
   saharareporters: { flag: '🇳🇬', geo: 'NG' },
   madamasr:     { flag: '🇪🇬', geo: 'EG' },
   lorienttoday: { flag: '🇱🇧', geo: 'LB' },
+  pbs:          { flag: '🇺🇸', geo: 'US' },
+  semafor:      { flag: '🇺🇸', geo: 'US' },
+  register:     { flag: '🇬🇧', geo: 'UK' },
+  straitstimes: { flag: '🇸🇬', geo: 'SG' },
 };
 
 // ── Source metadata: region + theme tags for info page filtering ──────────────
 // regions: americas | europe | middleeast | asia | global
 // themes:  politics | tech | science | war
 const SOURCE_META = {
-  ap:          { regions: ['global'],     themes: [] },
-  reuters:     { regions: ['global'],     themes: [] },
-  bbc:         { regions: ['europe'],     themes: [] },
-  guardian:    { regions: ['europe'],     themes: [] },
-  aljazeera:   { regions: ['global'],     themes: ['war'] },
-  dw:          { regions: ['europe'],     themes: [] },
-  bbc_sci:     { regions: ['europe'],     themes: ['techscience'] },
-  dropsite:    { regions: ['americas'],   themes: ['investigations', 'war'] },
-  intercept:   { regions: ['americas'],   themes: ['investigations', 'war'] },
+  // Wire — primary reporting, broadcast/agency
+  ap:          { regions: ['global'],     themes: ['wire'] },
+  reuters:     { regions: ['global'],     themes: ['wire'] },
+  bbc:         { regions: ['europe'],     themes: ['wire'] },
+  bbc_sci:     { regions: ['europe'],     themes: ['wire', 'techscience'] },
+  aljazeera:   { regions: ['global'],     themes: ['wire', 'war'] },
+  dw:          { regions: ['europe'],     themes: ['wire'] },
+  france24:    { regions: ['europe'],     themes: ['wire'] },
+  cbc:         { regions: ['americas'],   themes: ['wire'] },
+  pbs:         { regions: ['americas'],   themes: ['wire', 'uspolitics'] },
+  // World — global perspective, analysis, not print
+  globalvoices:{ regions: ['global'],     themes: ['world', 'investigations'] },
+  semafor:     { regions: ['americas'],   themes: ['world', 'business'] },
+  bellingcat:  { regions: ['global'],     themes: ['world', 'investigations', 'war'] },
+  foreignpol:  { regions: ['americas'],   themes: ['world', 'war'] },
+  foreignaff:  { regions: ['americas'],   themes: ['world', 'war'] },
+  economist:   { regions: ['europe'],     themes: ['world', 'business', 'newspapers'] },
+  arabnews:    { regions: ['middleeast'], themes: ['world'] },
+  mee:         { regions: ['middleeast'], themes: ['world', 'war'] },
+  tehrantimes: { regions: ['middleeast'], themes: ['world'] },
+  restofworld: { regions: ['global'],     themes: ['world', 'techscience', 'business'] },
+  occrp:       { regions: ['europe'],     themes: ['world', 'investigations', 'war'] },
+  isw:         { regions: ['americas'],   themes: ['world', 'war'] },
+  kyivindependent: { regions: ['europe'], themes: ['world', 'war', 'investigations'] },
+  defenseone:  { regions: ['americas'],   themes: ['world', 'war'] },
+  latam21:     { regions: ['americas'],   themes: ['world'] },
+  madamasr:    { regions: ['middleeast'], themes: ['world', 'investigations'] },
+  lorienttoday:{ regions: ['middleeast'], themes: ['world'] },
+  diem25:      { regions: ['europe'],     themes: ['world'] },
+  novara:      { regions: ['europe'],     themes: ['world'] },
+  cdt:         { regions: ['asia'],       themes: ['world'] },
+  // US Politics
+  politico:    { regions: ['americas'],   themes: ['uspolitics'] },
+  thehill:     { regions: ['americas'],   themes: ['uspolitics'] },
+  bulwark:     { regions: ['americas'],   themes: ['uspolitics'] },
+  prospect:    { regions: ['americas'],   themes: ['uspolitics', 'investigations'] },
+  nation:      { regions: ['americas'],   themes: ['uspolitics'] },
+  npr:         { regions: ['americas'],   themes: ['uspolitics'] },
+  unusualwhales:{ regions: ['americas'],  themes: ['uspolitics', 'business'] },
+  hellgate:    { regions: ['americas'],   themes: ['uspolitics'] },
+  thecity:     { regions: ['americas'],   themes: ['uspolitics', 'investigations'] },
+  savageminds: { regions: ['americas'],   themes: ['uspolitics'] },
+  dropsite:    { regions: ['americas'],   themes: ['uspolitics', 'investigations', 'war'] },
+  nyt:         { regions: ['americas'],   themes: ['uspolitics', 'newspapers'] },
+  // Newspapers — legacy print, general coverage
+  guardian:    { regions: ['europe'],     themes: ['newspapers'] },
+  wsj:         { regions: ['americas'],   themes: ['newspapers', 'business'] },
+  ft:          { regions: ['europe'],     themes: ['newspapers', 'business'] },
+  elpais:      { regions: ['europe'],     themes: ['newspapers'] },
+  spiegel:     { regions: ['europe'],     themes: ['newspapers'] },
+  globemail:   { regions: ['americas'],   themes: ['newspapers'] },
+  straitstimes:{ regions: ['asia'],       themes: ['newspapers', 'business'] },
+  hankyoreh:   { regions: ['asia'],       themes: ['newspapers'] },
+  dawn:        { regions: ['asia'],       themes: ['newspapers'] },
+  dailymav:    { regions: ['global'],     themes: ['newspapers', 'investigations'] },
+  saharareporters: { regions: ['global'], themes: ['newspapers', 'investigations'] },
+  japantimes:  { regions: ['asia'],       themes: ['newspapers'] },
+  scmp:        { regions: ['asia'],       themes: ['newspapers', 'business'] },
+  newyorker:   { regions: ['americas'],   themes: ['newspapers'] },
+  // Investigations
   propublica:  { regions: ['americas'],   themes: ['investigations'] },
-  nation:      { regions: ['americas'],   themes: ['politics'] },
-  politico:    { regions: ['americas'],   themes: ['politics'] },
-  wsj:         { regions: ['americas'],   themes: ['politics', 'business'] },
-  arst:        { regions: ['americas'],   themes: ['techscience'] },
-  newscientist:{ regions: ['europe'],     themes: ['techscience'] },
-  economist:   { regions: ['europe'],     themes: ['politics', 'business'] },
-  foreignaff:  { regions: ['americas'],   themes: ['politics', 'war'] },
-  newyorker:   { regions: ['americas'],   themes: ['politics'] },
-  thehill:     { regions: ['americas'],   themes: ['politics'] },
-  foreignpol:  { regions: ['americas'],   themes: ['politics', 'war'] },
-  spiegel:     { regions: ['europe'],     themes: ['politics'] },
-  france24:    { regions: ['europe'],     themes: [] },
-  mee:         { regions: ['middleeast'], themes: ['war'] },
-  occrp:       { regions: ['europe'],     themes: ['investigations', 'war'] },
-  savageminds: { regions: ['americas'],   themes: ['politics'] },
-  bulwark:     { regions: ['americas'],   themes: ['politics'] },
-  prospect:    { regions: ['americas'],   themes: ['politics', 'investigations'] },
-  isw:         { regions: ['americas'],   themes: ['war'] },
-  kyivindependent: { regions: ['europe'], themes: ['war', 'investigations'] },
-  unusualwhales:{ regions: ['americas'],  themes: ['business', 'politics'] },
-  nyt:         { regions: ['americas'],   themes: ['politics'] },
-  hellgate:    { regions: ['americas'],   themes: ['politics'] },
-  thecity:     { regions: ['americas'],   themes: ['investigations'] },
-  cbc:         { regions: ['americas'],   themes: [] },
-  globemail:   { regions: ['americas'],   themes: [] },
+  intercept:   { regions: ['americas'],   themes: ['investigations', 'war'] },
   narwhal:     { regions: ['americas'],   themes: ['investigations'] },
   breach:      { regions: ['americas'],   themes: ['investigations'] },
+  media404:    { regions: ['americas'],   themes: ['investigations', 'techscience'] },
+  // Tech & Science
+  arst:        { regions: ['americas'],   themes: ['techscience'] },
+  mittr:       { regions: ['americas'],   themes: ['techscience'] },
+  newscientist:{ regions: ['europe'],     themes: ['techscience'] },
   quanta:      { regions: ['americas'],   themes: ['techscience'] },
   nasa:        { regions: ['americas'],   themes: ['techscience'] },
-  globalvoices:{ regions: ['global'],     themes: ['investigations'] },
-  diem25:      { regions: ['europe'],     themes: ['politics'] },
-  novara:      { regions: ['europe'],     themes: ['politics'] },
-  npr:         { regions: ['americas'],   themes: ['politics'] },
-  japantimes:  { regions: ['asia'],       themes: ['politics'] },
-  cdt:         { regions: ['asia'],       themes: ['politics'] },
-  arabnews:    { regions: ['middleeast'], themes: [] },
-  tehrantimes: { regions: ['middleeast'], themes: ['politics'] },
-  scmp:        { regions: ['asia'],       themes: ['politics', 'business'] },
-  bellingcat:  { regions: ['global'],     themes: ['investigations', 'war'] },
-  mittr:       { regions: ['americas'],   themes: ['techscience'] },
-  ft:          { regions: ['europe'],     themes: ['business'] },
   hackernews:  { regions: ['americas'],   themes: ['techscience'] },
-  elpais:      { regions: ['europe'],     themes: ['politics'] },
-  dawn:        { regions: ['asia'],       themes: ['politics'] },
-  restofworld: { regions: ['global'],     themes: ['techscience', 'business'] },
-  media404:    { regions: ['americas'],   themes: ['techscience', 'investigations'] },
-  latam21:     { regions: ['americas'],   themes: ['politics'] },
-  hankyoreh:   { regions: ['asia'],       themes: ['politics'] },
-  defenseone:  { regions: ['americas'],   themes: ['war'] },
-  dailymav:    { regions: ['global'],     themes: ['politics', 'investigations'] },
-  saharareporters: { regions: ['global'], themes: ['politics', 'investigations'] },
-  madamasr:    { regions: ['middleeast'], themes: ['politics', 'investigations'] },
-  lorienttoday:{ regions: ['middleeast'], themes: ['politics'] },
+  register:    { regions: ['europe'],     themes: ['techscience'] },
 };
 
 // ── Disabled sources (persisted in localStorage) ─────────────────────────────
