@@ -1,12 +1,12 @@
 # Inked
 
-A chronological RSS reader pulling from ~63 sources across wire services, broadcasters, investigative outlets, policy journals, science publications, and local press. No ads, no algorithms, no affiliations.
+A chronological RSS reader pulling from ~67 sources across wire services, broadcasters, investigative outlets, policy journals, science publications, and local press. No ads, no algorithms, no affiliations.
 
 ---
 
 ## What it is
 
-Inked is a single HTML file that pulls live RSS feeds from 63 news sources and renders them as a clean chronological headline stream. Articles are cached locally for up to 3 days so content doesn't disappear as feeds roll over. Articles older than 10 months are filtered out globally.
+Inked is a single HTML file that pulls live RSS feeds from 67 news sources and renders them as a clean chronological headline stream. Articles are cached locally for up to 3 days so content doesn't disappear as feeds roll over. Articles older than 10 months are filtered out globally.
 
 It runs entirely in the browser. There is no backend, no database, no login. A Cloudflare Worker acts as a lightweight RSS proxy to handle cross-origin fetching.
 
@@ -18,67 +18,71 @@ It runs entirely in the browser. There is no backend, no database, no login. A C
 |---|---|
 | AP News (via Bluesky) | Wire |
 | Reuters (via Google News) | Wire |
-| BBC | International Broadcast |
-| BBC Science | Science |
-| Al Jazeera | International Broadcast |
-| Deutsche Welle | International Broadcast |
-| France 24 | International Broadcast |
-| Der Spiegel | European Press |
-| El País | European Press |
-| Guardian | Quality General |
-| Global Voices | Citizen Journalism |
-| South China Morning Post | Asia / China |
-| The Japan Times | Japan |
-| China Digital Times | China / Independent |
-| The Economist | Policy / Analysis |
-| Foreign Affairs | Policy / Analysis |
-| Foreign Policy | Policy / Analysis |
-| Financial Times | Business / Economics |
-| Wall Street Journal (via Bluesky) | US Legacy |
-| New York Times | US Legacy |
-| NPR | US Public Radio |
+| BBC | Wire |
+| BBC Science | Wire · Tech & Science |
+| Al Jazeera | Wire · War |
+| Deutsche Welle | Wire |
+| France 24 | Wire |
+| CBC | Wire |
+| PBS NewsHour | Wire · US Politics |
+| Global Voices | World · Investigations |
+| Semafor | World · Business |
+| Bellingcat | World · Investigations · War |
+| Foreign Policy | World · War |
+| Foreign Affairs | World · War |
+| The Economist | World · Business · Newspapers |
+| Arab News | World |
+| Middle East Eye | World · War |
+| Tehran Times | World |
+| Rest of World | World · Tech & Science · Business |
+| Organized Crime and Corruption Reporting Project | World · Investigations · War |
+| Institute for the Study of War (via Bluesky) | World · War |
+| Kyiv Independent (via Bluesky) | World · War · Investigations |
+| Defense One | World · War |
+| Latinoamérica21 | World |
+| Mada Masr | World · Investigations |
+| L'Orient Today | World |
+| DiEM25 (via Bluesky) | World |
+| Novara Media | World |
+| China Digital Times | World |
 | Politico | US Politics |
 | The Hill | US Politics |
 | The Bulwark | US Politics |
-| The American Prospect | US Politics / Left |
-| The Nation | Left / Opinion |
-| The New Yorker | Long-form / Culture |
-| Savage Minds | Culture / Politics |
-| DiEM25 (via Bluesky) | European Left |
-| Novara Media | Left / UK |
-| Institute for the Study of War (via Bluesky) | Defense / Conflict |
-| Kyiv Independent (via Bluesky) | Ukraine / War |
-| Middle East Eye | Middle East |
-| Arab News | Middle East |
-| Tehran Times | Iran State Media |
-| The Intercept | Investigative |
-| ProPublica | Investigative |
-| Drop Site | Investigative |
-| Organized Crime and Corruption Reporting Project | Investigative |
-| Bellingcat | Open-Source Investigation |
-| Dawn | Pakistan |
-| Ars Technica | Technology / Science |
-| MIT Technology Review | Technology |
-| New Scientist | Science |
-| Quanta Magazine | Science / Physics |
-| NASA | Space |
-| Hacker News | Technology |
-| 404 Media | Technology / Investigative |
-| Rest of World | Technology / Global |
-| Unusual Whales | Markets / Policy |
-| CBC | Canadian Broadcast |
-| Globe and Mail | Canadian Press |
-| The Narwhal | Canadian Investigative |
-| The Breach | Canadian Investigative |
-| Hell Gate | NYC Local |
-| The City | NYC Local |
-| Latinoamérica21 | Latin America |
-| The Hankyoreh | South Korea / Independent |
-| Defense One | Defense / Policy |
-| Daily Maverick | South Africa / Investigative |
-| Sahara Reporters | Nigeria / Citizen Journalism |
-| Mada Masr | Egypt / Independent |
-| L'Orient Today | Lebanon |
+| The American Prospect | US Politics · Investigations |
+| The Nation | US Politics |
+| NPR | US Politics |
+| Unusual Whales | US Politics · Business |
+| Hell Gate | US Politics |
+| The City | US Politics · Investigations |
+| Savage Minds | US Politics |
+| Drop Site | US Politics · Investigations · War |
+| New York Times | US Politics · Newspapers |
+| Guardian | Newspapers |
+| Wall Street Journal (via Bluesky) | Newspapers · Business |
+| Financial Times | Newspapers · Business |
+| El País | Newspapers |
+| Der Spiegel | Newspapers |
+| Globe and Mail | Newspapers |
+| The Straits Times | Newspapers · Business |
+| The Hankyoreh | Newspapers |
+| Dawn | Newspapers |
+| Daily Maverick | Newspapers · Investigations |
+| Sahara Reporters | Newspapers · Investigations |
+| The Japan Times | Newspapers |
+| South China Morning Post | Newspapers · Business |
+| The New Yorker | Newspapers |
+| ProPublica | Investigations |
+| The Intercept | Investigations · War |
+| The Narwhal | Investigations |
+| The Breach | Investigations |
+| 404 Media | Investigations · Tech & Science |
+| Ars Technica | Tech & Science |
+| MIT Technology Review | Tech & Science |
+| New Scientist | Tech & Science |
+| Quanta Magazine | Tech & Science |
+| NASA | Tech & Science |
+| Hacker News | Tech & Science |
+| The Register | Tech & Science |
 
 Paywalled outlets show an **Archive** button linking to archive.ph. Outlets marked `••` support in-app full-text reading where RSS content is available.
 
@@ -111,7 +115,7 @@ Browser (index.html)
 
 **Images tab** — Continuous photo grid pulling images from all RSS sources. Configurable column density (1 / 3 / 5 / 9). Tap any image to reveal the caption and article link. Header and footer collapse to slim frosted-glass bars when scrolling.
 
-**Sources page (Info)** — Full list of all sources with article counts, country flags, and geographic codes. Toggle individual sources on or off to exclude them from the feed and filter bar — preference is saved in localStorage. Use the **Select All / Deselect All** button to bulk toggle. Filter the list by theme using the footer chips: **Politics · Investigations · Tech & Science · Business · War**.
+**Sources page (Info)** — Full list of all sources with article counts, country flags, and geographic codes. Toggle individual sources on or off to exclude them from the feed and filter bar — preference is saved in localStorage. Use the **Select All / Deselect All** button to bulk toggle. Filter the list by theme using the footer chips: **Wire · World · US Politics · Newspapers · Investigations · Tech & Science · Business · War**.
 
 **Flagged** — Save articles for later by swiping right (mobile) or using the hover flag button (desktop). Access via the flag icon in the footer. Swipe left on a flagged article to remove it.
 
@@ -189,7 +193,7 @@ SOURCE_GEO['my_id'] = { flag: '🇺🇸', geo: 'US' };
 
 // SOURCE_META — region and theme tags for Sources page filtering
 // regions: americas | europe | middleeast | asia | global
-// themes:  politics | investigations | techscience | business | war
+// themes:  wire | world | uspolitics | newspapers | investigations | techscience | business | war
 SOURCE_META['my_id'] = { regions: ['americas'], themes: ['politics'] };
 ```
 
