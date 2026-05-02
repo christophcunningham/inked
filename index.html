@@ -85,7 +85,6 @@ html, body {
   font-variant-numeric: tabular-nums;
   text-align: right;
 }
-#header.dark #wordmark-dateline { display: none; }
 
 /* ── TICKER LINE ── */
 #ticker-line {
@@ -815,37 +814,15 @@ html, body {
   background: rgba(40, 40, 40, 0.93) !important;
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  /* Full width override — remove desktop centering constraints */
-  left: 0 !important;
-  right: 0 !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  transform: none !important;
-  padding-left: var(--pad);
-  padding-right: var(--pad);
 }
-/* When hiding in images mode, only translateY */
-#header.dark.hide { transform: translateY(-100%) !important; }
 
-/* Collapsed header row in images mode */
-#header.dark #header-row {
-  padding-bottom: 14px;
-}
+/* Images mode: hide clocks, show grid controls — all other layout identical to feed header */
 #header.dark #clocks-group { display: none; }
-#header.dark #wordmark {
-  font-size: 17px;
-  letter-spacing: 0.02em;
-}
-#header.dark #wordmark-group {
-  gap: 0;
-}
-#header.dark #source-bar-wrap {
-  padding-bottom: 10px;
-}
-#header.dark #ticker-line {
-  padding-top: 2px;
-  padding-bottom: 10px;
-}
+#header.dark #ticker-line { display: flex; }
+/* Pin header-left to same width as clocks group so wordmark stays right */
+#header.dark #header-left { min-width: 162px; }
+/* Drop grid controls down to optically match clock face position */
+#header.dark #grid-controls { padding-top: 6px; }
 
 #header.dark .clock-circle { stroke: rgba(255,255,255,0.6); }
 #header.dark .clock-hand-hour   { stroke: rgba(255,255,255,0.9); }
@@ -856,6 +833,9 @@ html, body {
 #header.dark .clock-center { fill: rgba(255,255,255,0.9); }
 #header.dark .clock-label  { color: rgba(255,255,255,0.4); }
 #header.dark #wordmark     { color: rgba(255,255,255,0.9); }
+#header.dark #dateline-date { color: rgba(255,255,255,0.7); }
+#header.dark #dateline-rule { background: rgba(255,255,255,0.25); }
+#header.dark #dateline-time { color: rgba(255,255,255,0.45); }
 #header.dark .ticker-stat  { color: rgba(255,255,255,0.35); }
 #header.dark .ticker-stat strong { color: rgba(255,255,255,0.6); }
 #header.dark .ticker-sep   { background: rgba(255,255,255,0.2); }
@@ -1104,7 +1084,7 @@ html, body {
 #grid-controls {
   display: none;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
 }
 #grid-controls.visible { display: flex; }
 
