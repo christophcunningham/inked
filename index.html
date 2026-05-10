@@ -2893,6 +2893,18 @@
                             font-weight: 500;
                         "
                     >
+                        A
+                    </td>
+                    <td style="padding: 5px 0">Almanac</td>
+                </tr>
+                <tr>
+                    <td
+                        style="
+                            padding: 5px 0;
+                            color: var(--ink);
+                            font-weight: 500;
+                        "
+                    >
                         S
                     </td>
                     <td style="padding: 5px 0">Search</td>
@@ -2919,7 +2931,7 @@
                     >
                         ,
                     </td>
-                    <td style="padding: 5px 0">Info</td>
+                    <td style="padding: 5px 0">Sources</td>
                 </tr>
             </table>
             <hr
@@ -5786,59 +5798,63 @@
             // ── Sun via Open-Meteo daily params + Moon calculated client-side ──
             async function loadSunMoon() {
                 try {
-                    const today = new Date().toISOString().split('T')[0];
                     const url = `https://api.open-meteo.com/v1/forecast?latitude=${almanacLat}&longitude=${almanacLon}&daily=sunrise,sunset,daylight_duration,sunshine_duration&timezone=auto&forecast_days=1`;
                     const res = await fetch(url);
                     const data = await res.json();
                     const d = data.daily;
 
-                    // Format time from ISO string e.g. "2026-05-10T05:47"
+                    if (!d || !d.sunrise) throw new Error('no data');
+
+                    // Format time from Open-Meteo ISO string "2026-05-10T05:47" (local, no offset)
                     const fmtTime = iso => {
                         if (!iso) return '—';
                         const t = iso.split('T')[1] || '';
                         const [h, m] = t.split(':').map(Number);
+                        if (isNaN(h) || isNaN(m)) return '—';
                         const ampm = h >= 12 ? 'PM' : 'AM';
                         const h12 = h % 12 || 12;
                         return `${h12}:${String(m).padStart(2,'0')} ${ampm}`;
                     };
 
-                    const sunrise = fmtTime(d.sunrise?.[0]);
-                    const sunset  = fmtTime(d.sunset?.[0]);
+                    // Add minutes to a naive "HH:MM" time string, returns "H:MM AM/PM"
+                    const addMins = (iso, mins) => {
+                        if (!iso) return '—';
+                        const t = iso.split('T')[1] || '';
+                        const [h, m] = t.split(':').map(Number);
+                        if (isNaN(h) || isNaN(m)) return '—';
+                        const total = h * 60 + m + mins;
+                        const nh = Math.floor(((total % 1440) + 1440) % 1440 / 60);
+                        const nm = ((total % 1440) + 1440) % 1440 % 60;
+                        const ampm = nh >= 12 ? 'PM' : 'AM';
+                        const h12 = nh % 12 || 12;
+                        return `${h12}:${String(nm).padStart(2,'0')} ${ampm}`;
+                    };
+
+                    // Solar noon = midpoint between sunrise and sunset (string arithmetic)
+                    const solarNoon = (() => {
+                        const sr = d.sunrise?.[0], ss = d.sunset?.[0];
+                        if (!sr || !ss) return '—';
+                        const [srH, srM] = sr.split('T')[1].split(':').map(Number);
+                        const [ssH, ssM] = ss.split('T')[1].split(':').map(Number);
+                        const midMins = Math.round((srH * 60 + srM + ssH * 60 + ssM) / 2);
+                        const nh = Math.floor(midMins / 60) % 24;
+                        const nm = midMins % 60;
+                        const ampm = nh >= 12 ? 'PM' : 'AM';
+                        const h12 = nh % 12 || 12;
+                        return `${h12}:${String(nm).padStart(2,'0')} ${ampm}`;
+                    })();
+
+                    const sunrise    = fmtTime(d.sunrise?.[0]);
+                    const sunset     = fmtTime(d.sunset?.[0]);
+                    const dawn       = addMins(d.sunrise?.[0], -30);
+                    const dusk       = addMins(d.sunset?.[0],   30);
+                    const goldenHour = addMins(d.sunset?.[0],  -60);
 
                     // Day length from daylight_duration (seconds)
                     const dlSec = d.daylight_duration?.[0] || 0;
                     const dlH = Math.floor(dlSec / 3600);
                     const dlM = Math.floor((dlSec % 3600) / 60);
                     const dayLen = dlH + 'h ' + dlM + 'm';
-
-                    // Solar noon = midpoint between sunrise and sunset
-                    const solarNoon = (() => {
-                        const sr = d.sunrise?.[0], ss = d.sunset?.[0];
-                        if (!sr || !ss) return '—';
-                        const mid = (new Date(sr).getTime() + new Date(ss).getTime()) / 2;
-                        return fmtTime(new Date(mid).toISOString().replace('Z',''));
-                    })();
-
-                    // Dawn = ~30 min before sunrise (civil twilight approx)
-                    const dawn = (() => {
-                        const sr = d.sunrise?.[0];
-                        if (!sr) return '—';
-                        return fmtTime(new Date(new Date(sr).getTime() - 30*60000).toISOString().replace('Z',''));
-                    })();
-
-                    // Dusk = ~30 min after sunset
-                    const dusk = (() => {
-                        const ss = d.sunset?.[0];
-                        if (!ss) return '—';
-                        return fmtTime(new Date(new Date(ss).getTime() + 30*60000).toISOString().replace('Z',''));
-                    })();
-
-                    // Golden hour = ~1h before sunset
-                    const goldenHour = (() => {
-                        const ss = d.sunset?.[0];
-                        if (!ss) return '—';
-                        return fmtTime(new Date(new Date(ss).getTime() - 60*60000).toISOString().replace('Z',''));
-                    })();
 
                     // DST contextual note (US only, within 14 days)
                     const isUS = almanacLat > 24 && almanacLat < 72 && almanacLon > -170 && almanacLon < -65;
@@ -7255,12 +7271,8 @@
                                 .getElementById("flagged-overlay")
                                 .classList.contains("open");
                             if (!flaggedOpen) {
-                                if (
-                                    document
-                                        .getElementById("info-overlay")
-                                        .classList.contains("open")
-                                )
-                                    closeInfo();
+                                if (document.getElementById("info-overlay").classList.contains("open")) closeInfo();
+                                if (document.getElementById("almanac-overlay").classList.contains("open")) closeAlmanac();
                                 toggleFlagged();
                             } else {
                                 closeFlagged();
@@ -7268,18 +7280,9 @@
                         } else {
                             // f → Feed tab
                             e.preventDefault();
-                            if (
-                                document
-                                    .getElementById("info-overlay")
-                                    .classList.contains("open")
-                            )
-                                closeInfo();
-                            if (
-                                document
-                                    .getElementById("flagged-overlay")
-                                    .classList.contains("open")
-                            )
-                                closeFlagged();
+                            if (document.getElementById("info-overlay").classList.contains("open")) closeInfo();
+                            if (document.getElementById("flagged-overlay").classList.contains("open")) closeFlagged();
+                            if (document.getElementById("almanac-overlay").classList.contains("open")) closeAlmanac();
                             switchTab("feed");
                         }
                         break;
@@ -7287,53 +7290,27 @@
                     case "G":
                         // g → Images tab
                         e.preventDefault();
-                        if (
-                            document
-                                .getElementById("info-overlay")
-                                .classList.contains("open")
-                        )
-                            closeInfo();
-                        if (
-                            document
-                                .getElementById("flagged-overlay")
-                                .classList.contains("open")
-                        )
-                            closeFlagged();
+                        if (document.getElementById("info-overlay").classList.contains("open")) closeInfo();
+                        if (document.getElementById("flagged-overlay").classList.contains("open")) closeFlagged();
+                        if (document.getElementById("almanac-overlay").classList.contains("open")) closeAlmanac();
                         switchTab("images");
                         break;
                     case ",":
-                        // , → Info page
+                        // , → Sources page
                         e.preventDefault();
-                        if (
-                            document
-                                .getElementById("flagged-overlay")
-                                .classList.contains("open")
-                        )
-                            closeFlagged();
+                        if (document.getElementById("flagged-overlay").classList.contains("open")) closeFlagged();
+                        if (document.getElementById("almanac-overlay").classList.contains("open")) closeAlmanac();
                         toggleInfo();
                         break;
                     case "s":
                     case "S":
-                        // s → Search (feed tab, open search bar and focus)
+                        // s → Search
                         e.preventDefault();
-                        if (
-                            document
-                                .getElementById("info-overlay")
-                                .classList.contains("open")
-                        )
-                            closeInfo();
-                        if (
-                            document
-                                .getElementById("flagged-overlay")
-                                .classList.contains("open")
-                        )
-                            closeFlagged();
+                        if (document.getElementById("info-overlay").classList.contains("open")) closeInfo();
+                        if (document.getElementById("flagged-overlay").classList.contains("open")) closeFlagged();
+                        if (document.getElementById("almanac-overlay").classList.contains("open")) closeAlmanac();
                         if (activeTab !== "feed") switchTab("feed");
-                        if (
-                            !document
-                                .getElementById("search-row")
-                                .classList.contains("visible")
-                        )
+                        if (!document.getElementById("search-row").classList.contains("visible"))
                             openSearch();
                         break;
                 }
