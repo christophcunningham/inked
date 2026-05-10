@@ -5798,7 +5798,12 @@
             // ── Sun via Open-Meteo daily params + Moon calculated client-side ──
             async function loadSunMoon() {
                 try {
-                    const url = `https://api.open-meteo.com/v1/forecast?latitude=${almanacLat}&longitude=${almanacLon}&daily=sunrise,sunset,daylight_duration,sunshine_duration&timezone=auto&forecast_days=1`;
+                    // Use known timezone if available, otherwise derive UTC offset from coordinates
+                    // (longitude / 15 gives approximate UTC hour offset)
+                    // Never use timezone=auto — it resolves to the server location, not the user's
+                    const tz = almanacTZ || `Etc/GMT${Math.round(-almanacLon / 15) >= 0 ? '+' : ''}${Math.round(-almanacLon / 15)}`;
+                    const tzParam = encodeURIComponent(tz);
+                    const url = `https://api.open-meteo.com/v1/forecast?latitude=${almanacLat}&longitude=${almanacLon}&daily=sunrise,sunset,daylight_duration,sunshine_duration&timezone=${tzParam}&forecast_days=1`;
                     const res = await fetch(url);
                     const data = await res.json();
                     const d = data.daily;
@@ -6352,7 +6357,8 @@
             }
             async function loadWeather() {
                 try {
-                    const url = `https://api.open-meteo.com/v1/forecast?latitude=${almanacLat}&longitude=${almanacLon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,relative_humidity_2m,precipitation,uv_index&daily=precipitation_sum,temperature_2m_max,temperature_2m_min,uv_index_max&wind_speed_unit=mph&temperature_unit=fahrenheit&timezone=auto&forecast_days=1`;
+                    const tz2 = almanacTZ || `Etc/GMT${Math.round(-almanacLon / 15) >= 0 ? '+' : ''}${Math.round(-almanacLon / 15)}`;
+                    const url = `https://api.open-meteo.com/v1/forecast?latitude=${almanacLat}&longitude=${almanacLon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,relative_humidity_2m,precipitation,uv_index&daily=precipitation_sum,temperature_2m_max,temperature_2m_min,uv_index_max&wind_speed_unit=mph&temperature_unit=fahrenheit&timezone=${encodeURIComponent(tz2)}&forecast_days=1`;
                     const res = await fetch(url);
                     const data = await res.json();
                     const c = data.current;
