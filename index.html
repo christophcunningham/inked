@@ -25,7 +25,7 @@
 */
 
             :root {
-                --ink: #35332e;
+                --ink: #3d3b36;
                 --ink-mid: #6b6860;
                 --ink-light: #9a9790;
                 --paper: #e8e6e3;
@@ -39,6 +39,36 @@
                 --pad: 28px;
                 --safe-top: env(safe-area-inset-top, 0px);
                 --safe-bottom: env(safe-area-inset-bottom, 0px);
+            }
+
+            /* ── COLOR THEMES ── */
+            /* Dark theme: invert paper/ink */
+            html[data-color-theme="dark"] {
+                --ink: #e8e6e3;
+                --ink-mid: #b0aea9;
+                --ink-light: #7a7870;
+                --paper: #2b2828;
+                --paper-dim: #2e2c28;
+                --rule: #4a4843;
+                --rule-heavy: #5e5c56;
+            }
+            /* Warm theme: warm paper, same ink */
+            html[data-color-theme="warm"] {
+                --paper: #f3cbb0;
+                --paper-dim: #eabd9e;
+                --rule: #d2a07c;
+                --rule-heavy: #bc8862;
+            }
+            /* Keep images/photos page unaffected by any color theme */
+            html[data-color-theme="dark"] #photos-view,
+            html[data-color-theme="dark"] #header.dark,
+            html[data-color-theme="warm"] #photos-view,
+            html[data-color-theme="warm"] #header.dark {
+                /* photos header uses its own rgba dark overlay — leave untouched */
+            }
+            html[data-color-theme="dark"] #tab-bar.dark,
+            html[data-color-theme="warm"] #tab-bar.dark {
+                /* images tab bar dark mode uses its own rgba — leave untouched */
             }
 
             *,
@@ -74,27 +104,32 @@
                 gap: 2px;
                 min-width: 180px;
             }
+            #dateline-weekday {
+                font-family: var(--font-ui);
+                font-size: 9px;
+                font-weight: 400;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                color: var(--ink);
+                text-align: right;
+            }
             #dateline-date {
                 font-family: var(--font-ui);
-                font-size: 8px;
-                font-weight: 600;
+                font-size: 9px;
+                font-weight: 400;
                 letter-spacing: 0.08em;
                 text-transform: uppercase;
                 color: var(--ink);
                 text-align: right;
             }
             #dateline-rule {
-                display: block;
-                width: 120px;
-                height: 1px;
-                background: var(--rule-heavy);
-                opacity: 0.5;
+                display: none;
             }
             #dateline-time {
                 font-family: var(--font-ui);
-                font-size: 10px;
-                font-weight: 300;
-                color: var(--ink-mid);
+                font-size: 9px;
+                font-weight: 400;
+                color: var(--ink);
                 font-variant-numeric: tabular-nums;
                 text-align: right;
             }
@@ -186,6 +221,7 @@
                 display: flex;
                 flex-direction: column;
                 gap: 10px;
+                min-width: 170px;
             }
 
             #clocks-group {
@@ -202,77 +238,104 @@
             }
 
             .clock-face {
-                width: 30px;
-                height: 30px;
+                width: 32px;
+                height: 32px;
             }
 
             .clock-circle {
                 fill: none;
-                stroke: #8a8680;
+                stroke: var(--ink);
                 stroke-width: 1;
+                opacity: 0.3;
             }
 
             .clock-hand-hour {
-                stroke: var(--ink);
-                stroke-width: 1.8;
-                stroke-linecap: round;
+                fill: var(--ink);
+                stroke: none;
                 transform-origin: 15px 15px;
             }
             .clock-hand-minute {
-                stroke: var(--ink);
-                stroke-width: 1.1;
-                stroke-linecap: round;
+                fill: var(--ink);
+                stroke: none;
                 transform-origin: 15px 15px;
             }
             .clock-hand-second {
-                stroke: var(--ink-mid);
-                stroke-width: 0.65;
-                stroke-linecap: round;
-                opacity: 0.5;
+                fill: var(--ink-light);
+                stroke: none;
+                opacity: 0.7;
                 transform-origin: 15px 15px;
             }
             .clock-tick-major {
                 stroke: var(--ink);
                 stroke-width: 1;
-                stroke-linecap: round;
-                opacity: 0.5;
+                stroke-linecap: square;
+                opacity: 0.4;
             }
             .clock-tick-minor {
                 stroke: var(--ink);
                 stroke-width: 0.5;
-                stroke-linecap: round;
-                opacity: 0.25;
+                stroke-linecap: square;
+                opacity: 0.2;
             }
-
             .clock-center {
                 fill: var(--ink);
             }
 
-            /* ── CLOCK NIGHT MODE ── */
-            .clock-item.night .clock-circle {
-                stroke: #8a8680;
+            /* Dark theme day clocks: paper face needs dark hands */
+            .clock-item.day-dark .clock-hand-hour,
+            .clock-item.day-dark .clock-hand-minute {
+                fill: #3d3b36;
             }
-            .clock-item.night .clock-hand-hour {
-                stroke: #3a3830;
+            .clock-item.day-dark .clock-hand-second {
+                fill: #888580;
             }
-            .clock-item.night .clock-hand-minute {
-                stroke: #3a3830;
+            .clock-item.day-dark .clock-tick-major,
+            .clock-item.day-dark .clock-tick-minor {
+                stroke: #3d3b36;
             }
-            .clock-item.night .clock-hand-second {
-                stroke: #5a5650;
-                opacity: 0.5;
+            .clock-item.day-dark .clock-center {
+                fill: #3d3b36;
             }
-            .clock-item.night .clock-tick-major {
-                stroke: #4a4840;
-                opacity: 0.5;
+            .clock-item.day-dark .clock-circle {
+                stroke: #3d3b36;
+                opacity: 0.3;
             }
-            .clock-item.night .clock-tick-minor {
-                stroke: #4a4840;
-                opacity: 0.2;
+
+            /* Dark/warm theme night clocks: light hands on dark gradient face */
+            .clock-item.night-dark .clock-hand-hour,
+            .clock-item.night-dark .clock-hand-minute {
+                fill: #e8e6e3;
             }
-            .clock-item.night .clock-center {
-                fill: #3a3830;
+            .clock-item.night-dark .clock-hand-second {
+                fill: #a0a09a;
             }
+            .clock-item.night-dark .clock-tick-major,
+            .clock-item.night-dark .clock-tick-minor {
+                stroke: #e8e6e3;
+            }
+            .clock-item.night-dark .clock-center {
+                fill: #e8e6e3;
+            }
+            .clock-item.night-dark .clock-circle {
+                stroke: #e8e6e3;
+                opacity: 0.3;
+            }
+
+            /* Light theme night clocks: paper hands on gradient face */
+            .clock-item.night-light .clock-hand-hour,
+            .clock-item.night-light .clock-hand-minute,
+            .clock-item.night-light .clock-hand-second {
+                fill: #e8e6e3;
+            }
+            .clock-item.night-light .clock-tick-major,
+            .clock-item.night-light .clock-tick-minor {
+                stroke: #e8e6e3;
+            }
+            .clock-item.night-light .clock-center {
+                fill: #e8e6e3;
+            }
+
+            /* Night: face fill handles the "after hours" look — no opacity changes */
             .clock-label {
                 font-family: var(--font-ui);
                 font-size: 7px;
@@ -333,7 +396,7 @@
 
             #wordmark {
                 font-family: var(--font-ui);
-                font-size: 16px;
+                font-size: 20px;
                 font-weight: 900;
                 font-style: normal;
                 letter-spacing: -0.03em;
@@ -839,7 +902,7 @@
                 font-weight: 400;
                 color: var(--ink-light);
                 width: 24px;
-                text-align: right;
+                text-align: left;
                 flex-shrink: 0;
             }
             .source-entry.disabled .source-entry-count {
@@ -934,7 +997,7 @@
 
             /* ── HEADER DARK MODE (images tab) ── */
             #header.dark {
-                background: rgba(40, 40, 40, 0.93) !important;
+                background: rgba(43, 40, 40, 0.93);
                 backdrop-filter: blur(14px);
                 -webkit-backdrop-filter: blur(14px);
             }
@@ -947,9 +1010,6 @@
                 display: flex;
             }
             /* Pin header-left to same width as clocks group so wordmark stays right */
-            #header.dark #header-left {
-                min-width: 162px;
-            }
             /* Drop grid controls down to optically match clock face position */
             #header.dark #grid-controls {
                 padding-top: 6px;
@@ -958,14 +1018,12 @@
             #header.dark .clock-circle {
                 stroke: rgba(255, 255, 255, 0.6);
             }
-            #header.dark .clock-hand-hour {
-                stroke: rgba(255, 255, 255, 0.9);
-            }
+            #header.dark .clock-hand-hour,
             #header.dark .clock-hand-minute {
-                stroke: rgba(255, 255, 255, 0.9);
+                fill: rgba(255, 255, 255, 0.9);
             }
             #header.dark .clock-hand-second {
-                stroke: rgba(255, 255, 255, 0.5);
+                fill: rgba(255, 255, 255, 0.5);
             }
             #header.dark .clock-tick-major {
                 stroke: rgba(255, 255, 255, 0.4);
@@ -982,14 +1040,19 @@
             #header.dark #wordmark {
                 color: rgba(255, 255, 255, 0.9);
             }
-            #header.dark #dateline-date {
+            #header.dark #dateline-weekday,
+            #header.dark #dateline-date,
+            #header.dark #dateline-time {
                 color: rgba(255, 255, 255, 0.7);
             }
             #header.dark #dateline-rule {
                 background: rgba(255, 255, 255, 0.25);
             }
-            #header.dark #dateline-time {
-                color: rgba(255, 255, 255, 0.45);
+            #header.dark #wordmark-dateline {
+                border-right-color: rgba(255, 255, 255, 0.2);
+            }
+            #header.dark #dateline-rule {
+                background: rgba(255, 255, 255, 0.25);
             }
             #header.dark .ticker-stat {
                 color: rgba(255, 255, 255, 0.35);
@@ -1002,6 +1065,30 @@
             }
             #header.dark .ticker-live {
                 color: rgba(255, 255, 255, 0.35);
+            }
+            /* Dark color theme: images header text uses same variables as feed */
+            html[data-color-theme="dark"] #header.dark #wordmark {
+                color: var(--ink);
+            }
+            html[data-color-theme="dark"] #header.dark #dateline-weekday,
+            html[data-color-theme="dark"] #header.dark #dateline-date,
+            html[data-color-theme="dark"] #header.dark #dateline-time {
+                color: var(--ink);
+            }
+            html[data-color-theme="dark"] #header.dark #dateline-rule {
+                background: var(--rule-heavy);
+            }
+            html[data-color-theme="dark"] #header.dark .ticker-stat {
+                color: var(--ink-light);
+            }
+            html[data-color-theme="dark"] #header.dark .ticker-stat strong {
+                color: var(--ink-mid);
+            }
+            html[data-color-theme="dark"] #header.dark .ticker-sep {
+                background: var(--rule-heavy);
+            }
+            html[data-color-theme="dark"] #header.dark .ticker-live {
+                color: var(--ink-light);
             }
             #header.dark .src-tag {
                 color: rgba(255, 255, 255, 0.5);
@@ -1178,7 +1265,7 @@
                 display: none;
                 position: fixed;
                 inset: 0;
-                background: #282828;
+                background: #2b2828;
                 z-index: 90;
                 overflow-y: auto;
                 -webkit-overflow-scrolling: touch;
@@ -1196,7 +1283,7 @@
                 gap: 1px;
                 padding-top: 0; /* set via JS to match header height */
                 padding-bottom: calc(var(--safe-bottom) + 60px);
-                background: #282828;
+                background: #2b2828;
             }
 
             /* grid columns set via JS */
@@ -1343,6 +1430,47 @@
                 animation: shimmer 1.4s ease-in-out infinite;
             }
 
+            /* ── PAGE COLOR THEME ROW (info overlay) ── */
+            #page-color-row {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 32px;
+            }
+            #page-color-label {
+                font-family: var(--font-ui);
+                font-size: 9px;
+                font-weight: 400;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+                color: var(--ink-light);
+            }
+            #page-color-tiles {
+                display: flex;
+                gap: 8px;
+                align-items: center;
+            }
+            .color-tile {
+                width: 36px;
+                height: 36px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                background: transparent;
+                border: none;
+                padding: 0;
+                -webkit-tap-highlight-color: transparent;
+            }
+            .color-tile svg {
+                display: block;
+            }
+
+            #info-btn svg,
+            #info-btn-close svg {
+                display: block;
+            }
+
             /* ── INFO FILTER ROW (shown in tab bar when info overlay is open) ── */
             #info-filter-theme {
                 display: flex;
@@ -1396,7 +1524,7 @@
 
             /* ── TAB BAR DARK MODE ── */
             #tab-bar.dark {
-                background: rgba(40, 40, 40, 0.93);
+                background: rgba(43, 40, 40, 0.93);
                 backdrop-filter: blur(14px);
                 -webkit-backdrop-filter: blur(14px);
             }
@@ -1425,6 +1553,50 @@
                 background: rgba(255, 255, 255, 0.9);
                 color: #282828;
                 border-color: rgba(255, 255, 255, 0.9);
+            }
+            /* Dark color theme: tab-bar.dark uses same variables as feed */
+            html[data-color-theme="dark"] #tab-bar.dark {
+                background: rgba(43, 40, 40, 0.93);
+            }
+            html[data-color-theme="dark"] #tab-bar.dark .tab-btn {
+                color: var(--ink-mid);
+                border-color: var(--rule-heavy);
+            }
+            html[data-color-theme="dark"] #tab-bar.dark .tab-btn.active {
+                background: var(--ink);
+                color: var(--paper);
+                border-color: var(--ink);
+            }
+            html[data-color-theme="dark"] #tab-bar.dark .bar-btn,
+            html[data-color-theme="dark"] #tab-bar.dark #refresh-btn,
+            html[data-color-theme="dark"] #tab-bar.dark #search-btn,
+            html[data-color-theme="dark"] #tab-bar.dark #flag-btn,
+            html[data-color-theme="dark"] #tab-bar.dark #info-btn,
+            html[data-color-theme="dark"] #tab-bar.dark #info-btn-close {
+                color: var(--ink-mid);
+            }
+
+            /* Info filter buttons on dark tab bar (images page, light/warm theme) */
+            #tab-bar.dark .info-filter-btn {
+                color: rgba(255, 255, 255, 0.55);
+                border-color: rgba(255, 255, 255, 0.25);
+                background: transparent;
+            }
+            #tab-bar.dark .info-filter-btn.active {
+                background: rgba(255, 255, 255, 0.9);
+                color: #2b2828;
+                border-color: rgba(255, 255, 255, 0.9);
+            }
+            /* Dark color theme: use CSS variables so it matches feed dark mode exactly */
+            html[data-color-theme="dark"] #tab-bar.dark .info-filter-btn {
+                color: var(--ink-mid);
+                border-color: var(--rule-heavy);
+                background: transparent;
+            }
+            html[data-color-theme="dark"] #tab-bar.dark .info-filter-btn.active {
+                background: var(--ink);
+                color: var(--paper);
+                border-color: var(--ink);
             }
 
             /* ── SWIPE-TO-FLAG ── */
@@ -1581,6 +1753,9 @@
             #tab-bar.dark #flag-btn {
                 color: rgba(255, 255, 255, 0.45);
             }
+            html[data-color-theme="dark"] #tab-bar.dark #flag-btn {
+                color: var(--ink-mid);
+            }
 
             /* ── RESPONSIVE ── */
             @media (min-width: 640px) {
@@ -1653,11 +1828,26 @@
                                     >
                                         <stop
                                             offset="0%"
-                                            stop-color="#dedad4"
+                                            stop-color="#4a4844"
                                         />
                                         <stop
                                             offset="100%"
-                                            stop-color="#bab6b0"
+                                            stop-color="#2a2824"
+                                        />
+                                    </radialGradient>
+                                    <radialGradient
+                                        id="night-grad-dark-nyc"
+                                        cx="50%"
+                                        cy="50%"
+                                        r="50%"
+                                    >
+                                        <stop
+                                            offset="0%"
+                                            stop-color="#4a4844"
+                                        />
+                                        <stop
+                                            offset="100%"
+                                            stop-color="#2a2824"
                                         />
                                     </radialGradient>
                                 </defs>
@@ -1675,35 +1865,26 @@
                                     r="13"
                                 />
                                 <g id="ticks-nyc"></g>
-                                <line
+                                <polygon
                                     class="clock-hand-hour"
                                     id="hr-nyc"
-                                    x1="15"
-                                    y1="15"
-                                    x2="15"
-                                    y2="8"
+                                    points="14.1,15 14.55,7.5 15.45,7.5 15.9,15"
                                 />
-                                <line
+                                <polygon
                                     class="clock-hand-minute"
                                     id="min-nyc"
-                                    x1="15"
-                                    y1="15"
-                                    x2="15"
-                                    y2="5"
-                                />
-                                <line
-                                    class="clock-hand-second"
-                                    id="sec-nyc"
-                                    x1="15"
-                                    y1="15"
-                                    x2="15"
-                                    y2="3.5"
+                                    points="14.3,15 14.55,3 15.45,3 15.7,15"
                                 />
                                 <circle
                                     class="clock-center"
                                     cx="15"
                                     cy="15"
-                                    r="1.5"
+                                    r="0.9"
+                                />
+                                <polygon
+                                    class="clock-hand-second"
+                                    id="sec-nyc"
+                                    points="14.7,18 14.9,3.5 15.1,3.5 15.3,18"
                                 />
                             </svg>
                             <span class="clock-label">NYC</span>
@@ -1723,11 +1904,26 @@
                                     >
                                         <stop
                                             offset="0%"
-                                            stop-color="#dedad4"
+                                            stop-color="#4a4844"
                                         />
                                         <stop
                                             offset="100%"
-                                            stop-color="#bab6b0"
+                                            stop-color="#2a2824"
+                                        />
+                                    </radialGradient>
+                                    <radialGradient
+                                        id="night-grad-dark-lon"
+                                        cx="50%"
+                                        cy="50%"
+                                        r="50%"
+                                    >
+                                        <stop
+                                            offset="0%"
+                                            stop-color="#4a4844"
+                                        />
+                                        <stop
+                                            offset="100%"
+                                            stop-color="#2a2824"
                                         />
                                     </radialGradient>
                                 </defs>
@@ -1745,35 +1941,26 @@
                                     r="13"
                                 />
                                 <g id="ticks-lon"></g>
-                                <line
+                                <polygon
                                     class="clock-hand-hour"
                                     id="hr-lon"
-                                    x1="15"
-                                    y1="15"
-                                    x2="15"
-                                    y2="8"
+                                    points="14.1,15 14.55,7.5 15.45,7.5 15.9,15"
                                 />
-                                <line
+                                <polygon
                                     class="clock-hand-minute"
                                     id="min-lon"
-                                    x1="15"
-                                    y1="15"
-                                    x2="15"
-                                    y2="5"
-                                />
-                                <line
-                                    class="clock-hand-second"
-                                    id="sec-lon"
-                                    x1="15"
-                                    y1="15"
-                                    x2="15"
-                                    y2="3.5"
+                                    points="14.3,15 14.55,3 15.45,3 15.7,15"
                                 />
                                 <circle
                                     class="clock-center"
                                     cx="15"
                                     cy="15"
-                                    r="1.5"
+                                    r="0.9"
+                                />
+                                <polygon
+                                    class="clock-hand-second"
+                                    id="sec-lon"
+                                    points="14.7,18 14.9,3.5 15.1,3.5 15.3,18"
                                 />
                             </svg>
                             <span class="clock-label">LON</span>
@@ -1793,11 +1980,26 @@
                                     >
                                         <stop
                                             offset="0%"
-                                            stop-color="#dedad4"
+                                            stop-color="#4a4844"
                                         />
                                         <stop
                                             offset="100%"
-                                            stop-color="#bab6b0"
+                                            stop-color="#2a2824"
+                                        />
+                                    </radialGradient>
+                                    <radialGradient
+                                        id="night-grad-dark-bey"
+                                        cx="50%"
+                                        cy="50%"
+                                        r="50%"
+                                    >
+                                        <stop
+                                            offset="0%"
+                                            stop-color="#4a4844"
+                                        />
+                                        <stop
+                                            offset="100%"
+                                            stop-color="#2a2824"
                                         />
                                     </radialGradient>
                                 </defs>
@@ -1815,35 +2017,26 @@
                                     r="13"
                                 />
                                 <g id="ticks-bey"></g>
-                                <line
+                                <polygon
                                     class="clock-hand-hour"
                                     id="hr-bey"
-                                    x1="15"
-                                    y1="15"
-                                    x2="15"
-                                    y2="8"
+                                    points="14.1,15 14.55,7.5 15.45,7.5 15.9,15"
                                 />
-                                <line
+                                <polygon
                                     class="clock-hand-minute"
                                     id="min-bey"
-                                    x1="15"
-                                    y1="15"
-                                    x2="15"
-                                    y2="5"
-                                />
-                                <line
-                                    class="clock-hand-second"
-                                    id="sec-bey"
-                                    x1="15"
-                                    y1="15"
-                                    x2="15"
-                                    y2="3.5"
+                                    points="14.3,15 14.55,3 15.45,3 15.7,15"
                                 />
                                 <circle
                                     class="clock-center"
                                     cx="15"
                                     cy="15"
-                                    r="1.5"
+                                    r="0.9"
+                                />
+                                <polygon
+                                    class="clock-hand-second"
+                                    id="sec-bey"
+                                    points="14.7,18 14.9,3.5 15.1,3.5 15.3,18"
                                 />
                             </svg>
                             <span class="clock-label">BEY</span>
@@ -1863,11 +2056,26 @@
                                     >
                                         <stop
                                             offset="0%"
-                                            stop-color="#dedad4"
+                                            stop-color="#4a4844"
                                         />
                                         <stop
                                             offset="100%"
-                                            stop-color="#bab6b0"
+                                            stop-color="#2a2824"
+                                        />
+                                    </radialGradient>
+                                    <radialGradient
+                                        id="night-grad-dark-tyo"
+                                        cx="50%"
+                                        cy="50%"
+                                        r="50%"
+                                    >
+                                        <stop
+                                            offset="0%"
+                                            stop-color="#4a4844"
+                                        />
+                                        <stop
+                                            offset="100%"
+                                            stop-color="#2a2824"
                                         />
                                     </radialGradient>
                                 </defs>
@@ -1885,35 +2093,26 @@
                                     r="13"
                                 />
                                 <g id="ticks-tyo"></g>
-                                <line
+                                <polygon
                                     class="clock-hand-hour"
                                     id="hr-tyo"
-                                    x1="15"
-                                    y1="15"
-                                    x2="15"
-                                    y2="8"
+                                    points="14.1,15 14.55,7.5 15.45,7.5 15.9,15"
                                 />
-                                <line
+                                <polygon
                                     class="clock-hand-minute"
                                     id="min-tyo"
-                                    x1="15"
-                                    y1="15"
-                                    x2="15"
-                                    y2="5"
-                                />
-                                <line
-                                    class="clock-hand-second"
-                                    id="sec-tyo"
-                                    x1="15"
-                                    y1="15"
-                                    x2="15"
-                                    y2="3.5"
+                                    points="14.3,15 14.55,3 15.45,3 15.7,15"
                                 />
                                 <circle
                                     class="clock-center"
                                     cx="15"
                                     cy="15"
-                                    r="1.5"
+                                    r="0.9"
+                                />
+                                <polygon
+                                    class="clock-hand-second"
+                                    id="sec-tyo"
+                                    points="14.7,18 14.9,3.5 15.1,3.5 15.3,18"
                                 />
                             </svg>
                             <span class="clock-label">TYO</span>
@@ -1982,14 +2181,14 @@
                         </button>
                     </div>
                 </div>
-                <div id="wordmark-group">
-                    <div id="wordmark">inked</div>
-                    <div id="wordmark-dateline">
-                        <span id="dateline-date"></span>
-                        <span id="dateline-rule"></span>
-                        <span id="dateline-time"></span>
+                    <div id="wordmark-group">
+                        <div id="wordmark">inked</div>
+                        <div id="wordmark-dateline">
+                            <span id="dateline-weekday"></span>
+                            <span id="dateline-date"></span>
+                            <span id="dateline-time" style="display:none;"></span>
+                        </div>
                     </div>
-                </div>
             </div>
             <div id="ticker-line">
                 <div class="ticker-stat">
@@ -2110,12 +2309,15 @@
                             xmlns="http://www.w3.org/2000/svg"
                             width="16"
                             height="16"
-                            viewBox="0 0 24 24"
+                            viewBox="0 0 256 256"
                             style="display: block"
                         >
                             <path
                                 fill="currentColor"
-                                d="M7 13v8q0 .425-.288.713T6 22t-.712-.288T5 21V4q0-.425.288-.712T6 3h13.525q.275 0 .488.125t.337.325t.162.438t-.062.487L19 8l1.45 3.625q.1.25.063.488t-.163.437t-.337.325t-.488.125zm0-2h11.05l-.9-2.25Q17 8.4 17 8t.15-.75l.9-2.25H7zm0 0V5z"
+                                stroke="currentColor"
+                                stroke-width="3"
+                                stroke-linejoin="round"
+                                d="M238.76,51.73A8,8,0,0,0,232,48H40a8,8,0,0,0-5.66,13.66L76.69,104,34.34,146.34A8,8,0,0,0,40,160H173.62l-28.84,60.56a8,8,0,1,0,14.44,6.88l80-168A8,8,0,0,0,238.76,51.73ZM181.23,144H59.31l34.35-34.34a8,8,0,0,0,0-11.32L59.31,64h160Z"
                             />
                         </svg>
                     </button>
@@ -2140,11 +2342,12 @@
                         </svg>
                     </button>
                     <button
-                        class="bar-btn bar-btn-fill"
                         id="info-btn"
                         onclick="toggleInfo()"
+                        aria-label="Info"
+                        style="border:none;background:transparent;padding:5px 6px;color:var(--ink-mid);display:flex;align-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent;"
                     >
-                        Info
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 256 256" style="display:block;"><path stroke="currentColor" stroke-width="3" stroke-linejoin="round" d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm109.94-52.79a8,8,0,0,0-3.89-5.4l-29.83-17-.12-33.62a8,8,0,0,0-2.83-6.08,111.91,111.91,0,0,0-36.72-20.67,8,8,0,0,0-6.46.59L128,41.85,97.88,25a8,8,0,0,0-6.47-.6A112.1,112.1,0,0,0,54.73,45.15a8,8,0,0,0-2.83,6.07l-.15,33.65-29.83,17a8,8,0,0,0-3.89,5.4,106.47,106.47,0,0,0,0,41.56,8,8,0,0,0,3.89,5.4l29.83,17,.12,33.62a8,8,0,0,0,2.83,6.08,111.91,111.91,0,0,0,36.72,20.67,8,8,0,0,0,6.46-.59L128,214.15,158.12,231a7.91,7.91,0,0,0,3.9,1,8.09,8.09,0,0,0,2.57-.42,112.1,112.1,0,0,0,36.68-20.73,8,8,0,0,0,2.83-6.07l.15-33.65,29.83-17a8,8,0,0,0,3.89-5.4A106.47,106.47,0,0,0,237.94,107.21Zm-15,34.91-28.57,16.25a8,8,0,0,0-3,3c-.58,1-1.19,2.06-1.81,3.06a7.94,7.94,0,0,0-1.22,4.21l-.15,32.25a95.89,95.89,0,0,1-25.37,14.3L134,199.13a8,8,0,0,0-3.91-1h-.19c-1.21,0-2.43,0-3.64,0a8.08,8.08,0,0,0-4.1,1l-28.84,16.1A96,96,0,0,1,67.88,201l-.11-32.2a8,8,0,0,0-1.22-4.22c-.62-1-1.23-2-1.8-3.06a8.09,8.09,0,0,0-3-3.06l-28.6-16.29a90.49,90.49,0,0,1,0-28.26L61.67,97.63a8,8,0,0,0,3-3c.58-1,1.19-2.06,1.81-3.06a7.94,7.94,0,0,0,1.22-4.21l.15-32.25a95.89,95.89,0,0,1,25.37-14.3L122,56.87a8,8,0,0,0,4.1,1c1.21,0,2.43,0,3.64,0a8.08,8.08,0,0,0,4.1-1l28.84-16.1A96,96,0,0,1,188.12,55l.11,32.2a8,8,0,0,0,1.22,4.22c.62,1,1.23,2,1.8,3.06a8.09,8.09,0,0,0,3,3.06l28.6,16.29A90.49,90.49,0,0,1,222.9,142.12Z"></path></svg>
                     </button>
                 </div>
             </div>
@@ -2221,11 +2424,12 @@
                 </div>
                 <div id="bottom-right-info">
                     <button
-                        class="bar-btn bar-btn-fill"
                         id="info-btn-close"
                         onclick="toggleInfo()"
+                        aria-label="Close Info"
+                        style="border:none;background:transparent;padding:5px 6px;color:var(--ink-mid);display:flex;align-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent;"
                     >
-                        Close
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 256 256" style="display:block;"><path stroke="currentColor" stroke-width="3" stroke-linejoin="round" d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm109.94-52.79a8,8,0,0,0-3.89-5.4l-29.83-17-.12-33.62a8,8,0,0,0-2.83-6.08,111.91,111.91,0,0,0-36.72-20.67,8,8,0,0,0-6.46.59L128,41.85,97.88,25a8,8,0,0,0-6.47-.6A112.1,112.1,0,0,0,54.73,45.15a8,8,0,0,0-2.83,6.07l-.15,33.65-29.83,17a8,8,0,0,0-3.89,5.4,106.47,106.47,0,0,0,0,41.56,8,8,0,0,0,3.89,5.4l29.83,17,.12,33.62a8,8,0,0,0,2.83,6.08,111.91,111.91,0,0,0,36.72,20.67,8,8,0,0,0,6.46-.59L128,214.15,158.12,231a7.91,7.91,0,0,0,3.9,1,8.09,8.09,0,0,0,2.57-.42,112.1,112.1,0,0,0,36.68-20.73,8,8,0,0,0,2.83-6.07l.15-33.65,29.83-17a8,8,0,0,0,3.89-5.4A106.47,106.47,0,0,0,237.94,107.21Zm-15,34.91-28.57,16.25a8,8,0,0,0-3,3c-.58,1-1.19,2.06-1.81,3.06a7.94,7.94,0,0,0-1.22,4.21l-.15,32.25a95.89,95.89,0,0,1-25.37,14.3L134,199.13a8,8,0,0,0-3.91-1h-.19c-1.21,0-2.43,0-3.64,0a8.08,8.08,0,0,0-4.1,1l-28.84,16.1A96,96,0,0,1,67.88,201l-.11-32.2a8,8,0,0,0-1.22-4.22c-.62-1-1.23-2-1.8-3.06a8.09,8.09,0,0,0-3-3.06l-28.6-16.29a90.49,90.49,0,0,1,0-28.26L61.67,97.63a8,8,0,0,0,3-3c.58-1,1.19-2.06,1.81-3.06a7.94,7.94,0,0,0,1.22-4.21l.15-32.25a95.89,95.89,0,0,1,25.37-14.3L122,56.87a8,8,0,0,0,4.1,1c1.21,0,2.43,0,3.64,0a8.08,8.08,0,0,0,4.1-1l28.84-16.1A96,96,0,0,1,188.12,55l.11,32.2a8,8,0,0,0,1.22,4.22c.62,1,1.23,2,1.8,3.06a8.09,8.09,0,0,0,3,3.06l28.6,16.29A90.49,90.49,0,0,1,222.9,142.12Z"></path></svg>
                     </button>
                 </div>
             </div>
@@ -2265,7 +2469,7 @@
 
         <div id="flagged-overlay">
             <div id="flagged-header">
-                <span id="flagged-title">Flagged</span>
+                <span id="flagged-title">Flagged <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 256 256" style="display:inline-block;vertical-align:middle;margin-left:4px;position:relative;top:-1px;"><path fill="currentColor" d="M238.76,51.73A8,8,0,0,0,232,48H40a8,8,0,0,0-5.66,13.66L76.69,104,34.34,146.34A8,8,0,0,0,40,160H173.62l-28.84,60.56a8,8,0,1,0,14.44,6.88l80-168A8,8,0,0,0,238.76,51.73ZM181.23,144H59.31l34.35-34.34a8,8,0,0,0,0-11.32L59.31,64h160Z"/></svg></span>
                 <button id="flagged-clear-btn" onclick="clearAllFlagged()">
                     Clear All
                 </button>
@@ -2288,7 +2492,31 @@
 
         <div id="info-overlay">
             <div id="info-header">
-                <span id="info-title">Information</span>
+                <span id="info-title">Settings</span>
+            </div>
+            <!-- Page Color theme selector -->
+            <div id="page-color-row">
+                <span id="page-color-label">Page Color</span>
+                <div id="page-color-tiles">
+                    <button class="color-tile" onclick="setColorTheme('light')" aria-label="Light theme" id="color-tile-light">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36">
+                            <rect x="1.5" y="1.5" width="25" height="33" rx="2" ry="2"
+                                fill="#e8e6e3" style="stroke: var(--rule-heavy); stroke-width: 1;"/>
+                        </svg>
+                    </button>
+                    <button class="color-tile" onclick="setColorTheme('dark')" aria-label="Dark theme" id="color-tile-dark">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36">
+                            <rect x="1.5" y="1.5" width="25" height="33" rx="2" ry="2"
+                                fill="#2b2828" style="stroke: var(--rule-heavy); stroke-width: 1;"/>
+                        </svg>
+                    </button>
+                    <button class="color-tile" onclick="setColorTheme('warm')" aria-label="Warm theme" id="color-tile-warm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36">
+                            <rect x="1.5" y="1.5" width="25" height="33" rx="2" ry="2"
+                                fill="#f3cbb0" style="stroke: var(--rule-heavy); stroke-width: 1;"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
             <div id="sources-toggle-row">
                 <span id="sources-toggle-label">Sources</span>
@@ -2579,6 +2807,12 @@
                     name: "France 24",
                     url: "https://www.france24.com/en/rss",
                     home: "https://france24.com/en",
+                },
+                {
+                    id: "lemonde",
+                    name: "Le Monde",
+                    url: "https://www.lemonde.fr/en/rss/une.xml",
+                    home: "https://www.lemonde.fr/en",
                 },
                 {
                     id: "mee",
@@ -3176,6 +3410,7 @@
                 foreignpol: { flag: "🇺🇸", geo: "US" },
                 spiegel: { flag: "🇩🇪", geo: "DE" },
                 france24: { flag: "🇫🇷", geo: "FR" },
+                lemonde: { flag: "🇫🇷", geo: "FR" },
                 mee: { flag: "🇬🇧", geo: "UK" },
                 occrp: { flag: "🇳🇱", geo: "NL" },
                 savageminds: { flag: "🇺🇸", geo: "US" },
@@ -3238,6 +3473,7 @@
                 aljazeera: { regions: ["global"], themes: ["wire", "war"] },
                 dw: { regions: ["europe"], themes: ["wire"] },
                 france24: { regions: ["europe"], themes: ["wire"] },
+                lemonde: { regions: ["europe"], themes: ["newspapers"] },
                 cbc: { regions: ["americas"], themes: ["wire"] },
                 pbs: { regions: ["americas"], themes: ["wire", "uspolitics"] },
                 // World — global perspective, analysis, not print
@@ -3571,6 +3807,41 @@
             // ── Info page theme filter state ─────────────────────────────────────────────
             const THEME_KEY = "inked_theme_filter";
 
+            // ── Page color theme ──────────────────────────────────────────────────────────
+            const COLOR_THEME_KEY = "inked_color_theme";
+
+            function loadColorTheme() {
+                try {
+                    return localStorage.getItem(COLOR_THEME_KEY) || "light";
+                } catch {
+                    return "light";
+                }
+            }
+            function saveColorTheme(val) {
+                try {
+                    localStorage.setItem(COLOR_THEME_KEY, val);
+                } catch {}
+            }
+            function applyColorTheme(theme) {
+                document.documentElement.setAttribute("data-color-theme", theme === "light" ? "" : theme);
+                ["light", "dark", "warm"].forEach((t) => {
+                    const tile = document.getElementById("color-tile-" + t);
+                    if (!tile) return;
+                    const rect = tile.querySelector("rect");
+                    if (!rect) return;
+                    const isActive = t === theme;
+                    rect.style.stroke = isActive ? "var(--ink)" : "var(--rule-heavy)";
+                    rect.style.strokeWidth = isActive ? "1.5" : "1";
+                });
+                saveColorTheme(theme);
+            }
+            function setColorTheme(theme) {
+                applyColorTheme(theme);
+                if (typeof updateClocks === "function") updateClocks();
+            }
+            // Apply on load
+            applyColorTheme(loadColorTheme());
+
             function loadThemeFilter() {
                 try {
                     return localStorage.getItem(THEME_KEY) || "";
@@ -3641,11 +3912,19 @@
             }
 
             function setThemeFilter(btn, val) {
+                // Toggle: clicking the active filter deselects it (back to All)
+                const newVal = val === infoThemeFilter ? "" : val;
                 document
                     .querySelectorAll("#info-filter-theme .info-filter-btn")
                     .forEach((b) => b.classList.remove("active"));
-                btn.classList.add("active");
-                applyThemeFilter(val);
+                if (newVal === "") {
+                    // Activate the "All" button
+                    const allBtn = document.querySelector("#info-filter-theme .info-filter-btn[data-theme='']");
+                    if (allBtn) allBtn.classList.add("active");
+                } else {
+                    btn.classList.add("active");
+                }
+                applyThemeFilter(newVal);
                 filterSourcesList();
             }
 
@@ -3697,6 +3976,8 @@
                         );
                     });
                 filterSourcesList();
+                // Sync color tile active state
+                applyColorTheme(loadColorTheme());
             }
 
             function closeInfo() {
@@ -3827,7 +4108,7 @@
                     isFlagged(a.id) ? "Unflag" : "Flag",
                 );
                 hoverBtn.dataset.articleId = a.id;
-                hoverBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"><path fill="currentColor" d="M7 13v8q0 .425-.288.713T6 22t-.712-.288T5 21V4q0-.425.288-.712T6 3h13.525q.275 0 .488.125t.337.325t.162.438t-.062.487L19 8l1.45 3.625q.1.25.063.488t-.163.437t-.337.325t-.488.125zm0-2h11.05l-.9-2.25Q17 8.4 17 8t.15-.75l.9-2.25H7zm0 0V5z"/></svg>`;
+                hoverBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 256 256"><path fill="currentColor" stroke="currentColor" stroke-width="3" stroke-linejoin="round" d="M238.76,51.73A8,8,0,0,0,232,48H40a8,8,0,0,0-5.66,13.66L76.69,104,34.34,146.34A8,8,0,0,0,40,160H173.62l-28.84,60.56a8,8,0,1,0,14.44,6.88l80-168A8,8,0,0,0,238.76,51.73ZM181.23,144H59.31l34.35-34.34a8,8,0,0,0,0-11.32L59.31,64h160Z"/></svg>`;
                 hoverBtn.addEventListener("click", (e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -3853,7 +4134,7 @@
 
                 const bg = document.createElement("div");
                 bg.className = "article-swipe-bg flag-bg";
-                bg.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><path fill="rgba(255,255,255,0.9)" d="M7 13v8q0 .425-.288.713T6 22t-.712-.288T5 21V4q0-.425.288-.712T6 3h13.525q.275 0 .488.125t.337.325t.162.438t-.062.487L19 8l1.45 3.625q.1.25.063.488t-.163.437t-.337.325t-.488.125zm0-2h11.05l-.9-2.25Q17 8.4 17 8t.15-.75l.9-2.25H7zm0 0V5z"/></svg>`;
+                bg.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 256 256"><path fill="rgba(255,255,255,0.9)" stroke="rgba(255,255,255,0.9)" stroke-width="3" stroke-linejoin="round" d="M238.76,51.73A8,8,0,0,0,232,48H40a8,8,0,0,0-5.66,13.66L76.69,104,34.34,146.34A8,8,0,0,0,40,160H173.62l-28.84,60.56a8,8,0,1,0,14.44,6.88l80-168A8,8,0,0,0,238.76,51.73ZM181.23,144H59.31l34.35-34.34a8,8,0,0,0,0-11.32L59.31,64h160Z"/></svg>`;
 
                 const inner = document.createElement("div");
                 inner.className = "article-swipe-inner";
@@ -4450,21 +4731,21 @@
 
             function updateClock() {
                 const now = new Date();
-                const date = now
-                    .toLocaleDateString("en-US", {
-                        weekday: "short",
+                const ms = now.getMilliseconds();
+                const weekday = now.toLocaleDateString("en-US", { weekday: "long" }).toUpperCase();
+                const date = now.toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",
                         year: "numeric",
-                    })
-                    .toUpperCase();
+                    }).toUpperCase();
                 const time = now.toLocaleTimeString("en-US", {
                     hour: "2-digit",
                     minute: "2-digit",
-                    second: "2-digit",
                 });
+                const weekdayEl = document.getElementById("dateline-weekday");
                 const dateEl = document.getElementById("dateline-date");
                 const timeEl = document.getElementById("dateline-time");
+                if (weekdayEl) weekdayEl.textContent = weekday;
                 if (dateEl) dateEl.textContent = date;
                 if (timeEl) timeEl.textContent = time;
 
@@ -4487,9 +4768,10 @@
                         const s = parseInt(
                             parts.find((p) => p.type === "second").value,
                         );
-                        const hrDeg = h * 30 + m * 0.5;
-                        const minDeg = m * 6 + s * 0.1;
-                        const secDeg = s * 6;
+                        // Smooth perpetual motion using milliseconds
+                        const secDeg = (s + ms / 1000) * 6;
+                        const minDeg = (m + (s + ms / 1000) / 60) * 6;
+                        const hrDeg = (h + (m + (s + ms / 1000) / 60) / 60) * 30;
                         const hr = document.getElementById(`hr-${id}`);
                         const min = document.getElementById(`min-${id}`);
                         const sec = document.getElementById(`sec-${id}`);
@@ -4512,18 +4794,32 @@
                         const clockItem = document
                             .getElementById(`clock-${id}`)
                             ?.closest(".clock-item");
-                        if (clockItem)
+                        if (clockItem) {
                             clockItem.classList.toggle("night", isNight);
+                            const isDarkTheme = document.documentElement.getAttribute("data-color-theme") === "dark";
+                            const isWarmTheme = document.documentElement.getAttribute("data-color-theme") === "warm";
+                            const isAltTheme = isDarkTheme || isWarmTheme;
+                            clockItem.classList.toggle("day-dark", isAltTheme && !isNight);
+                            clockItem.classList.toggle("night-dark", isAltTheme && isNight);
+                            clockItem.classList.toggle("night-light", !isAltTheme && isNight);
+                        }
                         const faceEl = document.getElementById(`face-${id}`);
-                        if (faceEl)
-                            faceEl.setAttribute(
-                                "fill",
-                                isNight
-                                    ? `url(#night-grad-${id})`
-                                    : "transparent",
-                            );
+                        if (faceEl) {
+                            const isDarkTheme = document.documentElement.getAttribute("data-color-theme") === "dark";
+                            const isWarmTheme = document.documentElement.getAttribute("data-color-theme") === "warm";
+                            if (isDarkTheme || isWarmTheme) {
+                                faceEl.setAttribute("fill", isNight ? `url(#night-grad-dark-${id})` : "#e8e6e3");
+                            } else {
+                                faceEl.setAttribute("fill", isNight ? `url(#night-grad-${id})` : "transparent");
+                            }
+                        }
                     } catch (e) {}
                 });
+            }
+
+            function clockLoop() {
+                updateClock();
+                requestAnimationFrame(clockLoop);
             }
 
             let tickerAnimFrame = null;
@@ -4571,8 +4867,7 @@
             }
 
             drawTicks();
-            updateClock();
-            setInterval(updateClock, 1000);
+            clockLoop();
 
             // ── FLAGGED / READING LIST ────────────────────────────────────────────────────
             const FLAGGED_KEY = "inked_flagged";
@@ -4879,6 +5174,14 @@
 
             // ── Desktop keyboard hotkeys ──────────────────────────────────────────────────
             document.addEventListener("keydown", (e) => {
+                // Escape: always cancel search if active
+                if (e.key === "Escape") {
+                    if (searchQuery || document.getElementById("search-row").classList.contains("visible")) {
+                        e.preventDefault();
+                        clearSearch();
+                        return;
+                    }
+                }
                 // Ignore when typing in an input/textarea
                 const tag = document.activeElement?.tagName;
                 if (tag === "INPUT" || tag === "TEXTAREA") return;
