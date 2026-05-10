@@ -1,12 +1,12 @@
 # Inked
 
-A chronological RSS reader pulling from ~67 sources across wire services, broadcasters, investigative outlets, policy journals, science publications, and local press. No ads, no algorithms, no affiliations.
+A chronological RSS reader pulling from ~68 sources across wire services, broadcasters, investigative outlets, policy journals, science publications, and local press. No ads, no algorithms, no affiliations.
 
 ---
 
 ## What it is
 
-Inked is a single HTML file that pulls live RSS feeds from 67 news sources and renders them as a clean chronological headline stream. Articles are cached locally for up to 3 days so content doesn't disappear as feeds roll over. Articles older than 10 months are filtered out globally.
+Inked is a single HTML file that pulls live RSS feeds from 68 news sources and renders them as a clean chronological headline stream. Articles are cached locally for up to 3 days so content doesn't disappear as feeds roll over. Articles older than 10 months are filtered out globally.
 
 It runs entirely in the browser. There is no backend, no database, no login. A Cloudflare Worker acts as a lightweight RSS proxy to handle cross-origin fetching.
 
@@ -45,6 +45,7 @@ It runs entirely in the browser. There is no backend, no database, no login. A C
 | DiEM25 (via Bluesky) | World |
 | Novara Media | World |
 | China Digital Times | World |
+| Le Monde (English) | World · Newspapers |
 | Politico | US Politics |
 | The Hill | US Politics |
 | The Bulwark | US Politics |
@@ -115,11 +116,28 @@ Browser (index.html)
 
 **Images tab** — Continuous photo grid pulling images from all RSS sources. Configurable column density (1 / 3 / 5 / 9). Tap any image to reveal the caption and article link. Header and footer collapse to slim frosted-glass bars when scrolling.
 
+**Almanac tab** — A location-aware daily conditions page in the tradition of the farmers' almanac. Uses browser geolocation (with manual city override) and stores your last location in localStorage. Powered entirely by free, no-key APIs and client-side calculation. Sections include:
+
+- **Severe Weather** — NWS active alerts for your location (US only), color-coded by severity with event-appropriate icons. Hidden when no alerts are active.
+- **Transit** — Nearby subway, rail, and bikeshare agencies with direct links to their live status pages. Covers 60+ agencies across the US, UK, Europe, Japan, Australia, and Canada. Detected by proximity.
+- **Airport Conditions** — FAA delay programs for all airports within 60 miles (US only). Normal status vs. Ground Delay / Ground Stop / Airspace Flow, with reason and delay window when available.
+- **Weather** — Current conditions, temperature (°F/°C toggle, persisted), feels like, high/low, humidity, wind speed and direction, precipitation, UV index with category label, and AQI. Powered by Open-Meteo.
+- **Sun** — Sunrise, sunset, solar noon, dawn, dusk, golden hour, and day length. Includes a Daylight Saving Time status row (active/inactive, with countdown when within 14 days). Powered by Open-Meteo daily parameters.
+- **Moon** — Phase name with emoji glyph, illumination percentage, and cycle age. Calculated client-side from a known epoch using the 29.53-day synodic period.
+- **Night Sky** — Approximate visibility of all 7 naked-eye planets (Mercury through Neptune) in the evening or morning sky, calculated using truncated VSOP87 orbital series (Jean Meeus). Also shows seasonal evening constellations, the Sun's current astronomical zodiacal position, and Milky Way core visibility status.
+- **Upcoming** — Next moon phases, solstices, equinoxes, and major meteor shower peaks within the next 60 days. All calculated client-side.
+- **Holidays & Observances** — Next 3 upcoming holidays across US Federal, global civic, UN observances, and culturally significant dates worldwide. Moveable feasts (Chinese New Year, Ramadan, Mardi Gras, Diwali, Easter) hardcoded through 2030.
+- **Tides** — Today's high and low tide times and heights from the nearest NOAA CO-OPS station within 75 miles (US coastal only). Silently hidden inland.
+- **Migration** — Seasonal bird migration status (warblers, shorebirds, raptors, waterfowl, and more) by latitude band, plus Ruby-throated Hummingbird, Monarch Butterfly, and coastal whale migration windows.
+- **Land** — USDA hardiness zone estimate, last spring frost / first fall frost dates, current planting season status, and in-season vegetables and fruits for the current month (US only).
+
 **Sources page (Info)** — Full list of all sources with article counts, country flags, and geographic codes. Toggle individual sources on or off to exclude them from the feed and filter bar — preference is saved in localStorage. Use the **Select All / Deselect All** button to bulk toggle. Filter the list by theme using the footer chips: **Wire · World · US Politics · Newspapers · Investigations · Tech & Science · Business · War**.
 
 **Flagged** — Save articles for later by swiping right (mobile) or using the hover flag button (desktop). Access via the flag icon in the footer. Swipe left on a flagged article to remove it.
 
 **Search** — Filter the feed by keyword across headlines and full-text articles. Tap the search icon or press `S` on desktop.
+
+**Page color** — Three theme options selectable from the Sources page: **Light** (warm off-white, default), **Dark** (deep warm dark), and **Warm** (terracotta). Preference is saved in localStorage. The Images tab always renders in dark mode regardless of theme to preserve photo fidelity.
 
 **Desktop keyboard shortcuts** —
 
@@ -128,8 +146,9 @@ Browser (index.html)
 | `F` | Feed |
 | `G` | Images |
 | `S` | Search |
+| `A` | Almanac |
 | `⇧F` | Flagged |
-| `,` | Info |
+| `,` | Info / Sources |
 
 ---
 
@@ -223,7 +242,7 @@ Articles are stored in `localStorage` for up to 3 days (2MB cap). This means:
 - Articles older than 10 months are filtered out globally regardless of cache
 - Cache is per-browser and per-device; clearing browser data will reset it
 
-Source on/off preferences are stored separately in `localStorage` under `inked_disabled_sources` and persist across sessions.
+Source on/off preferences are stored separately in `localStorage` under `inked_disabled_sources` and persist across sessions. Almanac location is stored under `inked_almanac_location`. Temperature unit preference is stored under `inked_almanac_temp_unit`. Page color theme is stored under `inked_color_theme`.
 
 ---
 

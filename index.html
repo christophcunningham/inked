@@ -1757,6 +1757,278 @@
                 color: var(--ink-mid);
             }
 
+            /* ── ALMANAC OVERLAY ── */
+            #almanac-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: var(--paper);
+                z-index: 200;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+                padding: calc(var(--safe-top) + 24px) var(--pad)
+                    calc(var(--safe-bottom) + 80px);
+                scrollbar-width: none;
+            }
+            #almanac-overlay::-webkit-scrollbar { display: none; }
+            #almanac-overlay.open { display: block; }
+
+            #almanac-header {
+                display: flex;
+                align-items: baseline;
+                justify-content: space-between;
+                border-bottom: 2px solid var(--ink);
+                padding-bottom: 12px;
+                margin-bottom: 24px;
+            }
+            #almanac-title {
+                font-family: var(--font-ui);
+                font-size: 10px;
+                font-weight: 600;
+                letter-spacing: 0.12em;
+                text-transform: uppercase;
+                color: var(--ink);
+            }
+
+            /* Location bar */
+            #almanac-location-bar {
+                display: flex;
+                gap: 8px;
+                margin-bottom: 20px;
+                align-items: center;
+                flex-wrap: wrap;
+            }
+            .almanac-input {
+                font-family: var(--font-ui);
+                font-size: 13px;
+                font-weight: 400;
+                padding: 6px 10px;
+                border: 1px solid var(--rule-heavy);
+                background: var(--paper);
+                color: var(--ink);
+                outline: none;
+                -webkit-appearance: none;
+                border-radius: 0;
+                flex: 1;
+                min-width: 100px;
+            }
+            .almanac-input::placeholder { color: var(--ink-light); }
+            #almanac-locate-btn {
+                font-family: var(--font-ui);
+                font-size: 9px;
+                font-weight: 400;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                padding: 6px 14px;
+                border: 1px solid var(--rule-heavy);
+                background: transparent;
+                color: var(--ink-mid);
+                cursor: pointer;
+                white-space: nowrap;
+                -webkit-tap-highlight-color: transparent;
+            }
+            #almanac-locate-btn:active {
+                background: var(--ink);
+                color: var(--paper);
+                border-color: var(--ink);
+            }
+            #almanac-location-display {
+                font-family: var(--font-ui);
+                font-size: 9px;
+                font-weight: 400;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                color: var(--ink-light);
+                margin-bottom: 20px;
+            }
+
+            /* Datetime block */
+            #almanac-datetime {
+                margin-bottom: 28px;
+                padding-bottom: 20px;
+                border-bottom: 1px solid var(--rule);
+            }
+            #almanac-day-large {
+                font-family: var(--font-body);
+                font-size: 38px;
+                font-weight: 300;
+                letter-spacing: -0.02em;
+                line-height: 1;
+                color: var(--ink);
+            }
+            #almanac-date-line {
+                font-family: var(--font-ui);
+                font-size: 12px;
+                font-weight: 400;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+                color: var(--ink-mid);
+                margin-top: 6px;
+            }
+            #almanac-time-live {
+                font-family: var(--font-ui);
+                font-size: 26px;
+                font-weight: 300;
+                letter-spacing: 0.02em;
+                color: var(--ink);
+                font-variant-numeric: tabular-nums;
+                margin-top: 8px;
+            }
+            #almanac-day-of-year {
+                font-family: var(--font-ui);
+                font-size: 11px;
+                font-weight: 400;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+                color: var(--ink-light);
+                margin-top: 6px;
+            }
+
+            /* Data sections */
+            .almanac-section {
+                margin-bottom: 0;
+                padding: 16px 0;
+                border-bottom: 1px solid var(--rule);
+            }
+            .almanac-section:last-child {
+                border-bottom: none;
+            }
+            .almanac-section-label {
+                font-family: var(--font-ui);
+                font-size: 9px;
+                font-weight: 600;
+                letter-spacing: 0.14em;
+                text-transform: uppercase;
+                color: var(--ink-light);
+                margin-bottom: 12px;
+            }
+            .almanac-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: baseline;
+                padding: 7px 0;
+                border-bottom: 1px solid var(--rule);
+            }
+            .almanac-row:last-child { border-bottom: none; padding-bottom: 0; }
+            .almanac-row-label {
+                font-family: var(--font-ui);
+                font-size: 11px;
+                font-weight: 400;
+                letter-spacing: 0.05em;
+                color: var(--ink-mid);
+                text-transform: uppercase;
+            }
+            .almanac-row-value {
+                font-family: var(--font-ui);
+                font-size: 14px;
+                font-weight: 500;
+                color: var(--ink);
+                text-align: right;
+            }
+            .almanac-row-sub {
+                font-family: var(--font-ui);
+                font-size: 10px;
+                font-weight: 400;
+                color: var(--ink-light);
+                margin-top: 3px;
+                text-align: right;
+            }
+            .almanac-loading {
+                font-family: var(--font-ui);
+                font-size: 10px;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+                color: var(--ink-light);
+                padding: 16px 0;
+            }
+            .almanac-tags {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+                margin-top: 4px;
+            }
+            .almanac-tag {
+                font-family: var(--font-ui);
+                font-size: 11px;
+                font-weight: 400;
+                letter-spacing: 0.04em;
+                padding: 4px 12px;
+                border: 1px solid var(--rule);
+                color: var(--ink-mid);
+            }
+            .almanac-error {
+                font-family: var(--font-ui);
+                font-size: 9px;
+                letter-spacing: 0.08em;
+                color: var(--ink-light);
+                font-style: italic;
+            }
+
+            /* NWS alert rows */
+            .nws-alert-row {
+                padding: 8px 0;
+                border-bottom: 1px solid var(--rule);
+            }
+            .nws-alert-row:last-child { border-bottom: none; padding-bottom: 0; }
+            .nws-alert-event {
+                font-family: var(--font-ui);
+                font-size: 13px;
+                font-weight: 600;
+                letter-spacing: 0.02em;
+                display: flex;
+                align-items: center;
+                gap: 7px;
+            }
+            .nws-alert-meta {
+                font-family: var(--font-ui);
+                font-size: 9px;
+                font-weight: 400;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+                color: var(--ink-light);
+                margin-top: 3px;
+            }
+            .nws-severity-extreme  { color: #c0392b; }
+            .nws-severity-severe   { color: #d35400; }
+            .nws-severity-moderate { color: #b07d00; }
+            .nws-severity-minor    { color: var(--ink-mid); }
+
+            /* Transit status link */
+            .transit-status-link {
+                font-family: var(--font-ui);
+                font-size: 10px;
+                font-weight: 500;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+                color: var(--ink-mid);
+                text-decoration: none;
+                padding: 4px 10px;
+                border: 1px solid var(--rule-heavy);
+                white-space: nowrap;
+                flex-shrink: 0;
+                -webkit-tap-highlight-color: transparent;
+            }
+            .transit-status-link:active {
+                background: var(--ink);
+                color: var(--paper);
+                border-color: var(--ink);
+            }
+
+            /* Almanac button in tab bar */
+            #almanac-btn {
+                border: none;
+                background: transparent;
+                padding: 5px 4px;
+                color: var(--ink-mid);
+                display: flex;
+                align-items: center;
+                cursor: pointer;
+                -webkit-tap-highlight-color: transparent;
+            }
+            #almanac-btn:active { opacity: 0.6; }
+            #tab-bar.dark #almanac-btn { color: rgba(255,255,255,0.45); }
+            html[data-color-theme="dark"] #tab-bar.dark #almanac-btn { color: var(--ink-mid); }
+
             /* ── RESPONSIVE ── */
             @media (min-width: 640px) {
                 :root {
@@ -1794,7 +2066,8 @@
 
                 #main,
                 #info-overlay,
-                #flagged-overlay {
+                #flagged-overlay,
+                #almanac-overlay {
                     max-width: 75%;
                     margin-left: auto;
                     margin-right: auto;
@@ -2342,6 +2615,13 @@
                         </svg>
                     </button>
                     <button
+                        id="almanac-btn"
+                        onclick="toggleAlmanac()"
+                        aria-label="Almanac"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 256 256" fill="currentColor" style="display:block"><path stroke="currentColor" stroke-width="3" stroke-linejoin="round" d="M245.11,60.68c-7.65-13.19-27.84-16.16-58.5-8.66A95.93,95.93,0,0,0,32,128a98,98,0,0,0,.78,12.31C5.09,169,5.49,186,10.9,195.32,16,204.16,26.64,208,40.64,208a124.11,124.11,0,0,0,28.79-4A95.93,95.93,0,0,0,224,128a97.08,97.08,0,0,0-.77-12.25c12.5-13,20.82-25.35,23.65-35.92C248.83,72.51,248.24,66.07,245.11,60.68ZM128,48a80.11,80.11,0,0,1,78,62.2c-17.06,16.06-40.15,32.53-62.07,45.13C116.38,171.14,92.48,181,73.42,186.4A79.94,79.94,0,0,1,128,48ZM24.74,187.29c-1.46-2.51-.65-7.24,2.22-13a79.05,79.05,0,0,1,10.29-15.05,96,96,0,0,0,18,31.32C38,193.46,27.24,191.61,24.74,187.29ZM128,208a79.45,79.45,0,0,1-38.56-9.94,370,370,0,0,0,62.43-28.86c21.58-12.39,40.68-25.82,56.07-39.08A80.07,80.07,0,0,1,128,208ZM231.42,75.69c-1.7,6.31-6.19,13.53-12.63,21.13a95.69,95.69,0,0,0-18-31.35c14.21-2.35,27.37-2.17,30.5,3.24C232.19,70.28,232.24,72.63,231.42,75.69Z"/></svg>
+                    </button>
+                    <button
                         id="info-btn"
                         onclick="toggleInfo()"
                         aria-label="Info"
@@ -2351,7 +2631,13 @@
                     </button>
                 </div>
             </div>
-            <!-- Info mode: single row of theme chips + Close -->
+            <!-- Almanac mode: just a label + close -->
+            <div class="bottom-bar-inner" id="tab-bar-almanac-mode" style="display:none;">
+                <span style="font-family:var(--font-ui);font-size:9px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-mid);">Almanac</span>
+                <button onclick="closeAlmanac()" style="border:none;background:transparent;padding:5px 6px;color:var(--ink-mid);display:flex;align-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="display:block"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+                </button>
+            </div>
             <div
                 class="bottom-bar-inner"
                 id="tab-bar-info-mode"
@@ -2429,7 +2715,7 @@
                         aria-label="Close Info"
                         style="border:none;background:transparent;padding:5px 6px;color:var(--ink-mid);display:flex;align-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent;"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 256 256" style="display:block;"><path stroke="currentColor" stroke-width="3" stroke-linejoin="round" d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm109.94-52.79a8,8,0,0,0-3.89-5.4l-29.83-17-.12-33.62a8,8,0,0,0-2.83-6.08,111.91,111.91,0,0,0-36.72-20.67,8,8,0,0,0-6.46.59L128,41.85,97.88,25a8,8,0,0,0-6.47-.6A112.1,112.1,0,0,0,54.73,45.15a8,8,0,0,0-2.83,6.07l-.15,33.65-29.83,17a8,8,0,0,0-3.89,5.4,106.47,106.47,0,0,0,0,41.56,8,8,0,0,0,3.89,5.4l29.83,17,.12,33.62a8,8,0,0,0,2.83,6.08,111.91,111.91,0,0,0,36.72,20.67,8,8,0,0,0,6.46-.59L128,214.15,158.12,231a7.91,7.91,0,0,0,3.9,1,8.09,8.09,0,0,0,2.57-.42,112.1,112.1,0,0,0,36.68-20.73,8,8,0,0,0,2.83-6.07l.15-33.65,29.83-17a8,8,0,0,0,3.89-5.4A106.47,106.47,0,0,0,237.94,107.21Zm-15,34.91-28.57,16.25a8,8,0,0,0-3,3c-.58,1-1.19,2.06-1.81,3.06a7.94,7.94,0,0,0-1.22,4.21l-.15,32.25a95.89,95.89,0,0,1-25.37,14.3L134,199.13a8,8,0,0,0-3.91-1h-.19c-1.21,0-2.43,0-3.64,0a8.08,8.08,0,0,0-4.1,1l-28.84,16.1A96,96,0,0,1,67.88,201l-.11-32.2a8,8,0,0,0-1.22-4.22c-.62-1-1.23-2-1.8-3.06a8.09,8.09,0,0,0-3-3.06l-28.6-16.29a90.49,90.49,0,0,1,0-28.26L61.67,97.63a8,8,0,0,0,3-3c.58-1,1.19-2.06,1.81-3.06a7.94,7.94,0,0,0,1.22-4.21l.15-32.25a95.89,95.89,0,0,1,25.37-14.3L122,56.87a8,8,0,0,0,4.1,1c1.21,0,2.43,0,3.64,0a8.08,8.08,0,0,0,4.1-1l28.84-16.1A96,96,0,0,1,188.12,55l.11,32.2a8,8,0,0,0,1.22,4.22c.62,1,1.23,2,1.8,3.06a8.09,8.09,0,0,0,3,3.06l28.6,16.29A90.49,90.49,0,0,1,222.9,142.12Z"></path></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="display:block"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
                     </button>
                 </div>
             </div>
@@ -2454,10 +2740,10 @@
                 </div>
                 <div style="flex-shrink: 0">
                     <button
-                        class="bar-btn bar-btn-fill"
                         onclick="toggleFlagged()"
+                        style="border:none;background:transparent;padding:5px 6px;color:var(--ink-mid);display:flex;align-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent;"
                     >
-                        Close
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="display:block"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
                     </button>
                 </div>
             </div>
@@ -2654,6 +2940,105 @@
                 >, 2026.
             </div>
             <div id="info-updated"></div>
+        </div>
+
+        <!-- ── ALMANAC OVERLAY ── -->
+        <div id="almanac-overlay">
+            <div id="almanac-header">
+                <span id="almanac-title">Almanac</span>
+            </div>
+
+            <!-- Location bar -->
+            <div id="almanac-location-bar">
+                <input class="almanac-input" id="almanac-city-input" type="text" placeholder="City or town…" autocomplete="off" autocorrect="off" spellcheck="false" />
+                <button id="almanac-locate-btn" onclick="almanacGeolocate()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 256 256" fill="currentColor" style="display:inline;vertical-align:middle;margin-right:4px"><path d="M229.66,109.66l-48,48a8,8,0,0,1-11.32-11.32L204.69,112H128a88.1,88.1,0,0,0-88,88,8,8,0,0,1-16,0A104.11,104.11,0,0,1,128,96h76.69L170.34,61.66A8,8,0,0,1,181.66,50.34l48,48A8,8,0,0,1,229.66,109.66Z"/></svg>Locate me
+                </button>
+            </div>
+            <div id="almanac-location-display"></div>
+
+            <!-- Date / Time -->
+            <div id="almanac-datetime">
+                <div id="almanac-day-large"></div>
+                <div id="almanac-date-line"></div>
+                <div id="almanac-time-live"></div>
+                <div id="almanac-day-of-year"></div>
+            </div>
+
+            <!-- Severe Weather Alerts (NWS, US only, hidden when no alerts) -->
+            <div class="almanac-section" id="almanac-section-nws" style="display:none">
+                <div class="almanac-section-label">Severe Weather</div>
+                <div id="almanac-nws-alerts-rows"></div>
+            </div>
+
+            <!-- Transit Delays (shown only if major transit city nearby) -->
+            <div class="almanac-section" id="almanac-section-transit" style="display:none">
+                <div class="almanac-section-label">Transit</div>
+                <div id="almanac-transit-rows"><div class="almanac-loading">Checking…</div></div>
+            </div>
+
+            <!-- Airport Delays (shown only if airports within range) -->
+            <div class="almanac-section" id="almanac-section-airports" style="display:none">
+                <div class="almanac-section-label">Airport Conditions</div>
+                <div id="almanac-airports-rows"><div class="almanac-loading">Checking…</div></div>
+            </div>
+
+            <!-- Weather -->
+            <div class="almanac-section" id="almanac-section-weather">
+                <div class="almanac-section-label" style="display:flex;justify-content:space-between;align-items:center;">
+                    <span>Weather</span>
+                    <button id="almanac-temp-toggle" onclick="toggleTempUnit()" style="font-family:var(--font-ui);font-size:9px;font-weight:600;letter-spacing:0.08em;border:1px solid var(--rule-heavy);background:transparent;color:var(--ink-mid);padding:2px 8px;cursor:pointer;-webkit-tap-highlight-color:transparent;">°F</button>
+                </div>
+                <div id="almanac-weather-rows"><div class="almanac-loading">Awaiting location…</div></div>
+            </div>
+
+            <!-- Sun data -->
+            <div class="almanac-section" id="almanac-section-sky">
+                <div class="almanac-section-label">Sun</div>
+                <div id="almanac-sky-rows"><div class="almanac-loading">Awaiting location…</div></div>
+            </div>
+
+            <!-- Moon -->
+            <div class="almanac-section" id="almanac-section-moon">
+                <div class="almanac-section-label">Moon</div>
+                <div id="almanac-moon-rows"><div class="almanac-loading">Awaiting location…</div></div>
+            </div>
+
+            <!-- Night Sky -->
+            <div class="almanac-section" id="almanac-section-nightsky">
+                <div class="almanac-section-label">Night Sky</div>
+                <div id="almanac-nightsky-rows"><div class="almanac-loading">Calculating…</div></div>
+            </div>
+
+            <!-- Astronomical events -->
+            <div class="almanac-section" id="almanac-section-astro">
+                <div class="almanac-section-label">Upcoming</div>
+                <div id="almanac-astro-rows"><div class="almanac-loading">Calculating…</div></div>
+            </div>
+
+            <!-- Holidays -->
+            <div class="almanac-section" id="almanac-section-holidays">
+                <div class="almanac-section-label">Holidays &amp; Observances</div>
+                <div id="almanac-holidays-rows"><div class="almanac-loading">Calculating…</div></div>
+            </div>
+
+            <!-- Tides (shown only if NOAA station found) -->
+            <div class="almanac-section" id="almanac-section-tides" style="display:none">
+                <div class="almanac-section-label">Tides</div>
+                <div id="almanac-tides-rows"><div class="almanac-loading">Loading…</div></div>
+            </div>
+
+            <!-- Migration -->
+            <div class="almanac-section" id="almanac-section-migration">
+                <div class="almanac-section-label">Migration</div>
+                <div id="almanac-migration-rows"><div class="almanac-loading">Awaiting location…</div></div>
+            </div>
+
+            <!-- Land -->
+            <div class="almanac-section" id="almanac-section-land">
+                <div class="almanac-section-label">Land</div>
+                <div id="almanac-land-rows"><div class="almanac-loading">Awaiting location…</div></div>
+            </div>
         </div>
 
         <script>
@@ -3958,6 +4343,7 @@
                 ) {
                     clearSearch();
                 }
+                if (document.getElementById('almanac-overlay').classList.contains('open')) closeAlmanac();
                 document.getElementById("info-overlay").classList.add("open");
                 document.getElementById("tab-bar-feed-mode").style.display =
                     "none";
@@ -5172,6 +5558,1669 @@
             // Initialise badge on load
             updateFlagBadge();
 
+            // ── ALMANAC ──────────────────────────────────────────────────────────────────
+
+            let almanacLat = null, almanacLon = null, almanacTZ = null;
+            let almanacTimeInterval = null;
+            let almanacCityName = '';
+            let almanacTempUnit = localStorage.getItem('inked_almanac_temp_unit') || 'F';
+
+            function toggleTempUnit() {
+                almanacTempUnit = almanacTempUnit === 'F' ? 'C' : 'F';
+                localStorage.setItem('inked_almanac_temp_unit', almanacTempUnit);
+                const btn = document.getElementById('almanac-temp-toggle');
+                if (btn) btn.textContent = '°' + almanacTempUnit;
+                if (almanacLat) loadWeather();
+            }
+
+            function toDisplayTemp(f) {
+                if (almanacTempUnit === 'C') return Math.round((f - 32) * 5/9) + '°C';
+                return Math.round(f) + '°F';
+            }
+
+            // Restore saved location from localStorage
+            (function restoreAlmanacLocation() {
+                try {
+                    const saved = localStorage.getItem('inked_almanac_location');
+                    if (!saved) return;
+                    const loc = JSON.parse(saved);
+                    if (loc.lat && loc.lon) {
+                        almanacLat = loc.lat;
+                        almanacLon = loc.lon;
+                        almanacTZ = loc.tz || null;
+                        almanacCityName = loc.city || '';
+                    }
+                } catch(e) {}
+            })();
+
+            function saveAlmanacLocation() {
+                try {
+                    localStorage.setItem('inked_almanac_location', JSON.stringify({
+                        lat: almanacLat, lon: almanacLon, tz: almanacTZ, city: almanacCityName
+                    }));
+                } catch(e) {}
+            }
+
+            function toggleAlmanac() {
+                const overlay = document.getElementById('almanac-overlay');
+                if (overlay.classList.contains('open')) {
+                    closeAlmanac();
+                } else {
+                    openAlmanac();
+                }
+            }
+
+            function openAlmanac() {
+                if (searchQuery || document.getElementById('search-row').classList.contains('visible')) clearSearch();
+                if (document.getElementById('info-overlay').classList.contains('open')) closeInfo();
+                if (document.getElementById('flagged-overlay').classList.contains('open')) closeFlagged();
+                document.getElementById('almanac-overlay').classList.add('open');
+                document.getElementById('tab-bar-feed-mode').style.display = 'none';
+                document.getElementById('tab-bar-almanac-mode').style.display = 'flex';
+                startAlmanacClock();
+                renderAstroEvents();
+                renderHolidays();
+                renderNightSky();
+                // Set temp toggle label
+                const tempBtn = document.getElementById('almanac-temp-toggle');
+                if (tempBtn) tempBtn.textContent = '°' + almanacTempUnit;
+                if (almanacLat) {
+                    // Restore saved location display and load data
+                    const cityInput = document.getElementById('almanac-city-input');
+                    if (cityInput && almanacCityName) cityInput.value = almanacCityName;
+                    showLocationDisplay(almanacCityName + (almanacLat ? ' · ' + almanacLat.toFixed(2) + '°, ' + almanacLon.toFixed(2) + '°' : ''));
+                    loadAlmanacData();
+                } else {
+                    almanacGeolocate();
+                }
+            }
+
+            function closeAlmanac() {
+                document.getElementById('almanac-overlay').classList.remove('open');
+                document.getElementById('tab-bar-feed-mode').style.display = 'flex';
+                document.getElementById('tab-bar-almanac-mode').style.display = 'none';
+                stopAlmanacClock();
+            }
+
+            // ── Clock / date ──
+            function startAlmanacClock() {
+                updateAlmanacClock();
+                almanacTimeInterval = setInterval(updateAlmanacClock, 1000);
+            }
+            function stopAlmanacClock() {
+                if (almanacTimeInterval) { clearInterval(almanacTimeInterval); almanacTimeInterval = null; }
+            }
+            function updateAlmanacClock() {
+                const now = almanacTZ ? new Date(new Date().toLocaleString('en-US', {timeZone: almanacTZ})) : new Date();
+                const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+                const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+                document.getElementById('almanac-day-large').textContent = days[now.getDay()];
+                document.getElementById('almanac-date-line').textContent =
+                    months[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear();
+                document.getElementById('almanac-time-live').textContent =
+                    now.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+                const start = new Date(now.getFullYear(), 0, 0);
+                const diff = now - start;
+                const dayOfYear = Math.floor(diff / 86400000);
+                const totalDays = isLeapYear(now.getFullYear()) ? 366 : 365;
+                const pct = Math.round((dayOfYear / totalDays) * 100);
+                document.getElementById('almanac-day-of-year').textContent =
+                    'Day ' + dayOfYear + ' of ' + totalDays + ' · ' + pct + '% through ' + now.getFullYear();
+                // Also update feed header dateline
+                const wkEl = document.getElementById('dateline-weekday');
+                const dtEl = document.getElementById('dateline-date');
+                if (wkEl) wkEl.textContent = days[now.getDay()].toUpperCase().slice(0,3);
+                if (dtEl) dtEl.textContent = months[now.getMonth()].slice(0,3).toUpperCase() + ' ' + now.getDate() + ', ' + now.getFullYear();
+            }
+            function isLeapYear(y) { return (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0; }
+
+            // ── Geolocation ──
+            function almanacGeolocate() {
+                const btn = document.getElementById('almanac-locate-btn');
+                if (btn) btn.textContent = 'Locating…';
+                if (!navigator.geolocation) {
+                    showLocationDisplay('Geolocation not available');
+                    if (btn) btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 256 256" fill="currentColor" style="display:inline;vertical-align:middle;margin-right:4px"><path d="M229.66,109.66l-48,48a8,8,0,0,1-11.32-11.32L204.69,112H128a88.1,88.1,0,0,0-88,88,8,8,0,0,1-16,0A104.11,104.11,0,0,1,128,96h76.69L170.34,61.66A8,8,0,0,1,181.66,50.34l48,48A8,8,0,0,1,229.66,109.66Z"/></svg>Locate me';
+                    return;
+                }
+                navigator.geolocation.getCurrentPosition(
+                    pos => {
+                        almanacLat = pos.coords.latitude;
+                        almanacLon = pos.coords.longitude;
+                        if (btn) btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 256 256" fill="currentColor" style="display:inline;vertical-align:middle;margin-right:4px"><path d="M229.66,109.66l-48,48a8,8,0,0,1-11.32-11.32L204.69,112H128a88.1,88.1,0,0,0-88,88,8,8,0,0,1-16,0A104.11,104.11,0,0,1,128,96h76.69L170.34,61.66A8,8,0,0,1,181.66,50.34l48,48A8,8,0,0,1,229.66,109.66Z"/></svg>Locate me';
+                        reverseGeocode(almanacLat, almanacLon);
+                        loadAlmanacData();
+                        saveAlmanacLocation();
+                    },
+                    err => {
+                        showLocationDisplay('Location access denied');
+                        if (btn) btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 256 256" fill="currentColor" style="display:inline;vertical-align:middle;margin-right:4px"><path d="M229.66,109.66l-48,48a8,8,0,0,1-11.32-11.32L204.69,112H128a88.1,88.1,0,0,0-88,88,8,8,0,0,1-16,0A104.11,104.11,0,0,1,128,96h76.69L170.34,61.66A8,8,0,0,1,181.66,50.34l48,48A8,8,0,0,1,229.66,109.66Z"/></svg>Locate me';
+                    },
+                    {timeout: 10000}
+                );
+            }
+
+            async function reverseGeocode(lat, lon) {
+                try {
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
+                    const data = await res.json();
+                    const city = data.address.city || data.address.town || data.address.village || data.address.county || '';
+                    const country = data.address.country || '';
+                    const country_code = (data.address.country_code || '').toUpperCase();
+                    almanacCityName = city;
+                    almanacTZ = data.timezone || null;
+                    // Try to get timezone separately
+                    try {
+                        const tzRes = await fetch(`https://timeapi.io/api/timezone/coordinate?latitude=${lat}&longitude=${lon}`);
+                        const tzData = await tzRes.json();
+                        if (tzData.timeZone) almanacTZ = tzData.timeZone;
+                    } catch(e) {}
+                    showLocationDisplay([city, country].filter(Boolean).join(', ') + (country_code ? ' · ' + lat.toFixed(2) + '°, ' + lon.toFixed(2) + '°' : ''));
+                    document.getElementById('almanac-city-input').value = city;
+                    saveAlmanacLocation();
+                } catch(e) {
+                    showLocationDisplay(lat.toFixed(3) + '°, ' + lon.toFixed(3) + '°');
+                }
+            }
+
+            function showLocationDisplay(text) {
+                const el = document.getElementById('almanac-location-display');
+                if (el) el.textContent = text;
+            }
+
+            // Manual city search
+            document.getElementById('almanac-city-input').addEventListener('keydown', async function(e) {
+                if (e.key !== 'Enter') return;
+                const val = this.value.trim();
+                if (!val) return;
+                this.blur();
+                showLocationDisplay('Searching…');
+                try {
+                    const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(val)}&format=json&limit=1`);
+                    const data = await res.json();
+                    if (!data.length) { showLocationDisplay('Location not found'); return; }
+                    almanacLat = parseFloat(data[0].lat);
+                    almanacLon = parseFloat(data[0].lon);
+                    almanacCityName = val;
+                    showLocationDisplay(data[0].display_name.split(',').slice(0,2).join(',') + ' · ' + almanacLat.toFixed(2) + '°, ' + almanacLon.toFixed(2) + '°');
+                    try {
+                        const tzRes = await fetch(`https://timeapi.io/api/timezone/coordinate?latitude=${almanacLat}&longitude=${almanacLon}`);
+                        const tzData = await tzRes.json();
+                        if (tzData.timeZone) almanacTZ = tzData.timeZone;
+                    } catch(e) {}
+                    saveAlmanacLocation();
+                    loadAlmanacData();
+                } catch(e) { showLocationDisplay('Search failed'); }
+            });
+
+            // ── Main data loader ──
+            async function loadAlmanacData() {
+                if (!almanacLat || !almanacLon) return;
+                setAlmanacSectionLoading();
+                await Promise.allSettled([
+                    loadSunMoon(),
+                    loadWeather(),
+                    loadTides(),
+                    loadAirports(),
+                    loadNWSAlerts(),
+                ]);
+                loadTransit();
+                renderAstroEvents();
+                renderHolidays();
+                renderNightSky();
+                renderLandData();
+                renderMigration();
+            }
+
+            function setAlmanacSectionLoading() {
+                ['sky','moon','nightsky','weather','tides','migration','land','airports','transit','nws-alerts'].forEach(id => {
+                    const el = document.getElementById('almanac-' + id + '-rows');
+                    if (el) el.innerHTML = '<div class="almanac-loading">Loading…</div>';
+                });
+                document.getElementById('almanac-section-tides').style.display = 'none';
+                document.getElementById('almanac-section-airports').style.display = 'none';
+                document.getElementById('almanac-section-transit').style.display = 'none';
+                document.getElementById('almanac-section-nws').style.display = 'none';
+            }
+
+            // ── Sun via Open-Meteo daily params + Moon calculated client-side ──
+            async function loadSunMoon() {
+                try {
+                    const today = new Date().toISOString().split('T')[0];
+                    const url = `https://api.open-meteo.com/v1/forecast?latitude=${almanacLat}&longitude=${almanacLon}&daily=sunrise,sunset,daylight_duration,sunshine_duration&timezone=auto&forecast_days=1`;
+                    const res = await fetch(url);
+                    const data = await res.json();
+                    const d = data.daily;
+
+                    // Format time from ISO string e.g. "2026-05-10T05:47"
+                    const fmtTime = iso => {
+                        if (!iso) return '—';
+                        const t = iso.split('T')[1] || '';
+                        const [h, m] = t.split(':').map(Number);
+                        const ampm = h >= 12 ? 'PM' : 'AM';
+                        const h12 = h % 12 || 12;
+                        return `${h12}:${String(m).padStart(2,'0')} ${ampm}`;
+                    };
+
+                    const sunrise = fmtTime(d.sunrise?.[0]);
+                    const sunset  = fmtTime(d.sunset?.[0]);
+
+                    // Day length from daylight_duration (seconds)
+                    const dlSec = d.daylight_duration?.[0] || 0;
+                    const dlH = Math.floor(dlSec / 3600);
+                    const dlM = Math.floor((dlSec % 3600) / 60);
+                    const dayLen = dlH + 'h ' + dlM + 'm';
+
+                    // Solar noon = midpoint between sunrise and sunset
+                    const solarNoon = (() => {
+                        const sr = d.sunrise?.[0], ss = d.sunset?.[0];
+                        if (!sr || !ss) return '—';
+                        const mid = (new Date(sr).getTime() + new Date(ss).getTime()) / 2;
+                        return fmtTime(new Date(mid).toISOString().replace('Z',''));
+                    })();
+
+                    // Dawn = ~30 min before sunrise (civil twilight approx)
+                    const dawn = (() => {
+                        const sr = d.sunrise?.[0];
+                        if (!sr) return '—';
+                        return fmtTime(new Date(new Date(sr).getTime() - 30*60000).toISOString().replace('Z',''));
+                    })();
+
+                    // Dusk = ~30 min after sunset
+                    const dusk = (() => {
+                        const ss = d.sunset?.[0];
+                        if (!ss) return '—';
+                        return fmtTime(new Date(new Date(ss).getTime() + 30*60000).toISOString().replace('Z',''));
+                    })();
+
+                    // Golden hour = ~1h before sunset
+                    const goldenHour = (() => {
+                        const ss = d.sunset?.[0];
+                        if (!ss) return '—';
+                        return fmtTime(new Date(new Date(ss).getTime() - 60*60000).toISOString().replace('Z',''));
+                    })();
+
+                    // DST contextual note (US only, within 14 days)
+                    const isUS = almanacLat > 24 && almanacLat < 72 && almanacLon > -170 && almanacLon < -65;
+                    let dstRow = '';
+                    if (isUS) {
+                        const now2 = new Date();
+                        const yr = now2.getFullYear();
+                        const dstStart = nthDay(yr, 3, 0, 2);
+                        const dstEnd   = nthDay(yr, 11, 0, 1);
+                        const daysToStart = Math.ceil((dstStart - now2) / 86400000);
+                        const daysToEnd   = Math.ceil((dstEnd   - now2) / 86400000);
+                        const isDST = now2 >= dstStart && now2 < dstEnd;
+
+                        if (daysToStart > 0 && daysToStart <= 14)
+                            dstRow = almanacRow('Daylight Saving Time', 'Off — starts in ' + daysToStart + ' days', 'Clocks spring forward ' + dstStart.toLocaleDateString('en-US',{month:'short',day:'numeric'}), 'sun');
+                        else if (daysToEnd > 0 && daysToEnd <= 14)
+                            dstRow = almanacRow('Daylight Saving Time', 'On — ends in ' + daysToEnd + ' days', 'Clocks fall back ' + dstEnd.toLocaleDateString('en-US',{month:'short',day:'numeric'}), 'moon');
+                        else if (isDST)
+                            dstRow = almanacRow('Daylight Saving Time', 'Active', 'Ends ' + dstEnd.toLocaleDateString('en-US',{month:'short',day:'numeric'}), 'sun');
+                        else
+                            dstRow = almanacRow('Daylight Saving Time', 'Not active', 'Begins ' + dstStart.toLocaleDateString('en-US',{month:'short',day:'numeric'}), 'moon');
+                    }
+
+                    document.getElementById('almanac-sky-rows').innerHTML = `
+                        ${almanacRow('Sunrise', sunrise, '', 'sun-horizon')}
+                        ${almanacRow('Sunset', sunset, '', 'sun-horizon')}
+                        ${almanacRow('Solar Noon', solarNoon, '', 'sun')}
+                        ${almanacRow('Dawn', dawn, '', 'sun-horizon')}
+                        ${almanacRow('Dusk', dusk, '', 'sun-horizon')}
+                        ${almanacRow('Golden Hour', goldenHour, '', 'rainbow-cloud')}
+                        ${almanacRow('Day Length', dayLen, '', 'sun')}
+                        ${dstRow}
+                    `;
+                } catch(e) {
+                    document.getElementById('almanac-sky-rows').innerHTML = '<div class="almanac-error">Sun data unavailable</div>';
+                }
+
+                // Moon: fully client-side, no API needed
+                try {
+                    const now = new Date();
+                    const knownNewMoon = new Date('2000-01-06T18:14:00Z');
+                    const synodic = 29.530588853;
+                    const elapsed = (now - knownNewMoon) / (synodic * 24 * 3600 * 1000);
+                    const phase = ((elapsed % 1) + 1) % 1; // 0=new, 0.5=full
+                    const ageDays = phase * synodic;
+
+                    // Phase name
+                    let phaseName, glyph;
+                    if      (phase < 0.033) { phaseName = 'New Moon';        glyph = '🌑'; }
+                    else if (phase < 0.25)  { phaseName = 'Waxing Crescent'; glyph = '🌒'; }
+                    else if (phase < 0.283) { phaseName = 'First Quarter';   glyph = '🌓'; }
+                    else if (phase < 0.50)  { phaseName = 'Waxing Gibbous';  glyph = '🌔'; }
+                    else if (phase < 0.533) { phaseName = 'Full Moon';       glyph = '🌕'; }
+                    else if (phase < 0.75)  { phaseName = 'Waning Gibbous';  glyph = '🌖'; }
+                    else if (phase < 0.783) { phaseName = 'Last Quarter';    glyph = '🌗'; }
+                    else if (phase < 0.967) { phaseName = 'Waning Crescent'; glyph = '🌘'; }
+                    else                    { phaseName = 'New Moon';        glyph = '🌑'; }
+
+                    // Illumination (0% at new, 100% at full)
+                    const illum = Math.round((1 - Math.cos(phase * 2 * Math.PI)) / 2 * 100);
+
+                    // Age in cycle
+                    const ageStr = ageDays.toFixed(1) + ' days into cycle';
+
+                    document.getElementById('almanac-moon-rows').innerHTML = `
+                        ${almanacRow('Phase', glyph + ' ' + phaseName, '', 'moon')}
+                        ${almanacRow('Illumination', illum + '%', '', 'moon')}
+                        ${almanacRow('Cycle Age', ageStr, '', 'moon-stars')}
+                    `;
+                } catch(e) {
+                    document.getElementById('almanac-moon-rows').innerHTML = '<div class="almanac-error">Moon data unavailable</div>';
+                }
+            }
+
+            function getMoonGlyph(phase) {
+                if (!phase) return '';
+                const p = phase.toLowerCase();
+                if (p.includes('new')) return '🌑';
+                if (p.includes('waxing crescent')) return '🌒';
+                if (p.includes('first quarter')) return '🌓';
+                if (p.includes('waxing gibbous')) return '🌔';
+                if (p.includes('full')) return '🌕';
+                if (p.includes('waning gibbous')) return '🌖';
+                if (p.includes('last quarter') || p.includes('third quarter')) return '🌗';
+                if (p.includes('waning crescent')) return '🌘';
+                return '';
+            }
+
+            // ── Astronomical events (calculated client-side) ──
+            function renderAstroEvents() {
+                const events = [];
+                const now = new Date();
+
+                // Next full moon (synodic period ~29.53 days, known reference)
+                const knownFullMoon = new Date('2000-01-21T04:41:00Z');
+                const synodic = 29.530588853 * 24 * 3600 * 1000;
+                let fm = new Date(knownFullMoon);
+                while (fm <= now) fm = new Date(fm.getTime() + synodic);
+                events.push({label: 'Next Full Moon', date: fm});
+
+                // Next new moon
+                let nm = new Date(knownFullMoon.getTime() - synodic / 2);
+                while (nm <= now) nm = new Date(nm.getTime() + synodic);
+                events.push({label: 'Next New Moon', date: nm});
+
+                // Solstices & equinoxes for current + next year
+                const year = now.getFullYear();
+                [year, year+1].forEach(y => {
+                    [
+                        {label: 'Spring Equinox', d: new Date(y, 2, 20)},
+                        {label: 'Summer Solstice', d: new Date(y, 5, 21)},
+                        {label: 'Fall Equinox', d: new Date(y, 8, 22)},
+                        {label: 'Winter Solstice', d: new Date(y, 11, 21)},
+                    ].forEach(ev => { if (ev.d > now) events.push({label: ev.label + ' ' + y, date: ev.d}); });
+                });
+
+                // Major meteor showers
+                [
+                    {label: 'Perseids Peak', d: new Date(year, 7, 12)},
+                    {label: 'Leonids Peak', d: new Date(year, 10, 17)},
+                    {label: 'Geminids Peak', d: new Date(year, 11, 13)},
+                    {label: 'Quadrantids Peak', d: new Date(year+1, 0, 3)},
+                    {label: 'Lyrids Peak', d: new Date(year+1, 3, 22)},
+                ].forEach(ev => { if (ev.d > now) events.push({label: ev.label, date: ev.d}); });
+
+                events.sort((a,b) => a.date - b.date);
+                const cutoff = new Date(now.getTime() + 60 * 86400000);
+                const next5 = events.filter(ev => ev.date <= cutoff);
+                const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                document.getElementById('almanac-astro-rows').innerHTML = next5.map(ev => {
+                    const d = ev.date;
+                    const dateStr = months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+                    const daysAway = Math.ceil((d - now) / 86400000);
+                    const ic = ev.label.toLowerCase().includes('moon') ? 'moon' : ev.label.toLowerCase().includes('meteor') || ev.label.toLowerCase().includes('peak') ? 'shooting-star' : 'sparkle';
+                    return almanacRow(ev.label, dateStr, daysAway === 1 ? 'Tomorrow' : 'In ' + daysAway + ' days', ic);
+                }).join('');
+            }
+
+            // ── NIGHT SKY — VSOP87 simplified planet positions ────────────────────────────
+            // Computes approximate ecliptic longitude of each planet using truncated
+            // VSOP87 series (Jean Meeus "Astronomical Algorithms" Ch. 32-36).
+            // Accuracy: ~0.5–2° — sufficient for "look west after sunset" purposes.
+
+            function julianDay(date) {
+                // Julian Day Number for a given Date
+                const y = date.getUTCFullYear();
+                const m = date.getUTCMonth() + 1;
+                const d = date.getUTCDate() + date.getUTCHours()/24 + date.getUTCMinutes()/1440;
+                const A = Math.floor((m === 1 || m === 2) ? y - 1 : y);
+                const B = Math.floor(A / 100);
+                const C = 2 - B + Math.floor(B / 4);
+                const M = (m === 1 || m === 2) ? m + 12 : m;
+                return Math.floor(365.25 * (A + 4716)) + Math.floor(30.6001 * (M + 1)) + d + C - 1524.5;
+            }
+
+            function mod360(x) { return ((x % 360) + 360) % 360; }
+            function rad(d) { return d * Math.PI / 180; }
+            function deg(r) { return r * 180 / Math.PI; }
+
+            // Compute approximate heliocentric ecliptic longitude (degrees) for each planet
+            // T = Julian centuries from J2000.0
+            function planetLongitudes(T) {
+                // Mean longitudes and daily motions (Meeus Table 31.a / VSOP87 truncated)
+                const planets = {
+                    Mercury: { L: mod360(252.2509 + 149472.6749 * T), v: 4.09234 },
+                    Venus:   { L: mod360(181.9798 +  58517.8156 * T), v: 1.60213 },
+                    Earth:   { L: mod360(100.4664 +  36000.7698 * T), v: 0.98563 },
+                    Mars:    { L: mod360(355.4330 +  19140.2993 * T), v: 0.52402 },
+                    Jupiter: { L: mod360( 34.3515 +   3034.9057 * T), v: 0.08309 },
+                    Saturn:  { L: mod360( 50.0774 +   1222.1138 * T), v: 0.03346 },
+                    Uranus:  { L: mod360(314.0550 +    428.4748 * T), v: 0.01168 },
+                    Neptune: { L: mod360(304.3487 +    218.4862 * T), v: 0.00597 },
+                };
+
+                // Equation of centre corrections (very simplified — dominant term only)
+                function eoc(name) {
+                    const e = { Mercury:0.2056, Venus:0.0068, Earth:0.0167, Mars:0.0934, Jupiter:0.0489, Saturn:0.0557, Uranus:0.0472, Neptune:0.0086 };
+                    const M = { Mercury: mod360(174.7948 + 149472.5153*T), Venus: mod360(50.4161 + 58517.8039*T), Earth: mod360(357.5291 + 35999.0503*T), Mars: mod360(19.3730 + 19140.3023*T), Jupiter: mod360(20.0202 + 3034.7754*T), Saturn: mod360(317.0207 + 1222.1138*T), Uranus: mod360(141.0498 + 428.4748*T), Neptune: mod360(256.2250 + 218.4862*T) };
+                    return 2 * e[name] * Math.sin(rad(M[name])) * 180 / Math.PI;
+                }
+
+                const result = {};
+                for (const [name, p] of Object.entries(planets)) {
+                    result[name] = mod360(p.L + eoc(name));
+                }
+                return result;
+            }
+
+            // Sun's geocentric longitude = Earth's heliocentric lon + 180°
+            // Planet's elongation from Sun = angular distance between planet and Sun as seen from Earth
+            // We approximate geocentric longitude via heliocentric positions
+            function geocentricLon(planetHel, earthHel, planetName) {
+                // Simple approximation for outer planets: geo ≈ helio
+                // For inner planets: more complex — use angular difference
+                const inner = ['Mercury', 'Venus'];
+                if (inner.includes(planetName)) {
+                    // Inferior planet: apparent position is near its heliocentric lon
+                    // (very rough for display purposes)
+                    return mod360(planetHel + 180);
+                }
+                return planetHel; // outer: heliocentric ≈ geocentric for elongation estimate
+            }
+
+            function elongation(planetLon, sunLon) {
+                let e = planetLon - sunLon;
+                if (e > 180) e -= 360;
+                if (e < -180) e += 360;
+                return e; // positive = east of sun (evening sky), negative = west (morning sky)
+            }
+
+            function renderNightSky() {
+                const now = new Date();
+                const JD = julianDay(now);
+                const T = (JD - 2451545.0) / 36525.0; // Julian centuries from J2000
+
+                const lons = planetLongitudes(T);
+                const sunLon = mod360(lons.Earth + 180);
+
+                const visiblePlanets = { evening: [], morning: [], conjunction: [] };
+
+                const planetData = [
+                    { name: 'Mercury', symbol: '☿', minElong: 10 },
+                    { name: 'Venus',   symbol: '♀', minElong: 10 },
+                    { name: 'Mars',    symbol: '♂', minElong: 20 },
+                    { name: 'Jupiter', symbol: '♃', minElong: 20 },
+                    { name: 'Saturn',  symbol: '♄', minElong: 20 },
+                    { name: 'Uranus',  symbol: '⛢', minElong: 20 },
+                    { name: 'Neptune', symbol: '♆', minElong: 20 },
+                ];
+
+                for (const p of planetData) {
+                    const pLon = lons[p.name];
+                    const gLon = geocentricLon(pLon, lons.Earth, p.name);
+                    const elong = elongation(gLon, sunLon);
+                    const absElong = Math.abs(elong);
+
+                    if (absElong < p.minElong) {
+                        visiblePlanets.conjunction.push({ ...p, elong });
+                    } else if (elong > 0) {
+                        visiblePlanets.evening.push({ ...p, elong: Math.round(absElong) });
+                    } else {
+                        visiblePlanets.morning.push({ ...p, elong: Math.round(absElong) });
+                    }
+                }
+
+                // Sort by elongation descending (most prominent first)
+                visiblePlanets.evening.sort((a, b) => b.elong - a.elong);
+                visiblePlanets.morning.sort((a, b) => b.elong - a.elong);
+
+                // ── Seasonal constellations by month (northern hemisphere evening sky) ──
+                const month = now.getMonth(); // 0-indexed
+                const CONSTELLATIONS = [
+                    // Jan
+                    ['Orion', 'Taurus', 'Gemini', 'Canis Major'],
+                    // Feb
+                    ['Orion', 'Gemini', 'Canis Major', 'Leo rising'],
+                    // Mar
+                    ['Leo', 'Hydra', 'Cancer', 'Ursa Major'],
+                    // Apr
+                    ['Leo', 'Virgo', 'Boötes rising', 'Ursa Major'],
+                    // May
+                    ['Virgo', 'Boötes', 'Leo', 'Corona Borealis'],
+                    // Jun
+                    ['Boötes', 'Scorpius', 'Hercules', 'Virgo'],
+                    // Jul
+                    ['Scorpius', 'Sagittarius', 'Hercules', 'Lyra'],
+                    // Aug
+                    ['Sagittarius', 'Scorpius', 'Aquila', 'Cygnus', 'Lyra'],
+                    // Sep
+                    ['Pegasus', 'Aquarius', 'Cygnus', 'Aquila'],
+                    // Oct
+                    ['Pegasus', 'Andromeda', 'Perseus', 'Aquarius'],
+                    // Nov
+                    ['Andromeda', 'Perseus', 'Aries', 'Pisces'],
+                    // Dec
+                    ['Orion rising', 'Taurus', 'Perseus', 'Andromeda'],
+                ];
+
+                const consts = CONSTELLATIONS[month];
+
+                // ── Milky Way core visibility (northern hemisphere) ──
+                // Core (Sagittarius) rises in spring, best Jun–Sep, sets in autumn
+                const mwMonths = [3, 4, 5, 6, 7, 8, 9]; // Apr–Oct
+                const mwStatus = mwMonths.includes(month)
+                    ? (month >= 5 && month <= 8 ? 'Galactic core visible — look south toward Sagittarius' : 'Milky Way visible low on horizon')
+                    : 'Below horizon — best viewing returns April';
+
+                // ── Zodiacal constellation the Sun is in ──
+                const zodiac = [
+                    {name:'Capricornus',start:270},{name:'Aquarius',start:300},{name:'Pisces',start:330},
+                    {name:'Aries',start:0},{name:'Taurus',start:30},{name:'Gemini',start:60},
+                    {name:'Cancer',start:90},{name:'Leo',start:120},{name:'Virgo',start:150},
+                    {name:'Libra',start:180},{name:'Scorpius',start:210},{name:'Ophiuchus',start:240},
+                ];
+                let sunZodiac = zodiac[0].name;
+                for (const z of zodiac) {
+                    if (sunLon >= z.start) sunZodiac = z.name;
+                }
+
+                // ── Build output ──
+                const fmtPlanets = arr => arr.length
+                    ? `<span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:clamp(9px,2.5vw,14px);display:block;max-width:100%;">${arr.map(p => `${p.symbol} ${p.name}`).join('  ')}</span>`
+                    : '—';
+
+                const rows = [
+                    almanacRow('Evening Sky', fmtPlanets(visiblePlanets.evening),
+                        visiblePlanets.evening.length ? 'Visible after sunset in the west' : 'No bright planets after sunset', 'cloud-moon'),
+                    almanacRow('Morning Sky', fmtPlanets(visiblePlanets.morning),
+                        visiblePlanets.morning.length ? 'Visible before sunrise in the east' : 'No bright planets before sunrise', 'sparkle'),
+                    ...(visiblePlanets.conjunction.length ? [almanacRow('Near Sun', fmtPlanets(visiblePlanets.conjunction), 'Too close to sun to observe', 'sun-dim')] : []),
+                    `<div class="almanac-row" style="flex-direction:column;align-items:flex-start;gap:6px;padding:7px 0;">
+                        <div class="almanac-row-label" style="display:flex;align-items:center;gap:7px;"><span style="color:var(--ink-light);display:flex;align-items:center;">${icon('star', 15)}</span><span>Evening Constellations</span></div>
+                        <div class="almanac-tags">${consts.map(c => `<span class="almanac-tag">${c}</span>`).join('')}</div>
+                    </div>`,
+                    almanacRow('Sun in', sunZodiac, 'Astronomical position', 'sun-dim'),
+                    almanacRow('Milky Way', mwStatus.split(' — ')[0], mwStatus.split(' — ')[1] || '', 'shooting-star'),
+                ];
+
+                document.getElementById('almanac-nightsky-rows').innerHTML = rows.join('');
+            }
+            // Returns [month(1-12), day] or a Date object for moveable feasts
+            function getHolidays(year) {
+                const h = [];
+
+                // ── Helper: nth weekday of month ──
+                // e.g. nthDay(year, 1, 1, 3) = 3rd Monday of January
+                function nthDay(y, mo, dow, n) {
+                    // dow: 0=Sun,1=Mon...6=Sat
+                    const d = new Date(y, mo - 1, 1);
+                    const first = d.getDay();
+                    let day = 1 + ((dow - first + 7) % 7) + (n - 1) * 7;
+                    return new Date(y, mo - 1, day);
+                }
+                // Last weekday of month
+                function lastDay(y, mo, dow) {
+                    const last = new Date(y, mo, 0); // last day of month
+                    const diff = (last.getDay() - dow + 7) % 7;
+                    return new Date(y, mo - 1, last.getDate() - diff);
+                }
+                // Easter (Anonymous Gregorian algorithm)
+                function easter(y) {
+                    const a = y % 19, b = Math.floor(y/100), c = y % 100;
+                    const d = Math.floor(b/4), e = b % 4, f = Math.floor((b+8)/25);
+                    const g = Math.floor((b-f+1)/3), h = (19*a+b-d-g+15) % 30;
+                    const i = Math.floor(c/4), k = c % 4;
+                    const l = (32+2*e+2*i-h-k) % 7;
+                    const m = Math.floor((a+11*h+22*l)/451);
+                    const mo = Math.floor((h+l-7*m+114)/31);
+                    const dy = ((h+l-7*m+114) % 31) + 1;
+                    return new Date(y, mo-1, dy);
+                }
+
+                const fixed = [
+                    // ── US Federal ──
+                    {name: "New Year's Day",          d: new Date(year,  0,  1), tag: 'US Federal'},
+                    {name: 'Independence Day',         d: new Date(year,  6,  4), tag: 'US Federal'},
+                    {name: 'Veterans Day',             d: new Date(year, 10, 11), tag: 'US Federal'},
+                    {name: 'Christmas Day',            d: new Date(year, 11, 25), tag: 'US Federal'},
+                    {name: 'Juneteenth',               d: new Date(year,  5, 19), tag: 'US Federal'},
+
+                    // ── US Calculated Federal ──
+                    {name: 'MLK Jr. Day',              d: nthDay(year,  1, 1, 3),  tag: 'US Federal'},
+                    {name: "Presidents' Day",          d: nthDay(year,  2, 1, 3),  tag: 'US Federal'},
+                    {name: 'Memorial Day',             d: lastDay(year, 5, 1),     tag: 'US Federal'},
+                    {name: 'Labor Day',                d: nthDay(year,  9, 1, 1),  tag: 'US Federal'},
+                    {name: 'Columbus Day',             d: nthDay(year, 10, 1, 2),  tag: 'US Federal'},
+                    {name: 'Thanksgiving',             d: nthDay(year, 11, 4, 4),  tag: 'US Federal'},
+
+                    // ── Election Day (first Tue after first Mon in Nov, even years) ──
+                    ...(year % 2 === 0 ? [{
+                        name: year % 4 === 0 ? 'Presidential Election Day' : 'Election Day',
+                        d: (() => { const d = nthDay(year,11,1,1); return d.getDate()===1 ? new Date(year,10,d.getDate()+1) : new Date(year,10,d.getDate()-d.getDay()+2+7*(d.getDay()>1?0:-1)); })(),
+                        tag: 'US'
+                    }] : []),
+
+                    // ── Global / Cultural ──
+                    {name: "Valentine's Day",          d: new Date(year,  1, 14), tag: 'Global'},
+                    {name: "International Women's Day",d: new Date(year,  2,  8), tag: 'Global'},
+                    {name: 'St. Patrick\'s Day',       d: new Date(year,  2, 17), tag: 'Global'},
+                    {name: 'Earth Day',                d: new Date(year,  3, 22), tag: 'Global'},
+                    {name: 'World Press Freedom Day',  d: new Date(year,  4,  3), tag: 'Global'},
+                    {name: 'World Environment Day',    d: new Date(year,  5,  5), tag: 'Global'},
+                    {name: 'Bastille Day',             d: new Date(year,  6, 14), tag: 'France'},
+                    {name: 'World Humanitarian Day',   d: new Date(year,  7, 19), tag: 'Global'},
+                    {name: 'International Day of Democracy', d: new Date(year, 8, 15), tag: 'UN'},
+                    {name: 'International Day of Peace',d: new Date(year, 8, 21), tag: 'UN'},
+                    {name: 'World Mental Health Day',  d: new Date(year,  9, 10), tag: 'Global'},
+                    {name: 'Halloween',                d: new Date(year, 10, 31), tag: 'Global'},
+                    {name: 'Armistice / Remembrance Day', d: new Date(year, 10, 11), tag: 'Global'},
+                    {name: 'Universal Human Rights Day', d: new Date(year, 11, 10), tag: 'UN'},
+                    {name: "New Year's Eve",           d: new Date(year, 11, 31), tag: 'Global'},
+
+                    // ── Calculated moveable ──
+                    {name: 'Easter Sunday',            d: easter(year),           tag: 'Global'},
+                    {name: 'Good Friday',              d: new Date(easter(year).getTime() - 2*86400000), tag: 'Global'},
+                    {name: "Mother's Day (US)",        d: nthDay(year, 5, 0, 2),  tag: 'US'},
+                    {name: "Father's Day (US)",        d: nthDay(year, 6, 0, 3),  tag: 'US'},
+                    {name: 'Daylight Saving Begins',   d: nthDay(year,  3, 0, 2), tag: 'US/CA'},
+                    {name: 'Daylight Saving Ends',     d: nthDay(year, 11, 0, 1), tag: 'US/CA'},
+                ];
+
+                // ── Lunar/moveable — hardcoded through 2030 ──
+                const lunarByYear = {
+                    2025: [
+                        {name: 'Chinese New Year (Snake)',     d: new Date(2025, 0, 29),  tag: 'Global'},
+                        {name: 'Mardi Gras / Carnival',        d: new Date(2025, 2,  4),  tag: 'Global'},
+                        {name: 'Ramadan Begins',               d: new Date(2025, 2,  1),  tag: 'Global'},
+                        {name: 'Diwali',                       d: new Date(2025, 9, 20),  tag: 'Global'},
+                        {name: 'Hanukkah Begins',              d: new Date(2025, 11, 14), tag: 'Global'},
+                    ],
+                    2026: [
+                        {name: 'Chinese New Year (Horse)',     d: new Date(2026, 1, 17),  tag: 'Global'},
+                        {name: 'Mardi Gras / Carnival',        d: new Date(2026, 1, 17),  tag: 'Global'},
+                        {name: 'Ramadan Begins',               d: new Date(2026, 1, 18),  tag: 'Global'},
+                        {name: 'Diwali',                       d: new Date(2026, 10,  8), tag: 'Global'},
+                        {name: 'Hanukkah Begins',              d: new Date(2026, 11,  4), tag: 'Global'},
+                    ],
+                    2027: [
+                        {name: 'Chinese New Year (Goat)',      d: new Date(2027, 1,  6),  tag: 'Global'},
+                        {name: 'Mardi Gras / Carnival',        d: new Date(2027, 1,  9),  tag: 'Global'},
+                        {name: 'Ramadan Begins',               d: new Date(2027, 1,  8),  tag: 'Global'},
+                        {name: 'Diwali',                       d: new Date(2027, 9, 29),  tag: 'Global'},
+                        {name: 'Hanukkah Begins',              d: new Date(2027, 11, 24), tag: 'Global'},
+                    ],
+                    2028: [
+                        {name: 'Chinese New Year (Monkey)',    d: new Date(2028, 0, 26),  tag: 'Global'},
+                        {name: 'Mardi Gras / Carnival',        d: new Date(2028, 2,  1),  tag: 'Global'},
+                        {name: 'Ramadan Begins',               d: new Date(2028, 0, 28),  tag: 'Global'},
+                        {name: 'Diwali',                       d: new Date(2028, 10, 16), tag: 'Global'},
+                        {name: 'Hanukkah Begins',              d: new Date(2028, 11, 12), tag: 'Global'},
+                    ],
+                    2029: [
+                        {name: 'Chinese New Year (Rooster)',   d: new Date(2029, 1, 13),  tag: 'Global'},
+                        {name: 'Mardi Gras / Carnival',        d: new Date(2029, 1, 13),  tag: 'Global'},
+                        {name: 'Ramadan Begins',               d: new Date(2029, 0, 17),  tag: 'Global'},
+                        {name: 'Diwali',                       d: new Date(2029, 11,  5), tag: 'Global'},
+                        {name: 'Hanukkah Begins',              d: new Date(2029, 11,  1), tag: 'Global'},
+                    ],
+                    2030: [
+                        {name: 'Chinese New Year (Dog)',       d: new Date(2030, 1,  3),  tag: 'Global'},
+                        {name: 'Mardi Gras / Carnival',        d: new Date(2030, 2,  5),  tag: 'Global'},
+                        {name: 'Ramadan Begins',               d: new Date(2030, 0,  6),  tag: 'Global'},
+                        {name: 'Diwali',                       d: new Date(2030, 10, 25), tag: 'Global'},
+                        {name: 'Hanukkah Begins',              d: new Date(2030, 11, 20), tag: 'Global'},
+                    ],
+                };
+
+                const allFixed = fixed.filter(e => e.d instanceof Date && !isNaN(e.d));
+                const lunar = lunarByYear[year] || [];
+                return [...allFixed, ...lunar].filter(e => e.d instanceof Date && !isNaN(e.d));
+            }
+
+            function renderHolidays() {
+                const now = new Date();
+                const todayStr = now.toDateString();
+                const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+                // Gather this year + next to handle year-boundary lookups
+                const year = now.getFullYear();
+                const allHolidays = [...getHolidays(year), ...getHolidays(year + 1)];
+
+                // Sort and filter to today onward
+                const upcoming = allHolidays
+                    .filter(h => h.d >= new Date(now.getFullYear(), now.getMonth(), now.getDate()))
+                    .sort((a, b) => a.d - b.d);
+
+                // Deduplicate by name+date
+                const seen = new Set();
+                const deduped = upcoming.filter(h => {
+                    const key = h.name + h.d.toDateString();
+                    if (seen.has(key)) return false;
+                    seen.add(key);
+                    return true;
+                });
+
+                const next10 = deduped.slice(0, 3);
+
+                document.getElementById('almanac-holidays-rows').innerHTML = next10.map(h => {
+                    const isToday = h.d.toDateString() === todayStr;
+                    const dateStr = months[h.d.getMonth()] + ' ' + h.d.getDate() + ', ' + h.d.getFullYear();
+                    const daysAway = Math.ceil((h.d - new Date(now.getFullYear(), now.getMonth(), now.getDate())) / 86400000);
+                    const sub = isToday ? 'Today' : daysAway === 1 ? 'Tomorrow' : 'In ' + daysAway + ' days';
+                    const calIcon = isToday ? 'calendar-dot' : 'calendar-dots';
+                    return `<div class="almanac-row">
+                        <span class="almanac-row-label" style="display:flex;align-items:center;gap:7px;${isToday ? 'color:var(--ink);font-weight:600;' : ''}">
+                            <span style="color:var(--ink-light);display:flex;align-items:center;">${icon(calIcon, 15)}</span>
+                            <span>${h.name} <span style="font-family:var(--font-ui);font-size:9px;font-weight:400;color:var(--ink-light);letter-spacing:0.04em;text-transform:none;">${h.tag}</span></span>
+                        </span>
+                        <div style="text-align:right">
+                            <div class="almanac-row-value" style="${isToday ? 'color:var(--ink);' : ''}">${dateStr}</div>
+                            <div class="almanac-row-sub" style="${isToday ? 'font-weight:600;color:var(--ink-mid);' : ''}">${sub}</div>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+            async function loadWeather() {
+                try {
+                    const url = `https://api.open-meteo.com/v1/forecast?latitude=${almanacLat}&longitude=${almanacLon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,relative_humidity_2m,precipitation,uv_index&daily=precipitation_sum,temperature_2m_max,temperature_2m_min,uv_index_max&wind_speed_unit=mph&temperature_unit=fahrenheit&timezone=auto&forecast_days=1`;
+                    const res = await fetch(url);
+                    const data = await res.json();
+                    const c = data.current;
+                    const d = data.daily;
+
+                    const desc = wmoDescription(c.weather_code);
+                    const uvLabel = uvCategory(c.uv_index);
+                    const windDir = degreesToCompass(c.wind_direction_10m);
+                    const precip = (c.precipitation || 0).toFixed(2);
+
+                    // Precipitation vs average: Open-Meteo historical for context
+                    let precipNote = '';
+                    try {
+                        const histUrl = `https://archive-api.open-meteo.com/v1/archive?latitude=${almanacLat}&longitude=${almanacLon}&start_date=${getDateMinusYears(1)}&end_date=${getDateMinusYears(1, true)}&daily=precipitation_sum&timezone=auto`;
+                        const histRes = await fetch(histUrl);
+                        const histData = await histRes.json();
+                        if (histData.daily && histData.daily.precipitation_sum) {
+                            const avg = histData.daily.precipitation_sum.reduce((a,b) => a + (b||0), 0) / histData.daily.precipitation_sum.length;
+                            const monthlyTotal = (d.precipitation_sum[0] || 0);
+                            if (avg > 0) precipNote = monthlyTotal >= avg ? 'Above avg' : 'Below avg';
+                        }
+                    } catch(e) {}
+
+                    document.getElementById('almanac-weather-rows').innerHTML = `
+                        ${almanacRow('Conditions', desc, '', wmoIcon(c.weather_code))}
+                        ${almanacRow('Temperature', toDisplayTemp(c.temperature_2m), 'Feels like ' + toDisplayTemp(c.apparent_temperature), tempIcon(c.temperature_2m))}
+                        ${almanacRow('High / Low', toDisplayTemp(d.temperature_2m_max[0]) + ' / ' + toDisplayTemp(d.temperature_2m_min[0]), '', 'sun-horizon')}
+                        ${almanacRow('Humidity', c.relative_humidity_2m + '%', '', 'drop-half')}
+                        ${almanacRow('Wind', Math.round(c.wind_speed_10m) + ' mph ' + windDir, '', 'wind')}
+                        ${almanacRow('Precipitation', precip + ' in' + (precipNote ? '' : ''), precipNote, 'umbrella')}
+                        ${almanacRow('UV Index', c.uv_index != null ? c.uv_index.toFixed(1) + ' — ' + uvLabel : '—', '', 'rainbow-cloud')}
+                        ${almanacRow('Air Quality', '—', 'AQI data loading…', 'face-mask')}
+                    `;
+
+                    // AQI via Open-Meteo air quality
+                    try {
+                        const aqUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${almanacLat}&longitude=${almanacLon}&current=us_aqi,pm2_5&timezone=auto`;
+                        const aqRes = await fetch(aqUrl);
+                        const aqData = await aqRes.json();
+                        const aqi = aqData.current.us_aqi;
+                        const aqLabel = aqiCategory(aqi);
+                        // Replace last row
+                        const rows = document.querySelectorAll('#almanac-weather-rows .almanac-row');
+                        const lastRow = rows[rows.length - 1];
+                        if (lastRow) lastRow.outerHTML = almanacRow('Air Quality (AQI)', aqi + ' — ' + aqLabel, '', 'face-mask');
+                    } catch(e) {}
+
+                } catch(e) {
+                    document.getElementById('almanac-weather-rows').innerHTML = '<div class="almanac-error">Weather unavailable</div>';
+                }
+            }
+
+            function wmoDescription(code) {
+                const map = {0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Foggy',48:'Icy fog',51:'Light drizzle',53:'Moderate drizzle',55:'Dense drizzle',61:'Slight rain',63:'Moderate rain',65:'Heavy rain',71:'Slight snow',73:'Moderate snow',75:'Heavy snow',77:'Snow grains',80:'Slight showers',81:'Moderate showers',82:'Violent showers',85:'Slight snow showers',86:'Heavy snow showers',95:'Thunderstorm',96:'Thunderstorm w/ hail',99:'Thunderstorm w/ heavy hail'};
+                return map[code] || 'Code ' + code;
+            }
+            function uvCategory(uv) {
+                if (uv == null) return '—';
+                if (uv < 3) return 'Low';
+                if (uv < 6) return 'Moderate';
+                if (uv < 8) return 'High';
+                if (uv < 11) return 'Very High';
+                return 'Extreme';
+            }
+            function aqiCategory(aqi) {
+                if (aqi == null) return '—';
+                if (aqi <= 50) return 'Good';
+                if (aqi <= 100) return 'Moderate';
+                if (aqi <= 150) return 'Unhealthy for Sensitive';
+                if (aqi <= 200) return 'Unhealthy';
+                if (aqi <= 300) return 'Very Unhealthy';
+                return 'Hazardous';
+            }
+            function degreesToCompass(deg) {
+                if (deg == null) return '';
+                const dirs = ['N','NE','E','SE','S','SW','W','NW'];
+                return dirs[Math.round(deg / 45) % 8];
+            }
+            function getDateMinusYears(years, endOfMonth = false) {
+                const d = new Date();
+                d.setFullYear(d.getFullYear() - years);
+                if (endOfMonth) { d.setDate(1); d.setMonth(d.getMonth() + 1); d.setDate(0); }
+                else d.setDate(1);
+                return d.toISOString().split('T')[0];
+            }
+
+            // ── Transit — proximity-detected, links to official status pages ─────────────
+            const TRANSIT_SYSTEMS = [
+                // ── United States ──
+                { name: 'MTA Subway',       lat: 40.7128, lon: -74.006,  radius: 40, icon: 'subway',        url: 'https://new.mta.info/alerts' },
+                { name: 'MTA LIRR',         lat: 40.7128, lon: -74.006,  radius: 50, icon: 'train-regional', url: 'https://new.mta.info/alerts' },
+                { name: 'Metro-North',      lat: 40.7128, lon: -74.006,  radius: 50, icon: 'train-regional', url: 'https://new.mta.info/alerts' },
+                { name: 'NJ Transit',       lat: 40.7282, lon: -74.0776, radius: 45, icon: 'train-regional', url: 'https://www.njtransit.com/alerts' },
+                { name: 'PATH',             lat: 40.7282, lon: -74.0776, radius: 25, icon: 'subway',        url: 'https://www.panynj.gov/path/en/index.html' },
+                { name: 'CTA L',            lat: 41.8827, lon: -87.6233, radius: 25, icon: 'train-simple',  url: 'https://www.transitchicago.com/travel_information/systemstatus.aspx' },
+                { name: 'CTA Bus',          lat: 41.8827, lon: -87.6233, radius: 25, icon: 'subway',        url: 'https://www.transitchicago.com/travel_information/systemstatus.aspx' },
+                { name: 'Metra',            lat: 41.8827, lon: -87.6233, radius: 40, icon: 'train-regional', url: 'https://metra.com/service-alerts/' },
+                { name: 'MBTA Subway',      lat: 42.3601, lon: -71.0589, radius: 25, icon: 'subway',        url: 'https://www.mbta.com/alerts' },
+                { name: 'MBTA Commuter Rail',lat: 42.3601, lon: -71.0589, radius: 40, icon: 'train-regional', url: 'https://www.mbta.com/alerts' },
+                { name: 'WMATA Metro',      lat: 38.9072, lon: -77.0369, radius: 30, icon: 'subway',        url: 'https://www.wmata.com/service/status/index.cfm' },
+                { name: 'BART',             lat: 37.7749, lon: -122.4194,radius: 40, icon: 'subway',        url: 'https://www.bart.gov/schedules/realtime' },
+                { name: 'Muni Metro',       lat: 37.7749, lon: -122.4194,radius: 20, icon: 'train-simple',  url: 'https://www.sfmta.com/getting-around/muni/service-alerts' },
+                { name: 'Caltrain',         lat: 37.5630, lon: -122.2673,radius: 40, icon: 'train-regional', url: 'https://www.caltrain.com/alerts' },
+                { name: 'SEPTA',            lat: 39.9526, lon: -75.1652, radius: 30, icon: 'subway',        url: 'https://www5.septa.org/real-time/alert/' },
+                { name: 'SEPTA Regional Rail',lat:39.9526, lon: -75.1652, radius: 40, icon: 'train-regional', url: 'https://www5.septa.org/real-time/alert/' },
+                { name: 'Metro (LA)',        lat: 34.0522, lon: -118.2437,radius: 30, icon: 'subway',        url: 'https://www.metro.net/alerts/' },
+                { name: 'Metrolink',        lat: 34.0522, lon: -118.2437,radius: 50, icon: 'train-regional', url: 'https://metrolinktrains.com/alerts/' },
+                { name: 'MARTA',            lat: 33.7490, lon: -84.3880, radius: 25, icon: 'subway',        url: 'https://www.itsmarta.com/service-alerts.aspx' },
+                { name: 'Denver RTD',       lat: 39.7392, lon: -104.9903,radius: 25, icon: 'train-simple',  url: 'https://www.rtd-denver.com/alerts' },
+                { name: 'Sound Transit',    lat: 47.6062, lon: -122.3321,radius: 30, icon: 'train-simple',  url: 'https://www.soundtransit.org/ride-with-us/service-alerts' },
+                { name: 'TriMet MAX',       lat: 45.5231, lon: -122.6765,radius: 25, icon: 'train-simple',  url: 'https://trimet.org/alerts/' },
+                { name: 'DART',             lat: 32.7767, lon: -96.7970, radius: 25, icon: 'train-simple',  url: 'https://www.dart.org/alerts/' },
+                { name: 'Miami-Dade Transit',lat: 25.7617, lon: -80.1918, radius: 20, icon: 'subway',       url: 'https://www.miamidade.gov/transit/alerts.asp' },
+                { name: 'Minneapolis Metro Transit',lat:44.9778,lon:-93.2650,radius:20,icon:'train-simple', url: 'https://www.metrotransit.org/alerts' },
+                { name: 'Citi Bikes NYC',   lat: 40.7128, lon: -74.006,  radius: 15, icon: 'bicycle',       url: 'https://account.citibikenyc.com/access-plan' },
+
+                // ── Europe ──
+                { name: 'London Underground',lat: 51.5074, lon: -0.1278,  radius: 25, icon: 'subway',        url: 'https://tfl.gov.uk/tube-dlr-overground/status/' },
+                { name: 'London Overground', lat: 51.5074, lon: -0.1278,  radius: 30, icon: 'train-regional', url: 'https://tfl.gov.uk/tube-dlr-overground/status/' },
+                { name: 'Elizabeth line',    lat: 51.5074, lon: -0.1278,  radius: 40, icon: 'train-regional', url: 'https://tfl.gov.uk/tube-dlr-overground/status/' },
+                { name: 'National Rail (UK)',lat: 51.5074, lon: -0.1278,  radius: 60, icon: 'train-regional', url: 'https://www.nationalrail.co.uk/service_disruptions/delays_explained.aspx' },
+                { name: 'Paris Métro (RATP)',lat: 48.8566, lon: 2.3522,   radius: 20, icon: 'subway',        url: 'https://www.ratp.fr/en/plan-interactif' },
+                { name: 'RER',              lat: 48.8566, lon: 2.3522,   radius: 40, icon: 'train-regional', url: 'https://www.ratp.fr/en/plan-interactif' },
+                { name: 'U-Bahn Berlin',    lat: 52.5200, lon: 13.4050,  radius: 20, icon: 'subway',        url: 'https://www.bvg.de/en/connections/bvg-disruptions' },
+                { name: 'S-Bahn Berlin',    lat: 52.5200, lon: 13.4050,  radius: 30, icon: 'train-regional', url: 'https://www.s-bahn-berlin.de/en/travel/information' },
+                { name: 'U-Bahn Munich',    lat: 48.1351, lon: 11.5820,  radius: 20, icon: 'subway',        url: 'https://www.mvg.de/en.html' },
+                { name: 'S-Bahn Munich',    lat: 48.1351, lon: 11.5820,  radius: 30, icon: 'train-regional', url: 'https://www.mvg.de/en.html' },
+                { name: 'U-Bahn Hamburg',   lat: 53.5511, lon: 9.9937,   radius: 20, icon: 'subway',        url: 'https://www.hvv.de/en' },
+                { name: 'GVB Amsterdam',    lat: 52.3676, lon: 4.9041,   radius: 20, icon: 'subway',        url: 'https://reisinfo.gvb.nl/en' },
+                { name: 'NS Intercity',     lat: 52.3676, lon: 4.9041,   radius: 50, icon: 'train-regional', url: 'https://www.ns.nl/en/travel-information/current-situation-on-the-tracks' },
+                { name: 'Metro Madrid',     lat: 40.4168, lon: -3.7038,  radius: 20, icon: 'subway',        url: 'https://www.metromadrid.es/en/viaja_en_metro/estado_del_servicio' },
+                { name: 'Metro Barcelona',  lat: 41.3851, lon: 2.1734,   radius: 20, icon: 'subway',        url: 'https://www.tmb.cat/en/transport/metro-tram/status' },
+                { name: 'Metro Rome',       lat: 41.9028, lon: 12.4964,  radius: 20, icon: 'subway',        url: 'https://www.atac.roma.it/index.asp?lingua=ENG' },
+                { name: 'Metro Milan',      lat: 45.4642, lon: 9.1900,   radius: 20, icon: 'subway',        url: 'https://www.atm.it/en/AltreInfo/Pages/NetworkStatus.aspx' },
+                { name: 'Metro Lisbon',     lat: 38.7223, lon: -9.1393,  radius: 15, icon: 'subway',        url: 'https://www.metrolisboa.pt/en/travel/disruptions/' },
+                { name: 'Tram Vienna',      lat: 48.2082, lon: 16.3738,  radius: 20, icon: 'train-simple',  url: 'https://www.wienerlinien.at/web/wl-en' },
+                { name: 'Metro Prague',     lat: 50.0755, lon: 14.4378,  radius: 15, icon: 'subway',        url: 'https://www.dpp.cz/en' },
+                { name: 'Metro Warsaw',     lat: 52.2297, lon: 21.0122,  radius: 15, icon: 'subway',        url: 'https://www.metro.waw.pl/en' },
+                { name: 'Metro Stockholm',  lat: 59.3293, lon: 18.0686,  radius: 20, icon: 'subway',        url: 'https://www.sl.se/en/in-english/' },
+                { name: 'Metro Copenhagen', lat: 55.6761, lon: 12.5683,  radius: 15, icon: 'subway',        url: 'https://www.m.dk/#!/' },
+                { name: 'Metro Brussels',   lat: 50.8503, lon: 4.3517,   radius: 15, icon: 'subway',        url: 'https://www.stib-mivb.be/article.html?_guid=dd6ebf8e-5622-3410-8c3d-a72d22c8a72e&l=en' },
+                { name: 'Eurostar',         lat: 51.5074, lon: -0.1278,  radius: 5,  icon: 'train-regional', url: 'https://www.eurostar.com/uk-en/travel-info/service-information' },
+                { name: 'Deutsche Bahn',    lat: 52.5200, lon: 13.4050,  radius: 60, icon: 'train-regional', url: 'https://www.bahn.com/en/booking-information/travel-information/current-disruptions' },
+                { name: 'SNCF',             lat: 48.8566, lon: 2.3522,   radius: 60, icon: 'train-regional', url: 'https://www.sncf-voyageurs.com/en/our-offers/timetables-and-disruptions/' },
+                { name: 'Renfe',            lat: 40.4168, lon: -3.7038,  radius: 60, icon: 'train-regional', url: 'https://www.renfe.com/es/en' },
+
+                // ── Asia-Pacific ──
+                { name: 'Tokyo Metro',      lat: 35.6762, lon: 139.6503, radius: 20, icon: 'subway',        url: 'https://www.tokyometro.jp/en/service/status/index.html' },
+                { name: 'JR East',          lat: 35.6762, lon: 139.6503, radius: 50, icon: 'train-regional', url: 'https://traininfo.jreast.co.jp/train_info/sp/index.aspx' },
+                { name: 'Seoul Metro',      lat: 37.5665, lon: 126.9780, radius: 20, icon: 'subway',        url: 'https://www.seoulmetro.co.kr/en/' },
+                { name: 'MTR Hong Kong',    lat: 22.3193, lon: 114.1694, radius: 15, icon: 'subway',        url: 'https://www.mtr.com.hk/en/customer/services/service_status.html' },
+                { name: 'Sydney Trains',    lat: -33.8688, lon: 151.2093,radius: 30, icon: 'train-regional', url: 'https://transportnsw.info/alerts' },
+                { name: 'Melbourne Metro',  lat: -37.8136, lon: 144.9631,radius: 25, icon: 'train-simple',  url: 'https://www.ptv.vic.gov.au/disruptions/' },
+                { name: 'MRT Singapore',    lat: 1.3521,  lon: 103.8198, radius: 20, icon: 'subway',        url: 'https://www.smrt.com.sg/Trains/ServiceAdvisories' },
+            ];
+
+            function loadTransit() {
+                try {
+                    if (!almanacLat || !almanacLon) return;
+
+                    const nearby = TRANSIT_SYSTEMS.filter(s =>
+                        haversine(almanacLat, almanacLon, s.lat, s.lon) <= s.radius
+                    );
+                    if (!nearby.length) return;
+
+                    document.getElementById('almanac-section-transit').style.display = '';
+
+                    const rows = nearby.map(s => `
+                        <div class="almanac-row">
+                            <span class="almanac-row-label" style="display:flex;align-items:center;gap:7px;">
+                                <span style="color:var(--ink-light);display:flex;align-items:center;">${icon(s.icon, 15)}</span>
+                                <span>${s.name}</span>
+                            </span>
+                            <a href="${s.url}" target="_blank" rel="noopener noreferrer"
+                               style="font-family:var(--font-ui);font-size:11px;font-weight:500;color:var(--ink);text-decoration:none;white-space:nowrap;display:flex;align-items:center;gap:4px;-webkit-tap-highlight-color:transparent;">
+                                Status
+                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 256 256" fill="currentColor" style="display:block;opacity:0.5"><path d="M224,104a8,8,0,0,1-16,0V59.32l-82.34,82.34a8,8,0,0,1-11.32-11.32L196.68,48H152a8,8,0,0,1,0-16h64a8,8,0,0,1,8,8Zm-40,24a8,8,0,0,0-8,8v72H48V80h72a8,8,0,0,0,0-16H48A16,16,0,0,0,32,80V208a16,16,0,0,0,16,16H176a16,16,0,0,0,16-16V136A8,8,0,0,0,184,128Z"/></svg>
+                            </a>
+                        </div>`
+                    ).join('');
+
+                    document.getElementById('almanac-transit-rows').innerHTML = rows;
+                } catch(e) {
+                    document.getElementById('almanac-section-transit').style.display = 'none';
+                }
+            }
+
+            // ── Airport Delays via FAA (US only, no key) ──────────────────────────────────
+            const AIRPORTS = [
+                // Northeast
+                {iata:'JFK',name:'JFK',city:'New York',lat:40.6413,lon:-73.7781},
+                {iata:'LGA',name:'LGA',city:'New York',lat:40.7769,lon:-73.8740},
+                {iata:'EWR',name:'EWR',city:'Newark',lat:40.6895,lon:-74.1745},
+                {iata:'BOS',name:'BOS',city:'Boston',lat:42.3656,lon:-71.0096},
+                {iata:'PHL',name:'PHL',city:'Philadelphia',lat:39.8729,lon:-75.2437},
+                {iata:'BWI',name:'BWI',city:'Baltimore',lat:39.1754,lon:-76.6682},
+                {iata:'DCA',name:'DCA',city:'Washington',lat:38.8521,lon:-77.0377},
+                {iata:'IAD',name:'IAD',city:'Dulles',lat:38.9531,lon:-77.4565},
+                {iata:'BDL',name:'BDL',city:'Hartford',lat:41.9389,lon:-72.6832},
+                {iata:'PVD',name:'PVD',city:'Providence',lat:41.7272,lon:-71.4284},
+                {iata:'ALB',name:'ALB',city:'Albany',lat:42.7483,lon:-73.8017},
+                {iata:'SYR',name:'SYR',city:'Syracuse',lat:43.1112,lon:-76.1063},
+                {iata:'BUF',name:'BUF',city:'Buffalo',lat:42.9405,lon:-78.7322},
+                {iata:'ROC',name:'ROC',city:'Rochester',lat:43.1189,lon:-77.6724},
+                // Southeast
+                {iata:'ATL',name:'ATL',city:'Atlanta',lat:33.6407,lon:-84.4277},
+                {iata:'CLT',name:'CLT',city:'Charlotte',lat:35.2144,lon:-80.9473},
+                {iata:'MIA',name:'MIA',city:'Miami',lat:25.7959,lon:-80.2870},
+                {iata:'FLL',name:'FLL',city:'Fort Lauderdale',lat:26.0742,lon:-80.1506},
+                {iata:'MCO',name:'MCO',city:'Orlando',lat:28.4294,lon:-81.3089},
+                {iata:'TPA',name:'TPA',city:'Tampa',lat:27.9755,lon:-82.5332},
+                {iata:'RDU',name:'RDU',city:'Raleigh-Durham',lat:35.8776,lon:-78.7875},
+                {iata:'DCA',name:'DCA',city:'Washington DC',lat:38.8521,lon:-77.0377},
+                {iata:'MSY',name:'MSY',city:'New Orleans',lat:29.9934,lon:-90.2580},
+                {iata:'BNA',name:'BNA',city:'Nashville',lat:36.1245,lon:-86.6782},
+                {iata:'MEM',name:'MEM',city:'Memphis',lat:35.0424,lon:-89.9767},
+                {iata:'JAX',name:'JAX',city:'Jacksonville',lat:30.4941,lon:-81.6879},
+                {iata:'SDF',name:'SDF',city:'Louisville',lat:38.1744,lon:-85.7360},
+                // Midwest
+                {iata:'ORD',name:'ORD',city:'Chicago',lat:41.9742,lon:-87.9073},
+                {iata:'MDW',name:'MDW',city:'Chicago Midway',lat:41.7868,lon:-87.7522},
+                {iata:'DTW',name:'DTW',city:'Detroit',lat:42.2162,lon:-83.3554},
+                {iata:'MSP',name:'MSP',city:'Minneapolis',lat:44.8848,lon:-93.2223},
+                {iata:'STL',name:'STL',city:'St. Louis',lat:38.7487,lon:-90.3700},
+                {iata:'CLE',name:'CLE',city:'Cleveland',lat:41.4117,lon:-81.8498},
+                {iata:'CMH',name:'CMH',city:'Columbus',lat:39.9980,lon:-82.8919},
+                {iata:'IND',name:'IND',city:'Indianapolis',lat:39.7173,lon:-86.2944},
+                {iata:'MKE',name:'MKE',city:'Milwaukee',lat:42.9472,lon:-87.8966},
+                {iata:'CVG',name:'CVG',city:'Cincinnati',lat:39.0488,lon:-84.6678},
+                {iata:'PIT',name:'PIT',city:'Pittsburgh',lat:40.4915,lon:-80.2329},
+                {iata:'GRR',name:'GRR',city:'Grand Rapids',lat:42.8808,lon:-85.5228},
+                {iata:'DSM',name:'DSM',city:'Des Moines',lat:41.5340,lon:-93.6631},
+                {iata:'OMA',name:'OMA',city:'Omaha',lat:41.3032,lon:-95.8941},
+                {iata:'KCI',name:'KCI',city:'Kansas City',lat:39.2976,lon:-94.7139},
+                // South / Southwest
+                {iata:'DFW',name:'DFW',city:'Dallas-Fort Worth',lat:32.8998,lon:-97.0403},
+                {iata:'DAL',name:'DAL',city:'Dallas Love Field',lat:32.8471,lon:-96.8517},
+                {iata:'IAH',name:'IAH',city:'Houston',lat:29.9902,lon:-95.3368},
+                {iata:'HOU',name:'HOU',city:'Houston Hobby',lat:29.6454,lon:-95.2789},
+                {iata:'SAT',name:'SAT',city:'San Antonio',lat:29.5337,lon:-98.4698},
+                {iata:'AUS',name:'AUS',city:'Austin',lat:30.1975,lon:-97.6664},
+                {iata:'PHX',name:'PHX',city:'Phoenix',lat:33.4373,lon:-112.0078},
+                {iata:'TUS',name:'TUS',city:'Tucson',lat:32.1161,lon:-110.9410},
+                {iata:'ABQ',name:'ABQ',city:'Albuquerque',lat:35.0402,lon:-106.6090},
+                {iata:'DEN',name:'DEN',city:'Denver',lat:39.8561,lon:-104.6737},
+                {iata:'SLC',name:'SLC',city:'Salt Lake City',lat:40.7884,lon:-111.9778},
+                {iata:'OKC',name:'OKC',city:'Oklahoma City',lat:35.3931,lon:-97.6007},
+                {iata:'TUL',name:'TUL',city:'Tulsa',lat:36.1984,lon:-95.8881},
+                {iata:'ELP',name:'ELP',city:'El Paso',lat:31.8072,lon:-106.3779},
+                // West Coast
+                {iata:'LAX',name:'LAX',city:'Los Angeles',lat:33.9425,lon:-118.4081},
+                {iata:'SFO',name:'SFO',city:'San Francisco',lat:37.6213,lon:-122.3790},
+                {iata:'SJC',name:'SJC',city:'San Jose',lat:37.3626,lon:-121.9290},
+                {iata:'OAK',name:'OAK',city:'Oakland',lat:37.7213,lon:-122.2208},
+                {iata:'SEA',name:'SEA',city:'Seattle',lat:47.4502,lon:-122.3088},
+                {iata:'PDX',name:'PDX',city:'Portland',lat:45.5898,lon:-122.5951},
+                {iata:'SAN',name:'SAN',city:'San Diego',lat:32.7338,lon:-117.1933},
+                {iata:'LAS',name:'LAS',city:'Las Vegas',lat:36.0840,lon:-115.1537},
+                {iata:'SMF',name:'SMF',city:'Sacramento',lat:38.6954,lon:-121.5908},
+                {iata:'BUR',name:'BUR',city:'Burbank',lat:34.2007,lon:-118.3585},
+                {iata:'ONT',name:'ONT',city:'Ontario CA',lat:34.0560,lon:-117.6012},
+                {iata:'SNA',name:'SNA',city:'Orange County',lat:33.6757,lon:-117.8682},
+                {iata:'BOI',name:'BOI',city:'Boise',lat:43.5644,lon:-116.2228},
+                {iata:'RNO',name:'RNO',city:'Reno',lat:39.4991,lon:-119.7681},
+                {iata:'GEG',name:'GEG',city:'Spokane',lat:47.6199,lon:-117.5339},
+                // Mountain / Other
+                {iata:'MSO',name:'MSO',city:'Missoula',lat:46.9163,lon:-114.0906},
+                {iata:'BZN',name:'BZN',city:'Bozeman',lat:45.7775,lon:-111.1530},
+                {iata:'BIL',name:'BIL',city:'Billings',lat:45.8077,lon:-108.5430},
+                {iata:'FAR',name:'FAR',city:'Fargo',lat:46.9207,lon:-96.8158},
+                {iata:'BIS',name:'BIS',city:'Bismarck',lat:46.7727,lon:-100.7467},
+                {iata:'RAP',name:'RAP',city:'Rapid City',lat:44.0453,lon:-103.0574},
+                {iata:'COS',name:'COS',city:'Colorado Springs',lat:38.8058,lon:-104.7008},
+                // Alaska & Hawaii
+                {iata:'ANC',name:'ANC',city:'Anchorage',lat:61.1741,lon:-149.9961},
+                {iata:'FAI',name:'FAI',city:'Fairbanks',lat:64.8151,lon:-147.8762},
+                {iata:'HNL',name:'HNL',city:'Honolulu',lat:21.3187,lon:-157.9224},
+                {iata:'OGG',name:'OGG',city:'Maui',lat:20.8986,lon:-156.4305},
+                {iata:'KOA',name:'KOA',city:'Kona',lat:19.7388,lon:-156.0456},
+            ];
+
+            async function loadAirports() {
+                try {
+                    const isUS = almanacLat > 15 && almanacLat < 72 && almanacLon > -170 && almanacLon < -50;
+                    if (!isUS) return;
+
+                    // Find airports within 60 miles
+                    const nearby = AIRPORTS.filter(a => haversine(almanacLat, almanacLon, a.lat, a.lon) <= 60);
+
+                    // Deduplicate by iata
+                    const seen = new Set();
+                    const unique = nearby.filter(a => { if (seen.has(a.iata)) return false; seen.add(a.iata); return true; });
+
+                    if (!unique.length) return;
+
+                    document.getElementById('almanac-section-airports').style.display = '';
+
+                    // Fetch FAA delay data — single call returns all current US delays
+                    let delayMap = {};
+                    try {
+                        const res = await fetch('https://nasstatus.faa.gov/api/airport-delays');
+                        const data = await res.json();
+                        // Response: { AirportStatusList: [ { ARPT: 'EWR', Delays: [ { type, reason, minDelay, maxDelay } ] } ] }
+                        if (data.AirportStatusList) {
+                            data.AirportStatusList.forEach(ap => {
+                                delayMap[ap.ARPT] = ap.Delays || [];
+                            });
+                        }
+                    } catch(e) {
+                        // If FAA API fails, show airports as normal
+                    }
+
+                    const rows = unique.map(a => {
+                        const delays = delayMap[a.iata] || [];
+                        const dist = Math.round(haversine(almanacLat, almanacLon, a.lat, a.lon));
+
+                        if (!delays.length) {
+                            return almanacRow(a.iata, 'Normal', a.city + ' · ' + dist + ' mi', 'airplane-takeoff2');
+                        }
+
+                        // Summarise delays
+                        const summary = delays.map(d => {
+                            const type = (d.type || '').replace(/_/g,' ');
+                            const reason = d.reason ? ' — ' + d.reason : '';
+                            const delay = d.minDelay ? ' (' + d.minDelay + (d.maxDelay && d.maxDelay !== d.minDelay ? '–' + d.maxDelay : '') + ' min)' : '';
+                            return type + reason + delay;
+                        }).join('; ');
+
+                        return `<div class="almanac-row">
+                            <span class="almanac-row-label" style="display:flex;align-items:center;gap:7px;">
+                                <span style="color:var(--ink-light);display:flex;align-items:center;">${icon('air-traffic-control', 15)}</span>
+                                <span style="color:var(--ink-mid);font-size:10px;font-weight:700;letter-spacing:0.04em;">${a.iata}</span>
+                            </span>
+                            <div style="text-align:right">
+                                <div class="almanac-row-value" style="color:#b85c00;">${delays.length > 1 ? delays.length + ' Programs' : formatDelayType(delays[0].type)}</div>
+                                <div class="almanac-row-sub">${summary.length > 60 ? summary.slice(0,57) + '…' : summary}</div>
+                            </div>
+                        </div>`;
+                    });
+
+                    document.getElementById('almanac-airports-rows').innerHTML = rows.join('');
+
+                } catch(e) {
+                    document.getElementById('almanac-section-airports').style.display = 'none';
+                }
+            }
+
+            function formatDelayType(type) {
+                if (!type) return 'Delay';
+                const map = {
+                    'Ground Delay':'Ground Delay',
+                    'Ground_Delay':'Ground Delay',
+                    'Ground Stop':'Ground Stop',
+                    'Ground_Stop':'Ground Stop',
+                    'Airspace Flow':'Airspace Flow',
+                    'Airspace_Flow_Program':'Airspace Flow',
+                    'Closure':'Closure',
+                    'Delay':'Delay',
+                };
+                return map[type] || type.replace(/_/g,' ');
+            }
+            // ── NWS Severe Weather Alerts (US only, no key) ──────────────────────────────
+            async function loadNWSAlerts() {
+                try {
+                    const isUS = almanacLat > 24 && almanacLat < 72 && almanacLon > -170 && almanacLon < -65;
+                    if (!isUS) return;
+
+                    const url = `https://api.weather.gov/alerts/active?point=${almanacLat.toFixed(4)},${almanacLon.toFixed(4)}&status=actual`;
+                    const res = await fetch(url, { headers: { 'Accept': 'application/geo+json' } });
+                    const data = await res.json();
+
+                    const alerts = (data.features || []).filter(f => {
+                        const sev = (f.properties?.severity || '').toLowerCase();
+                        return sev !== 'unknown' && sev !== 'minor';
+                    });
+
+                    if (!alerts.length) {
+                        document.getElementById('almanac-section-nws').style.display = 'none';
+                        return;
+                    }
+
+                    document.getElementById('almanac-section-nws').style.display = '';
+
+                    const rows = alerts.slice(0, 5).map(f => {
+                        const p = f.properties;
+                        const event = p.event || 'Weather Alert';
+                        const severity = (p.severity || 'moderate').toLowerCase();
+                        const expires = p.expires ? new Date(p.expires) : null;
+                        const expiresStr = expires ? 'Until ' + expires.toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit'}) + ' ' + expires.toLocaleDateString('en-US', {month:'short', day:'numeric'}) : '';
+                        const areas = p.areaDesc ? p.areaDesc.split(';')[0].trim() : '';
+
+                        // Icon based on event type
+                        let ic = 'lightning';
+                        const ev = event.toLowerCase();
+                        if (ev.includes('tornado'))          ic = 'tornado';
+                        else if (ev.includes('hurricane') || ev.includes('tropical')) ic = 'hurricane';
+                        else if (ev.includes('snow') || ev.includes('blizzard') || ev.includes('ice') || ev.includes('winter')) ic = 'cloud-snow';
+                        else if (ev.includes('wind'))        ic = 'wind';
+                        else if (ev.includes('flood'))       ic = 'waves';
+                        else if (ev.includes('fog'))         ic = 'cloud-fog';
+                        else if (ev.includes('heat'))        ic = 'thermometer-hot';
+                        else if (ev.includes('cold') || ev.includes('freeze') || ev.includes('frost')) ic = 'thermometer-cold';
+                        else if (ev.includes('thunder') || ev.includes('storm')) ic = 'cloud-lightning';
+
+                        const sevClass = severity === 'extreme' ? 'nws-severity-extreme' :
+                                         severity === 'severe'  ? 'nws-severity-severe'  :
+                                                                   'nws-severity-moderate';
+
+                        return `<div class="nws-alert-row">
+                            <div class="nws-alert-event ${sevClass}">
+                                <span style="display:flex;align-items:center;flex-shrink:0;">${icon(ic, 16)}</span>
+                                <span>${event}</span>
+                            </div>
+                            <div class="nws-alert-meta">${[areas, expiresStr].filter(Boolean).join(' · ')}</div>
+                        </div>`;
+                    }).join('');
+
+                    document.getElementById('almanac-nws-alerts-rows').innerHTML = rows;
+                } catch(e) {
+                    document.getElementById('almanac-section-nws').style.display = 'none';
+                }
+            }
+
+            async function loadTides() {
+                try {
+                    // Find nearest NOAA station
+                    const stationsUrl = `https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi/stations.json?type=tidepredictions&units=english`;
+                    const stRes = await fetch(stationsUrl);
+                    const stData = await stRes.json();
+                    if (!stData.stations) return;
+
+                    // Find closest station within 75 miles
+                    let closest = null, minDist = Infinity;
+                    stData.stations.forEach(st => {
+                        const d = haversine(almanacLat, almanacLon, parseFloat(st.lat), parseFloat(st.lng));
+                        if (d < minDist) { minDist = d; closest = st; }
+                    });
+                    if (!closest || minDist > 75) return; // No nearby station
+
+                    // Show tides section
+                    document.getElementById('almanac-section-tides').style.display = '';
+
+                    const today = new Date().toISOString().split('T')[0].replace(/-/g,'');
+                    const tidesUrl = `https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?date=today&product=predictions&datum=mllw&interval=hilo&format=json&units=english&time_zone=lst_ldt&station=${closest.id}`;
+                    const tRes = await fetch(tidesUrl);
+                    const tData = await tRes.json();
+
+                    if (!tData.predictions || !tData.predictions.length) {
+                        document.getElementById('almanac-tides-rows').innerHTML = '<div class="almanac-error">Tide predictions unavailable</div>';
+                        return;
+                    }
+
+                    const rows = tData.predictions.map(p => {
+                        const type = p.type === 'H' ? 'High' : 'Low';
+                        const time = p.t.split(' ')[1];
+                        const height = parseFloat(p.v).toFixed(1) + ' ft';
+                        return almanacRow(type + ' Tide', time, height, type === 'High' ? 'waves' : 'anchor');
+                    }).join('');
+
+                    document.getElementById('almanac-tides-rows').innerHTML =
+                        `<div style="font-family:var(--font-ui);font-size:9px;color:var(--ink-light);margin-bottom:8px;letter-spacing:0.06em;display:flex;align-items:center;gap:6px;">${icon('sailboat',13)} Station: ${closest.name}</div>` + rows;
+
+                } catch(e) {
+                    // Silently hide — no tides available
+                    document.getElementById('almanac-section-tides').style.display = 'none';
+                }
+            }
+
+            function haversine(lat1, lon1, lat2, lon2) {
+                const R = 3959; // miles
+                const dLat = (lat2 - lat1) * Math.PI / 180;
+                const dLon = (lon2 - lon1) * Math.PI / 180;
+                const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+                return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            }
+
+            // ── Land: frost dates, GDD, planting, produce ──
+            // Hardiness zone from lat/lon (simplified US lookup)
+            function getHardinessZone(lat, lon) {
+                // Very rough US zone by latitude band
+                if (lat > 50) return 3;
+                if (lat > 47) return 4;
+                if (lat > 44) return 5;
+                if (lat > 41) return 6;
+                if (lat > 37) return 7;
+                if (lat > 33) return 8;
+                if (lat > 29) return 9;
+                if (lat > 26) return 10;
+                return 11;
+            }
+
+            // Frost dates by zone (approximate averages)
+            const FROST_DATES = {
+                3: {last:'June 1',first:'Sept 15'},
+                4: {last:'May 15',first:'Oct 1'},
+                5: {last:'Apr 30',first:'Oct 15'},
+                6: {last:'Apr 15',first:'Oct 31'},
+                7: {last:'Mar 31',first:'Nov 15'},
+                8: {last:'Mar 1',first:'Dec 1'},
+                9: {last:'Feb 1',first:'Dec 15'},
+                10: {last:'Jan 31',first:'Dec 31'},
+                11: {last:'—',first:'—'},
+            };
+
+            // Planting seasons by zone + current month
+            function getPlantingInfo(zone, month) {
+                const ZONE_PLANTING = {
+                    3: {spring:[5,6],summer:[6,7],fall:[]},
+                    4: {spring:[4,5],summer:[6,7],fall:[8]},
+                    5: {spring:[3,4,5],summer:[6,7],fall:[8,9]},
+                    6: {spring:[3,4],summer:[6,7],fall:[8,9,10]},
+                    7: {spring:[2,3,4],summer:[5,6],fall:[9,10,11]},
+                    8: {spring:[1,2,3],summer:[4,5],fall:[9,10,11]},
+                    9: {spring:[1,2],summer:[3,4],fall:[9,10,11,12]},
+                    10: {spring:[1,2],summer:[3],fall:[10,11,12]},
+                    11: {spring:[1,2],summer:[3,4],fall:[11,12]},
+                };
+                const seasons = [];
+                const z = ZONE_PLANTING[zone] || ZONE_PLANTING[6];
+                if (z.spring.includes(month)) seasons.push('Spring planting');
+                if (z.summer.includes(month)) seasons.push('Summer planting');
+                if (z.fall.includes(month)) seasons.push('Fall planting');
+                return seasons.length ? seasons.join(' · ') : 'Between seasons';
+            }
+
+            // In-season produce by month (US, general)
+            const SEASONAL_PRODUCE = {
+                1:  {veg:['Kale','Brussels sprouts','Leeks','Turnips','Parsnips','Beets'],fruit:['Citrus','Pomelos','Kiwi']},
+                2:  {veg:['Kale','Cabbage','Chard','Broccoli','Cauliflower'],fruit:['Blood oranges','Grapefruit','Clementines']},
+                3:  {veg:['Asparagus','Spinach','Arugula','Peas','Leeks'],fruit:['Strawberries','Citrus']},
+                4:  {veg:['Asparagus','Peas','Lettuce','Radishes','Spinach','Ramps'],fruit:['Strawberries','Rhubarb']},
+                5:  {veg:['Asparagus','Artichokes','Peas','Lettuce','Radishes'],fruit:['Strawberries','Rhubarb','Cherries']},
+                6:  {veg:['Zucchini','Cucumbers','Peas','Beets','Lettuce','Garlic scapes'],fruit:['Blueberries','Cherries','Peaches','Apricots']},
+                7:  {veg:['Tomatoes','Corn','Zucchini','Green beans','Eggplant','Peppers'],fruit:['Blueberries','Raspberries','Peaches','Plums','Melon']},
+                8:  {veg:['Tomatoes','Corn','Peppers','Eggplant','Okra','Beans'],fruit:['Blackberries','Peaches','Figs','Watermelon','Nectarines']},
+                9:  {veg:['Winter squash','Broccoli','Cauliflower','Sweet potato','Kale'],fruit:['Apples','Pears','Grapes','Figs','Plums']},
+                10: {veg:['Pumpkins','Winter squash','Beets','Turnips','Parsnips','Brussels sprouts'],fruit:['Apples','Pears','Cranberries','Quince']},
+                11: {veg:['Kale','Brussels sprouts','Turnips','Beets','Leeks','Parsnips'],fruit:['Cranberries','Apples','Citrus']},
+                12: {veg:['Kale','Brussels sprouts','Leeks','Chard','Parsnips'],fruit:['Citrus','Pomegranate','Pears']},
+            };
+
+            // ── MIGRATION ─────────────────────────────────────────────────────────────────
+            // Static lookup by month (0-indexed) and latitude band
+            // latBand: 'north' >= 45°, 'mid' 30–45°, 'south' < 30° (US)
+
+            function getLatBand(lat) {
+                if (lat == null) return 'mid';
+                if (lat >= 45) return 'north';
+                if (lat >= 30) return 'mid';
+                return 'south';
+            }
+
+            // Each entry: { species, status, note }
+            // status: 'peak' | 'active' | 'early' | 'late' | 'absent'
+            const MIGRATION_DATA = {
+                // ── Birds ──
+                birds: {
+                    north: [
+                        // Jan
+                        [{s:'Waterfowl (ducks, geese)',st:'active',n:'Wintering flocks present'},{s:'Snowy Owls',st:'active',n:'Irruption years — check fields & coasts'}],
+                        // Feb
+                        [{s:'Waterfowl',st:'active',n:'Late winter flocks; early departures'},{s:'Red-winged Blackbirds',st:'early',n:'First scouts returning'}],
+                        // Mar
+                        [{s:'Shorebirds',st:'early',n:'Early species arriving'},{s:'Waterfowl',st:'peak',n:'Peak spring migration'},{s:'Tundra Swans',st:'peak',n:'Moving north through March'}],
+                        // Apr
+                        [{s:'Warblers',st:'early',n:'First arrivals — Yellow-rumped, Pine'},{s:'Shorebirds',st:'active',n:'Sandpipers & plovers moving through'},{s:'Raptors',st:'peak',n:'Broad-winged & Sharp-shinned Hawks'}],
+                        // May
+                        [{s:'Warblers',st:'peak',n:'Peak warbler migration — 30+ species possible'},{s:'Shorebirds',st:'peak',n:'Peak shorebird movement'},{s:'Vireos & Flycatchers',st:'active',n:'Moving through'}],
+                        // Jun
+                        [{s:'Shorebirds',st:'early',n:'Southbound shorebirds begin — July birds in June'},{s:'Breeding species',st:'active',n:'Nesting season; migrants have passed'}],
+                        // Jul
+                        [{s:'Shorebirds',st:'active',n:'Southbound movement underway'},{s:'Swallows',st:'active',n:'Flocking before departure'}],
+                        // Aug
+                        [{s:'Shorebirds',st:'peak',n:'Peak southbound shorebird migration'},{s:'Warblers',st:'early',n:'First fall warblers moving'},{s:'Nighthawks',st:'active',n:'Visible evening migration'}],
+                        // Sep
+                        [{s:'Warblers',st:'peak',n:'Peak fall warbler migration'},{s:'Raptors',st:'peak',n:'Broad-winged Hawk days — thousands possible'},{s:'Monarch Butterfly',st:'peak',n:'See Monarchs below'}],
+                        // Oct
+                        [{s:'Sparrows',st:'peak',n:'Peak sparrow migration'},{s:'Waterfowl',st:'active',n:'Ducks & geese moving south'},{s:'Raptors',st:'active',n:'Late-season hawks'}],
+                        // Nov
+                        [{s:'Waterfowl',st:'peak',n:'Peak duck & goose migration'},{s:'Juncos & winter finches',st:'active',n:'Arriving for winter'}],
+                        // Dec
+                        [{s:'Waterfowl',st:'active',n:'Wintering flocks settled'},{s:'Winter finches',st:'active',n:'Irruption species in some years'}],
+                    ],
+                    mid: [
+                        // Jan
+                        [{s:'Waterfowl',st:'active',n:'Wintering ducks & geese on open water'},{s:'American Robins',st:'active',n:'Winter flocks in fruiting trees'}],
+                        // Feb
+                        [{s:'Waterfowl',st:'active',n:'Early movement begins'},{s:'Sandhill Cranes',st:'early',n:'First northbound flocks'}],
+                        // Mar
+                        [{s:'Sandhill Cranes',st:'peak',n:'Peak crane migration — Platte River corridor'},{s:'Shorebirds',st:'early',n:'First arrivals'},{s:'Waterfowl',st:'peak',n:'Peak movement'}],
+                        // Apr
+                        [{s:'Warblers',st:'early',n:'Yellows, Palms, Pine Warblers arriving'},{s:'Shorebirds',st:'active',n:'Sandpipers moving through'},{s:'Hummingbirds',st:'early',n:'Ruby-throated arriving in southern range'}],
+                        // May
+                        [{s:'Warblers',st:'peak',n:'Peak warbler migration'},{s:'Shorebirds',st:'peak',n:'Peak movement'},{s:'Hummingbirds',st:'active',n:'Ruby-throated moving through'}],
+                        // Jun
+                        [{s:'Shorebirds',st:'active',n:'Southbound shorebirds begin'},{s:'Hummingbirds',st:'active',n:'Breeding & resident birds'}],
+                        // Jul
+                        [{s:'Shorebirds',st:'active',n:'Good variety of southbound sandpipers'},{s:'Purple Martins',st:'active',n:'Congregating before departure'}],
+                        // Aug
+                        [{s:'Shorebirds',st:'peak',n:'Peak southbound shorebirds'},{s:'Warblers',st:'early',n:'First fall warblers'},{s:'Monarch Butterfly',st:'active',n:'Southbound movement building'}],
+                        // Sep
+                        [{s:'Warblers',st:'peak',n:'Peak fall migration'},{s:'Monarch Butterfly',st:'peak',n:'Peak southbound — millions passing through'},{s:'Raptors',st:'active',n:'Broad-wings & others'}],
+                        // Oct
+                        [{s:'Monarch Butterfly',st:'late',n:'Last monarchs heading to Mexico'},{s:'Sparrows',st:'peak',n:'Peak sparrow migration'},{s:'Waterfowl',st:'peak',n:'Duck & goose migration'}],
+                        // Nov
+                        [{s:'Waterfowl',st:'peak',n:'Peak migration & wintering birds arriving'},{s:'Sandhill Cranes',st:'active',n:'Southbound movement'}],
+                        // Dec
+                        [{s:'Waterfowl',st:'active',n:'Winter residents settled in'}],
+                    ],
+                    south: [
+                        // Jan
+                        [{s:'Waterfowl',st:'active',n:'Wintering ducks on coastal wetlands'},{s:'Shorebirds',st:'active',n:'Wintering shorebirds on beaches'}],
+                        // Feb
+                        [{s:'Shorebirds',st:'active',n:'Wintering flocks; some early movement'},{s:'Purple Martins',st:'early',n:'First scouts arriving — Feb 1 in Texas/Gulf Coast'}],
+                        // Mar
+                        [{s:'Purple Martins',st:'active',n:'Colony establishment underway'},{s:'Warblers',st:'early',n:'First migrants moving through'},{s:'Monarch Butterfly',st:'early',n:'First breeding generation emerging in Texas'}],
+                        // Apr
+                        [{s:'Warblers',st:'peak',n:'Peak trans-Gulf migration — fallouts possible'},{s:'Monarch Butterfly',st:'active',n:'Spring breeding expansion northward'},{s:'Hummingbirds',st:'active',n:'Ruby-throated moving north'}],
+                        // May
+                        [{s:'Warblers',st:'active',n:'Late migrants still moving through'},{s:'Shorebirds',st:'active',n:'Northbound movement'},{s:'Monarch Butterfly',st:'active',n:'Second generation moving north'}],
+                        // Jun–Aug: quiet for migration
+                        [{s:'Breeding residents',st:'active',n:'Migration largely over; nesting season'}],
+                        [{s:'Shorebirds',st:'early',n:'First southbound shorebirds arriving'}],
+                        [{s:'Shorebirds',st:'active',n:'Southbound shorebird movement'}],
+                        // Sep
+                        [{s:'Monarch Butterfly',st:'active',n:'Southbound movement building'},{s:'Warblers',st:'active',n:'Fall migration through coastal corridors'}],
+                        // Oct
+                        [{s:'Monarch Butterfly',st:'peak',n:'Peak migration — watch coastal corridors'},{s:'Waterfowl',st:'active',n:'Ducks arriving on coastal marshes'}],
+                        // Nov
+                        [{s:'Waterfowl',st:'peak',n:'Peak waterfowl migration & wintering'},{s:'Shorebirds',st:'active',n:'Winter residents arriving'}],
+                        // Dec
+                        [{s:'Waterfowl',st:'active',n:'Wintering flocks on wetlands & coasts'},{s:'Shorebirds',st:'active',n:'Winter residents present'}],
+                    ],
+                },
+
+                // ── Monarchs (separate — very well documented) ──
+                monarchs: {
+                    north:  ['absent','absent','absent','early','active','active','absent','absent','peak','late','absent','absent'],
+                    mid:    ['absent','absent','early','active','active','active','absent','active','peak','late','absent','absent'],
+                    south:  ['absent','absent','early','active','active','absent','absent','early','active','peak','absent','absent'],
+                },
+
+                // ── Hummingbirds ──
+                hummingbirds: {
+                    north:  ['absent','absent','absent','absent','early','active','active','active','late','absent','absent','absent'],
+                    mid:    ['absent','absent','absent','early','active','active','active','active','late','absent','absent','absent'],
+                    south:  ['absent','absent','absent','active','active','active','active','active','active','late','absent','absent'],
+                },
+
+                // ── Whales (coastal only — shown if tides section is visible) ──
+                whales: [
+                    // Jan: Gray whales southbound on Pacific, Humpbacks in Hawaii/Caribbean
+                    'Gray Whale southbound migration (Pacific coast)',
+                    // Feb
+                    'Gray Whale southbound; calving in Baja lagoons',
+                    // Mar
+                    'Gray Whale northbound migration begins (Pacific)',
+                    // Apr
+                    'Gray Whale peak northbound (Pacific); Humpbacks arriving NE',
+                    // May
+                    'Gray & Humpback Whales active on both coasts',
+                    // Jun
+                    'Humpbacks feeding in northern waters; Blue Whales (Pacific)',
+                    // Jul
+                    'Humpback peak season New England & Pacific NW',
+                    // Aug
+                    'Humpback peak; Right Whales (Gulf of Maine)',
+                    // Sep
+                    'Humpbacks beginning to depart; Gray Whale calves moving south',
+                    // Oct
+                    'Gray Whale southbound migration begins',
+                    // Nov
+                    'Gray Whale peak southbound migration',
+                    // Dec
+                    'Gray Whales arriving in Baja; Humpbacks in winter grounds',
+                ],
+            };
+
+            function statusLabel(st) {
+                const map = { peak:'Peak', active:'Active', early:'Early season', late:'Late season', absent:'Not present' };
+                return map[st] || st;
+            }
+
+            function renderMigration() {
+                const month = new Date().getMonth();
+                const band = getLatBand(almanacLat);
+                const isCoastal = document.getElementById('almanac-section-tides').style.display !== 'none';
+                const isUS = almanacLat != null && almanacLon > -170 && almanacLon < -50 && almanacLat > 24 && almanacLat < 72;
+
+                if (!isUS && almanacLat != null) {
+                    document.getElementById('almanac-migration-rows').innerHTML =
+                        '<div class="almanac-error">Migration data available for US locations</div>';
+                    return;
+                }
+
+                const rows = [];
+
+                // Birds
+                const birdList = MIGRATION_DATA.birds[band][month] || [];
+                birdList.forEach(b => {
+                    rows.push(almanacRow(b.s, statusLabel(b.st), b.n, 'bird'));
+                });
+
+                // Hummingbirds
+                const hSt = MIGRATION_DATA.hummingbirds[band][month];
+                if (hSt && hSt !== 'absent') {
+                    rows.push(almanacRow('Ruby-throated Hummingbird', statusLabel(hSt),
+                        hSt === 'active' || hSt === 'peak' ? 'Keep feeders clean and filled' : '', 'bird'));
+                }
+
+                // Monarchs
+                const mSt = MIGRATION_DATA.monarchs[band][month];
+                if (mSt && mSt !== 'absent') {
+                    rows.push(almanacRow('Monarch Butterfly', statusLabel(mSt),
+                        mSt === 'peak' ? 'Watch roadsides, meadows & coastal corridors' :
+                        mSt === 'active' ? 'Moving through — milkweed patches are key stopover' :
+                        mSt === 'early' ? 'First monarchs appearing' : 'Last stragglers heading south', 'butterfly'));
+                }
+
+                // Whales (coastal only)
+                if (isCoastal) {
+                    rows.push(almanacRow('Coastal Whales', '🐋', MIGRATION_DATA.whales[month], 'fish'));
+                }
+
+                if (rows.length === 0) {
+                    document.getElementById('almanac-migration-rows').innerHTML =
+                        '<div class="almanac-error">Migration activity low this month for your region</div>';
+                    return;
+                }
+
+                document.getElementById('almanac-migration-rows').innerHTML = rows.join('');
+            }
+
+            function renderLandData() {
+                const zone = getHardinessZone(almanacLat, almanacLon);
+                const isUS = almanacLon > -170 && almanacLon < -50 && almanacLat > 24 && almanacLat < 72;
+                const month = new Date().getMonth() + 1;
+
+                if (!isUS) {
+                    document.getElementById('almanac-land-rows').innerHTML = '<div class="almanac-error">Detailed land data available for US locations</div>';
+                    return;
+                }
+
+                const frost = FROST_DATES[zone] || FROST_DATES[6];
+                const planting = getPlantingInfo(zone, month);
+                const produce = SEASONAL_PRODUCE[month] || {veg:[], fruit:[]};
+
+                // Growing degree days: simple estimate from today's temp (placeholder since we need weather loaded)
+                const now = new Date();
+                const dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000);
+                const gddEst = '—'; // will update after weather loads
+
+                document.getElementById('almanac-land-rows').innerHTML = `
+                    ${almanacRow('Hardiness Zone', 'Zone ' + zone, 'USDA estimate', zone >= 10 ? 'cactus' : zone <= 4 ? 'tree-evergreen' : zone <= 6 ? 'acorn' : 'tree')}
+                    ${almanacRow('Last Spring Frost', frost.last, '', 'snowflake')}
+                    ${almanacRow('First Fall Frost', frost.first, '', 'snowflake')}
+                    ${almanacRow('Planting Season', planting, '', 'farm')}
+                    <div class="almanac-row" style="flex-direction:column;align-items:flex-start;gap:6px;padding:7px 0;">
+                        <div class="almanac-row-label" style="display:flex;align-items:center;gap:7px;"><span style="color:var(--ink-light);display:flex;align-items:center;">${icon('carrot', 15)}</span><span>In Season — Vegetables</span></div>
+                        <div class="almanac-tags">${produce.veg.map(v => `<span class="almanac-tag">${v}</span>`).join('')}</div>
+                    </div>
+                    <div class="almanac-row" style="flex-direction:column;align-items:flex-start;gap:6px;padding:7px 0 0;">
+                        <div class="almanac-row-label" style="display:flex;align-items:center;gap:7px;"><span style="color:var(--ink-light);display:flex;align-items:center;">${icon('orange', 15)}</span><span>In Season — Fruit</span></div>
+                        <div class="almanac-tags">${produce.fruit.map(f => `<span class="almanac-tag">${f}</span>`).join('')}</div>
+                    </div>
+                `;
+            }
+
+            // ── HTML helper ──
+            const ICONS = {
+                sun:              'M120,40V16a8,8,0,0,1,16,0V40a8,8,0,0,1-16,0Zm72,88a64,64,0,1,1-64-64A64.07,64.07,0,0,1,192,128Zm-16,0a48,48,0,1,0-48,48A48.05,48.05,0,0,0,176,128ZM58.34,69.66A8,8,0,0,0,69.66,58.34l-16-16A8,8,0,0,0,42.34,53.66Zm0,116.68-16,16a8,8,0,0,0,11.32,11.32l16-16a8,8,0,0,0-11.32-11.32ZM192,72a8,8,0,0,0,5.66-2.34l16-16a8,8,0,0,0-11.32-11.32l-16,16A8,8,0,0,0,192,72Zm5.66,114.34a8,8,0,0,0-11.32,11.32l16,16a8,8,0,0,0,11.32-11.32ZM48,128a8,8,0,0,0-8-8H16a8,8,0,0,0,0,16H40A8,8,0,0,0,48,128Zm80,80a8,8,0,0,0-8,8v24a8,8,0,0,0,16,0V216A8,8,0,0,0,128,208Zm112-88H216a8,8,0,0,0,0,16h24a8,8,0,0,0,0-16Z',
+                'cloud-sun':      'M164,72a76.2,76.2,0,0,0-20.26,2.73,55.63,55.63,0,0,0-9.41-11.54l9.51-13.57a8,8,0,1,0-13.11-9.18L121.22,54A55.9,55.9,0,0,0,96,48c-.58,0-1.16,0-1.74,0L91.37,31.71a8,8,0,1,0-15.75,2.77L78.5,50.82A56.1,56.1,0,0,0,55.23,65.67L41.61,56.14a8,8,0,1,0-9.17,13.11L46,78.77A55.55,55.55,0,0,0,40,104c0,.57,0,1.15,0,1.72L23.71,108.6a8,8,0,0,0,1.38,15.88,8.24,8.24,0,0,0,1.39-.12l16.32-2.88a55.74,55.74,0,0,0,5.86,12.42A52,52,0,0,0,84,224h80a76,76,0,0,0,0-152ZM56,104a40,40,0,0,1,72.54-23.24,76.26,76.26,0,0,0-35.62,40,52.14,52.14,0,0,0-31,4.17A40,40,0,0,1,56,104ZM164,208H84a36,36,0,1,1,4.78-71.69c-.37,2.37-.63,4.79-.77,7.23a8,8,0,0,0,16,.92,58.91,58.91,0,0,1,1.88-11.81c0-.16.09-.32.12-.48A60.06,60.06,0,1,1,164,208Z',
+                cloud:            'M160,40A88.09,88.09,0,0,0,81.29,88.67,64,64,0,1,0,72,216h88a88,88,0,0,0,0-176Zm0,160H72a48,48,0,0,1,0-96c1.1,0,2.2,0,3.29.11A88,88,0,0,0,72,128a8,8,0,0,0,16,0,72,72,0,1,1,72,72Z',
+                'cloud-fog':      'M120,208H72a8,8,0,0,1,0-16h48a8,8,0,0,1,0,16Zm64-16H160a8,8,0,0,0,0,16h24a8,8,0,0,0,0-16Zm-24,32H104a8,8,0,0,0,0,16h56a8,8,0,0,0,0-16Zm72-124a76.08,76.08,0,0,1-76,76H76A52,52,0,0,1,76,72a53.26,53.26,0,0,1,8.92.76A76.08,76.08,0,0,1,232,100Zm-16,0A60.06,60.06,0,0,0,96,96.46a8,8,0,0,1-16-.92q.21-3.66.77-7.23A38.11,38.11,0,0,0,76,88a36,36,0,0,0,0,72h80A60.07,60.07,0,0,0,216,100Z',
+                drop:             'M174,47.75a254.19,254.19,0,0,0-41.45-38.3,8,8,0,0,0-9.18,0A254.19,254.19,0,0,0,82,47.75C54.51,79.32,40,112.6,40,144a88,88,0,0,0,176,0C216,112.6,201.49,79.32,174,47.75ZM128,216a72.08,72.08,0,0,1-72-72c0-57.23,55.47-105,72-118,16.53,13,72,60.75,72,118A72.08,72.08,0,0,1,128,216Zm55.89-62.66a57.6,57.6,0,0,1-46.56,46.55A8.75,8.75,0,0,1,136,200a8,8,0,0,1-1.32-15.89c16.57-2.79,30.63-16.85,33.44-33.45a8,8,0,0,1,15.78,2.68Z',
+                'cloud-rain':     'M158.66,196.44l-32,48a8,8,0,1,1-13.32-8.88l32-48a8,8,0,0,1,13.32,8.88ZM232,92a76.08,76.08,0,0,1-76,76H132.28l-29.62,44.44a8,8,0,1,1-13.32-8.88L113.05,168H76A52,52,0,0,1,76,64a53.26,53.26,0,0,1,8.92.76A76.08,76.08,0,0,1,232,92Zm-16,0A60.06,60.06,0,0,0,96,88.46a8,8,0,0,1-16-.92q.21-3.66.77-7.23A38.11,38.11,0,0,0,76,80a36,36,0,0,0,0,72h80A60.07,60.07,0,0,0,216,92Z',
+                'cloud-snow':     'M88,196a12,12,0,1,1-12-12A12,12,0,0,1,88,196Zm28,4a12,12,0,1,0,12,12A12,12,0,0,0,116,200Zm48-16a12,12,0,1,0,12,12A12,12,0,0,0,164,184ZM68,224a12,12,0,1,0,12,12A12,12,0,0,0,68,224Zm88,0a12,12,0,1,0,12,12A12,12,0,0,0,156,224ZM232,92a76.08,76.08,0,0,1-76,76H76A52,52,0,0,1,76,64a53.26,53.26,0,0,1,8.92.76A76.08,76.08,0,0,1,232,92Zm-16,0A60.06,60.06,0,0,0,96,88.46a8,8,0,0,1-16-.92q.21-3.66.77-7.23A38.11,38.11,0,0,0,76,80a36,36,0,0,0,0,72h80A60.07,60.07,0,0,0,216,92Z',
+                snowflake:        'M223.77,150.09a8,8,0,0,1-5.86,9.68l-24.64,6,6.46,24.11a8,8,0,0,1-5.66,9.8A8.25,8.25,0,0,1,192,200a8,8,0,0,1-7.72-5.93l-7.72-28.8L136,141.86v46.83l21.66,21.65a8,8,0,0,1-11.32,11.32L128,203.31l-18.34,18.35a8,8,0,0,1-11.32-11.32L120,188.69V141.86L79.45,165.27l-7.72,28.8A8,8,0,0,1,64,200a8.25,8.25,0,0,1-2.08-.27,8,8,0,0,1-5.66-9.8l6.46-24.11-24.64-6a8,8,0,0,1,3.82-15.54l29.45,7.23L112,128,71.36,104.54l-29.45,7.23A7.85,7.85,0,0,1,40,112a8,8,0,0,1-1.91-15.77l24.64-6L56.27,66.07a8,8,0,0,1,15.46-4.14l7.72,28.8L120,114.14V67.31L98.34,45.66a8,8,0,0,1,11.32-11.32L128,52.69l18.34-18.35a8,8,0,0,1,11.32,11.32L136,67.31v46.83l40.55-23.41,7.72-28.8a8,8,0,0,1,15.46,4.14l-6.46,24.11,24.64,6A8,8,0,0,1,216,112a7.85,7.85,0,0,1-1.91-.23l-29.45-7.23L144,128l40.64,23.46,29.45-7.23A8,8,0,0,1,223.77,150.09Z',
+                'cloud-lightning':'M156,16A76.2,76.2,0,0,0,84.92,64.76,53.26,53.26,0,0,0,76,64a52,52,0,0,0,0,104h37.87L97.14,195.88A8,8,0,0,0,104,208h25.87l-16.73,27.88a8,8,0,0,0,13.72,8.24l24-40A8,8,0,0,0,144,192H118.13l14.4-24H156a76,76,0,0,0,0-152Zm0,136H76a36,36,0,0,1,0-72,38.11,38.11,0,0,1,4.78.31q-.56,3.57-.77,7.23a8,8,0,0,0,16,.92A60.06,60.06,0,1,1,156,152Z',
+                wind:             'M184,184a32,32,0,0,1-32,32c-13.7,0-26.95-8.93-31.5-21.22a8,8,0,0,1,15-5.56C137.74,195.27,145,200,152,200a16,16,0,0,0,0-32H40a8,8,0,0,1,0-16H152A32,32,0,0,1,184,184Zm-64-80a32,32,0,0,0,0-64c-13.7,0-26.95,8.93-31.5,21.22a8,8,0,0,0,15,5.56C105.74,60.73,113,56,120,56a16,16,0,0,1,0,32H24a8,8,0,0,0,0,16Zm88-32c-13.7,0-26.95,8.93-31.5,21.22a8,8,0,0,0,15,5.56C193.74,92.73,201,88,208,88a16,16,0,0,1,0,32H32a8,8,0,0,0,0,16H208a32,32,0,0,0,0-64Z',
+                'rainbow-cloud':  'M200,112a48.18,48.18,0,0,0-44.66,30.4,31,31,0,0,0-3.34-.18c-17.65,0-32,14.76-32,32.89S134.35,208,152,208h48a48,48,0,0,0,0-96Zm0,80H152c-8.82,0-16-7.58-16-16.89s7.18-16.89,16-16.89a15,15,0,0,1,5.78,1.14,8,8,0,0,0,10.87-5.81A32,32,0,1,1,200,192ZM24,160v16a8,8,0,0,1-16,0V160A104,104,0,0,1,184.5,85.44a8,8,0,0,1-11.15,11.47A88,88,0,0,0,24,160Zm32,0v16a8,8,0,0,1-16,0V160a72,72,0,0,1,114.6-58,8,8,0,1,1-9.47,12.89A56,56,0,0,0,56,160Zm61.57-23.35A24,24,0,0,0,88,160v16a8,8,0,0,1-16,0V160a40,40,0,0,1,49.27-38.92,8,8,0,1,1-3.7,15.57Z',
+                'face-mask':      'M176,104a8,8,0,0,1-8,8H88a8,8,0,0,1,0-16h80A8,8,0,0,1,176,104Zm-8,24H88a8,8,0,0,0,0,16h80a8,8,0,0,0,0-16Zm88-24v24a32,32,0,0,1-32,32h-5.19c-7.19,15.8-21.79,29.43-43.23,40.16a191.16,191.16,0,0,1-46.15,15.71,7.93,7.93,0,0,1-2.86,0,191.16,191.16,0,0,1-46.15-15.71C59,189.43,44.38,175.8,37.19,160H32A32,32,0,0,1,0,128V104A32,32,0,0,1,32,72h.85a16,16,0,0,1,9.68-10l80-29.09a16.06,16.06,0,0,1,10.94,0l80,29.09a16,16,0,0,1,9.68,10H224A32,32,0,0,1,256,104ZM32.55,144a58.74,58.74,0,0,1-.55-8V88a16,16,0,0,0-16,16v24a16,16,0,0,0,16,16ZM208,136V77.09L128,48,48,77.09V136c0,45,69.09,61.52,80,63.84C138.89,197.52,208,181,208,136Zm32-32a16,16,0,0,0-16-16v48a58.74,58.74,0,0,1-.55,8H224a16,16,0,0,0,16-16Z',
+                'sun-horizon':    'M240,152H199.55a73.54,73.54,0,0,0,.45-8,72,72,0,0,0-144,0,73.54,73.54,0,0,0,.45,8H16a8,8,0,0,0,0,16H240a8,8,0,0,0,0-16ZM72,144a56,56,0,1,1,111.41,8H72.59A56.13,56.13,0,0,1,72,144Zm144,56a8,8,0,0,1-8,8H48a8,8,0,0,1,0-16H208A8,8,0,0,1,216,200ZM72.84,43.58a8,8,0,0,1,14.32-7.16l8,16a8,8,0,0,1-14.32,7.16Zm-56,48.84a8,8,0,0,1,10.74-3.57l16,8a8,8,0,0,1-7.16,14.31l-16-8A8,8,0,0,1,16.84,92.42Zm192,15.16a8,8,0,0,1,3.58-10.73l16-8a8,8,0,1,1,7.16,14.31l-16,8a8,8,0,0,1-10.74-3.58Zm-48-55.16,8-16a8,8,0,0,1,14.32,7.16l-8,16a8,8,0,1,1-14.32-7.16Z',
+                'moon-stars':     'M240,96a8,8,0,0,1-8,8H216v16a8,8,0,0,1-16,0V104H184a8,8,0,0,1,0-16h16V72a8,8,0,0,1,16,0V88h16A8,8,0,0,1,240,96ZM144,56h8v8a8,8,0,0,0,16,0V56h8a8,8,0,0,0,0-16h-8V32a8,8,0,0,0-16,0v8h-8a8,8,0,0,0,0,16Zm72.77,97a8,8,0,0,1,1.43,8A96,96,0,1,1,95.07,37.8a8,8,0,0,1,10.6,9.06A88.07,88.07,0,0,0,209.14,150.33,8,8,0,0,1,216.77,153Zm-19.39,14.88c-1.79.09-3.59.14-5.38.14A104.11,104.11,0,0,1,88,64c0-1.79,0-3.59.14-5.38A80,80,0,1,0,197.38,167.86Z',
+                meteor:           'M96,120a40,40,0,1,0,40,40A40,40,0,0,0,96,120Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,96,184Zm125.66-61.66a8,8,0,0,1,0,11.32l-48,48a8,8,0,0,1-11.32-11.32l48-48A8,8,0,0,1,221.66,122.34ZM160,136a8,8,0,0,1-5.66-13.66l24-24a8,8,0,0,1,11.32,11.32l-24,24A8,8,0,0,1,160,136Zm69.66-66.34-16,16a8,8,0,0,1-11.32-11.32l16-16a8,8,0,0,1,11.32,11.32ZM122.34,90.34l72-72a8,8,0,1,1,11.32,11.32l-72,72a8,8,0,0,1-11.32-11.32ZM146.91,199.6a8,8,0,0,1,0,11.31A72,72,0,1,1,45.09,109.09l82.74-82.75a8,8,0,1,1,11.32,11.32L56.4,120.4a56,56,0,0,0,79.2,79.2A8,8,0,0,1,146.91,199.6Z',
+                farm:             'M136.83,220.43a8,8,0,0,1-11.09,2.23A183.15,183.15,0,0,0,24,192a8,8,0,0,1,0-16,199.11,199.11,0,0,1,110.6,33.34A8,8,0,0,1,136.83,220.43ZM24,144a8,8,0,0,0,0,16,214.81,214.81,0,0,1,151.17,61.71,8,8,0,1,0,11.2-11.42A230.69,230.69,0,0,0,24,144Zm208,16a216.51,216.51,0,0,0-48.59,5.49q8.24,6.25,16,13.16A201.53,201.53,0,0,1,232,176a8,8,0,0,1,0,16c-6,0-11.93.29-17.85.86q8.32,8.67,15.94,18.14a8,8,0,1,1-12.48,10A247,247,0,0,0,24,128a8,8,0,0,1,0-16,266.33,266.33,0,0,1,48,4.37V80a8,8,0,0,1,3.2-6.4l64-48a8,8,0,0,1,9.6,0l64,48A8,8,0,0,1,216,80v32.49c5.31-.31,10.64-.49,16-.49a8,8,0,0,1,0,16,246.3,246.3,0,0,0-84.26,14.69q9.44,5,18.46,10.78A232.2,232.2,0,0,1,232,144a8,8,0,0,1,0,16ZM120,88h48a8,8,0,0,1,8,8v21.94q11.88-2.56,24-4V84L144,42,88,84v35.81q12.19,3,24,7.18V96A8,8,0,0,1,120,88Zm8.07,45.27A262.48,262.48,0,0,1,160,121.94V104H128v29.24Z',
+                hurricane:        'M128,96a32,32,0,1,0,32,32A32,32,0,0,0,128,96Zm0,48a16,16,0,1,1,16-16A16,16,0,0,1,128,144Zm30.32-98.64,9.41-35.3A8,8,0,0,0,158.32.18,195.87,195.87,0,0,0,99.67,25.27C60.63,50.37,40,85.89,40,128a88.11,88.11,0,0,0,57.68,82.64l-9.41,35.3a8,8,0,0,0,9.41,9.88,195.87,195.87,0,0,0,58.65-25.09C195.37,205.63,216,170.11,216,128A88.1,88.1,0,0,0,158.32,45.36ZM148.06,217a184.14,184.14,0,0,1-40.68,19.37l7.73-29a8,8,0,0,0-5.67-9.79A72.06,72.06,0,0,1,56,128c0-36.77,17.48-66.72,51.94-89a184.14,184.14,0,0,1,40.68-19.37l-7.73,29a8,8,0,0,0,5.67,9.79A72.06,72.06,0,0,1,200,128C200,164.77,182.52,194.72,148.06,217Z',
+                tornado:          'M232,40a8,8,0,0,1-8,8H56a8,8,0,0,1,0-16H224A8,8,0,0,1,232,40ZM184,72a8,8,0,0,0-8-8H32a8,8,0,0,0,0,16H176A8,8,0,0,0,184,72Zm-16,32a8,8,0,0,0-8-8H56a8,8,0,0,0,0,16H160A8,8,0,0,0,168,104Zm16,32a8,8,0,0,0-8-8H88a8,8,0,0,0,0,16h88A8,8,0,0,0,184,136Zm0,24H120a8,8,0,0,0,0,16h64a8,8,0,0,0,0-16Zm-24,32H128a8,8,0,0,0,0,16h32a8,8,0,0,0,0-16Zm-32,32H112a8,8,0,0,0,0,16h16a8,8,0,0,0,0-16Z',
+                lightning:        'M215.79,118.17a8,8,0,0,0-5-5.66L153.18,90.9l14.66-73.33a8,8,0,0,0-13.69-7l-112,120a8,8,0,0,0,3,13l57.63,21.61L88.16,238.43a8,8,0,0,0,13.69,7l112-120A8,8,0,0,0,215.79,118.17ZM109.37,214l10.47-52.38a8,8,0,0,0-5-9.06L62,132.71l84.62-90.66L136.16,94.43a8,8,0,0,0,5,9.06l52.8,19.8Z',
+                // ── Batch 1 ──
+                fish:             'M168,76a12,12,0,1,1-12-12A12,12,0,0,1,168,76Zm48.72,67.64c-19.37,34.9-55.44,53.76-107.24,56.1l-22,51.41A8,8,0,0,1,80.1,256l-.51,0a8,8,0,0,1-7.19-5.78L57.6,198.39,5.8,183.56a8,8,0,0,1-1-15.05l51.41-22c2.35-51.78,21.21-87.84,56.09-107.22,24.75-13.74,52.74-15.84,71.88-15.18,18.64.64,36,4.27,38.86,6a8,8,0,0,1,2.83,2.83c1.69,2.85,5.33,20.21,6,38.85C232.55,90.89,230.46,118.89,216.72,143.64Zm-55.18,29a52.11,52.11,0,0,1-33.4-44.78A52.09,52.09,0,0,1,83.37,94.47q-10.45,23.79-11.3,57.59a8,8,0,0,1-4.85,7.17L31.83,174.37l34.45,9.86a8,8,0,0,1,5.49,5.5l9.84,34.44,15.16-35.4a8,8,0,0,1,7.17-4.84Q137.71,183.12,161.54,172.64ZM212.42,43.57c-14.15-3-64.1-11-100.3,14.75a81.21,81.21,0,0,0-16,15.07,36,36,0,0,0,39.35,38.44,8,8,0,0,1,8.73,8.73,36,36,0,0,0,38.47,39.34,80.81,80.81,0,0,0,15-16C223.42,107.73,215.42,57.74,212.42,43.57Z',
+                'compass-rose':   'M249.94,120.24l-27.05-6.76a95.86,95.86,0,0,0-80.37-80.37l-6.76-27a8,8,0,0,0-15.52,0l-6.76,27.05a95.86,95.86,0,0,0-80.37,80.37l-27,6.76a8,8,0,0,0,0,15.52l27.05,6.76a95.86,95.86,0,0,0,80.37,80.37l6.76,27.05a8,8,0,0,0,15.52,0l6.76-27.05a95.86,95.86,0,0,0,80.37-80.37l27.05-6.76a8,8,0,0,0,0-15.52Zm-95.49,22.9L139.31,128l15.14-15.14L215,128Zm-52.9,0L41,128l60.57-15.14L116.69,128ZM205.77,109.2,158.6,97.4,146.8,50.23A79.88,79.88,0,0,1,205.77,109.2Zm-62.63-7.65L128,116.69l-15.14-15.14L128,41ZM109.2,50.23,97.4,97.4,50.23,109.2A79.88,79.88,0,0,1,109.2,50.23Zm-59,96.57L97.4,158.6l11.8,47.17A79.88,79.88,0,0,1,50.23,146.8Zm62.63,7.65L128,139.31l15.14,15.14L128,215Zm33.94,51.32,11.8-47.17,47.17-11.8A79.88,79.88,0,0,1,146.8,205.77Z',
+                'tree-palm':      'M237.79,53.23a66.86,66.86,0,0,0-97.74,0,72.21,72.21,0,0,0-12.05,17,72.21,72.21,0,0,0-12-17,66.86,66.86,0,0,0-97.74,0,8,8,0,0,0,2.6,12.85L77,90.55a71.42,71.42,0,0,0-43.36,33.21,70.64,70.64,0,0,0-7.2,54.32A8,8,0,0,0,39,182.36l81-61.68V224a8,8,0,0,0,16,0V120.68l81,61.68a8,8,0,0,0,12.57-4.28,70.64,70.64,0,0,0-7.2-54.32A71.42,71.42,0,0,0,179,90.55l56.22-24.47a8,8,0,0,0,2.6-12.85ZM67.08,48a51.13,51.13,0,0,1,37.28,16.26,56.53,56.53,0,0,1,14.26,26.93L39,56.53A50.5,50.5,0,0,1,67.08,48ZM40,161.5a54.82,54.82,0,0,1,7.47-29.7,55.55,55.55,0,0,1,34-25.89A56.52,56.52,0,0,1,96.1,104a55.82,55.82,0,0,1,16.23,2.41ZM208.5,131.8A54.82,54.82,0,0,1,216,161.5l-72.3-55.1a56.3,56.3,0,0,1,64.83,25.4ZM137.38,91.19a56.53,56.53,0,0,1,14.26-26.93A51.13,51.13,0,0,1,188.92,48,50.5,50.5,0,0,1,217,56.53Z',
+                'tree-evergreen': 'M230.32,187.09l-46-59.09H208a8,8,0,0,0,6.34-12.88l-80-104a8,8,0,0,0-12.68,0l-80,104A8,8,0,0,0,48,128H71.64l-46,59.09A8,8,0,0,0,32,200h88v40a8,8,0,0,0,16,0V200h88a8,8,0,0,0,6.32-12.91ZM48.36,184l46-59.09A8,8,0,0,0,88,112H64.25L128,29.12,191.75,112H168a8,8,0,0,0-6.31,12.91L207.64,184Z',
+                tree:             'M198.1,62.59a76,76,0,0,0-140.2,0A71.71,71.71,0,0,0,16,127.8C15.9,166,48,199,86.14,200A72.09,72.09,0,0,0,120,192.47V232a8,8,0,0,0,16,0V192.47A72.17,72.17,0,0,0,168,200l1.82,0C208,199,240.11,166,240,127.8A71.71,71.71,0,0,0,198.1,62.59ZM169.45,184a56.08,56.08,0,0,1-33.45-10v-41l43.58-21.78a8,8,0,1,0-7.16-14.32L136,115.06V88a8,8,0,0,0-16,0v51.06L83.58,120.84a8,8,0,1,0-7.16,14.32L120,156.94v17a56,56,0,0,1-33.45,10C56.9,183.23,31.92,157.52,32,127.84A55.77,55.77,0,0,1,67.11,76a8,8,0,0,0,4.53-4.67,60,60,0,0,1,112.72,0A8,8,0,0,0,188.89,76,55.79,55.79,0,0,1,224,127.84C224.08,157.52,199.1,183.23,169.45,184Z',
+                cactus:           'M216,208H168V184h4a68.07,68.07,0,0,0,68-68,28,28,0,0,0-56,0,12,12,0,0,1-12,12h-4V56a40,40,0,0,0-80,0V88H84A12,12,0,0,1,72,76a28,28,0,0,0-56,0,68.07,68.07,0,0,0,68,68h4v64H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16ZM96,128H84A52.06,52.06,0,0,1,32,76a12,12,0,0,1,24,0,28,28,0,0,0,28,28H96a8,8,0,0,0,8-8V56a24,24,0,0,1,48,0v80a8,8,0,0,0,8,8h12a28,28,0,0,0,28-28,12,12,0,0,1,24,0,52.06,52.06,0,0,1-52,52H160a8,8,0,0,0-8,8v32H104V136A8,8,0,0,0,96,128Z',
+                'map-pin-area':   'M112,80a16,16,0,1,1,16,16A16,16,0,0,1,112,80ZM64,80a64,64,0,0,1,128,0c0,59.95-57.58,93.54-60,94.95a8,8,0,0,1-7.94,0C121.58,173.54,64,140,64,80Zm16,0c0,42.2,35.84,70.21,48,78.5,12.15-8.28,48-36.3,48-78.5a48,48,0,0,0-96,0Zm122.77,67.63a8,8,0,0,0-5.54,15C213.74,168.74,224,176.92,224,184c0,13.36-36.52,32-96,32s-96-18.64-96-32c0-7.08,10.26-15.26,26.77-21.36a8,8,0,0,0-5.54-15C29.22,156.49,16,169.41,16,184c0,31.18,57.71,48,112,48s112-16.82,112-48C240,169.41,226.78,156.49,202.77,147.63Z',
+                leaf:             'M223.45,40.07a8,8,0,0,0-7.52-7.52C139.8,28.08,78.82,51,52.82,94a87.09,87.09,0,0,0-12.76,49c.57,15.92,5.21,32,13.79,47.85l-19.51,19.5a8,8,0,0,0,11.32,11.32l19.5-19.51C81,210.73,97.09,215.37,113,215.94q1.67.06,3.33.06A86.93,86.93,0,0,0,162,203.18C205,177.18,227.93,116.21,223.45,40.07ZM153.75,189.5c-22.75,13.78-49.68,14-76.71.77l88.63-88.62a8,8,0,0,0-11.32-11.32L65.73,179c-13.19-27-13-54,.77-76.71,22.09-36.47,74.6-56.44,141.31-54.06C210.2,114.89,190.22,167.41,153.75,189.5Z',
+                flower:           'M210.35,129.36c-.81-.47-1.7-.92-2.62-1.36.92-.44,1.81-.89,2.62-1.36a40,40,0,1,0-40-69.28c-.81.47-1.65,1-2.48,1.59.08-1,.13-2,.13-3a40,40,0,0,0-80,0c0,.94,0,1.94.13,3-.83-.57-1.67-1.12-2.48-1.59a40,40,0,1,0-40,69.28c.81.47,1.7.92,2.62,1.36-.92.44-1.81.89-2.62,1.36a40,40,0,1,0,40,69.28c.81-.47,1.65-1,2.48-1.59-.08,1-.13,2-.13,2.95a40,40,0,0,0,80,0c0-.94-.05-1.94-.13-2.95.83.57,1.67,1.12,2.48,1.59A39.79,39.79,0,0,0,190.29,204a40.43,40.43,0,0,0,10.42-1.38,40,40,0,0,0,9.64-73.28ZM104,128a24,24,0,1,1,24,24A24,24,0,0,1,104,128Zm74.35-56.79a24,24,0,1,1,24,41.57c-6.27,3.63-18.61,6.13-35.16,7.19A40,40,0,0,0,154.53,98.1C163.73,84.28,172.08,74.84,178.35,71.21ZM128,32a24,24,0,0,1,24,24c0,7.24-4,19.19-11.36,34.06a39.81,39.81,0,0,0-25.28,0C108,75.19,104,63.24,104,56A24,24,0,0,1,128,32ZM44.86,80a24,24,0,0,1,32.79-8.79c6.27,3.63,14.62,13.07,23.82,26.89A40,40,0,0,0,88.81,120c-16.55-1.06-28.89-3.56-35.16-7.18A24,24,0,0,1,44.86,80ZM77.65,184.79a24,24,0,1,1-24-41.57c6.27-3.63,18.61-6.13,35.16-7.19a40,40,0,0,0,12.66,21.87C92.27,171.72,83.92,181.16,77.65,184.79ZM128,224a24,24,0,0,1-24-24c0-7.24,4-19.19,11.36-34.06a39.81,39.81,0,0,0,25.28,0C148,180.81,152,192.76,152,200A24,24,0,0,1,128,224Zm83.14-48a24,24,0,0,1-32.79,8.79c-6.27-3.63-14.62-13.07-23.82-26.89A40,40,0,0,0,167.19,136c16.55,1.06,28.89,3.56,35.16,7.18A24,24,0,0,1,211.14,176Z',
+                clover:           'M211.66,165.54C225.16,159.7,232,144.37,232,120s-6.84-39.7-20.34-45.55c-11.65-5-27.24-2.23-46.46,8.35,10.58-19.22,13.39-34.81,8.35-46.46C167.7,22.84,152.37,16,128,16S88.3,22.84,82.45,36.34c-5,11.65-2.23,27.24,8.35,46.45C71.58,72.22,56,69.4,44.34,74.45,30.84,80.3,24,95.63,24,120s6.84,39.7,20.34,45.54A31,31,0,0,0,56.8,168c9.6,0,21-3.62,34-10.79C80.22,176.41,77.41,192,82.45,203.65,88.3,217.15,103.63,224,128,224s39.7-6.85,45.55-20.35a32.24,32.24,0,0,0,2.34-15c10.45,16.23,19.64,34.48,24.35,53.33A8,8,0,0,0,208,248a8.13,8.13,0,0,0,1.95-.24,8,8,0,0,0,5.82-9.7c-6.94-27.76-22.27-53.8-37.86-74.79Q189.68,168,199.2,168A31,31,0,0,0,211.66,165.54Zm-6.37-76.4C214.14,93,216,108,216,120s-1.86,27-10.7,30.86c-8.36,3.63-23.52-1.31-42.68-13.91a243.4,243.4,0,0,1-22.54-17C158.49,104.37,190.4,82.68,205.29,89.14ZM97.14,42.7C101,33.86,116,32,128,32s27,1.86,30.86,10.7c3.63,8.36-1.31,23.52-13.91,42.68a243.4,243.4,0,0,1-17,22.54C112.37,89.51,90.69,57.59,97.14,42.7ZM50.71,150.86C41.86,147,40,132,40,120s1.86-27,10.7-30.86A15.64,15.64,0,0,1,57,88c8.75,0,21.34,5.17,36.4,15.07a243.4,243.4,0,0,1,22.54,17C97.51,135.62,65.59,157.32,50.71,150.86Zm108.15,46.43C155,206.14,140,208,128,208s-27-1.86-30.86-10.7c-3.63-8.36,1.31-23.52,13.91-42.68a243.4,243.4,0,0,1,17-22.54C143.63,150.49,165.31,182.41,158.86,197.29Z',
+                boat:             'M221.06,110.59,208,106.23V56a16,16,0,0,0-16-16H136V24a8,8,0,0,0-16,0V40H64A16,16,0,0,0,48,56v50.23l-13.06,4.36A16,16,0,0,0,24,125.77V152c0,61.54,97.89,86.72,102.06,87.76a8,8,0,0,0,3.88,0C134.11,238.72,232,213.54,232,152V125.77A16,16,0,0,0,221.06,110.59ZM64,56H192v44.9L130.53,80.41a8,8,0,0,0-5.06,0L64,100.9Zm152,96c0,24.91-23.68,43-43.55,53.83A228.13,228.13,0,0,1,128,223.72,226.85,226.85,0,0,1,83.81,206C47.6,186.35,40,165.79,40,152V125.77L120,99.1V168a8,8,0,0,0,16,0V99.1l80,26.67Z',
+                globe:            'M128,24h0A104,104,0,1,0,232,128,104.12,104.12,0,0,0,128,24Zm88,104a87.61,87.61,0,0,1-3.33,24H174.16a157.44,157.44,0,0,0,0-48h38.51A87.61,87.61,0,0,1,216,128ZM102,168H154a115.11,115.11,0,0,1-26,45A115.27,115.27,0,0,1,102,168Zm-3.9-16a140.84,140.84,0,0,1,0-48h59.88a140.84,140.84,0,0,1,0,48ZM40,128a87.61,87.61,0,0,1,3.33-24H81.84a157.44,157.44,0,0,0,0,48H43.33A87.61,87.61,0,0,1,40,128ZM154,88H102a115.11,115.11,0,0,1,26-45A115.27,115.27,0,0,1,154,88Zm52.33,0H170.71a135.28,135.28,0,0,0-22.3-45.6A88.29,88.29,0,0,1,206.37,88ZM107.59,42.4A135.28,135.28,0,0,0,85.29,88H49.63A88.29,88.29,0,0,1,107.59,42.4ZM49.63,168H85.29a135.28,135.28,0,0,0,22.3,45.6A88.29,88.29,0,0,1,49.63,168Zm98.78,45.6a135.28,135.28,0,0,0,22.3-45.6h35.66A88.29,88.29,0,0,1,148.41,213.6Z',
+                'airplane-takeoff':'M176,216a8,8,0,0,1-8,8H24a8,8,0,0,1,0-16H168A8,8,0,0,1,176,216ZM247.86,93.15a8,8,0,0,1-3.76,5.39l-147.41,88a40.18,40.18,0,0,1-20.26,5.52,39.78,39.78,0,0,1-27.28-10.87l-.12-.12L13,145.8a16,16,0,0,1,4.49-26.21l3-1.47a8,8,0,0,1,6.08-.4l28.26,9.54L75,115.06,53.17,93.87A16,16,0,0,1,57.7,67.4l.32-.13,7.15-2.71a8,8,0,0,1,5.59,0L124.7,84.38,176.27,53.6a39.82,39.82,0,0,1,51.28,9.12l.12.15,18.64,23.89A8,8,0,0,1,247.86,93.15Zm-19.74-3.7-13-16.67a23.88,23.88,0,0,0-30.68-5.42l-54.8,32.72a8.06,8.06,0,0,1-6.87.64L68,80.58l-4,1.53.21.2L93.57,110.8a8,8,0,0,1-1.43,12.58L59.93,142.87a8,8,0,0,1-6.7.73l-28.67-9.67-.19.1-.37.17a.71.71,0,0,1,.13.12l36,35.26a23.85,23.85,0,0,0,28.42,3.18Z',
+                'airplane-taxiing':'M208,96H147.32L101.66,50.34A8,8,0,0,0,96,48H88A16,16,0,0,0,72.83,69.06l9,26.94H59.32L37.66,74.34A8,8,0,0,0,32,72H24A16,16,0,0,0,8.69,92.6l14.07,46.89A39.75,39.75,0,0,0,61.07,168H240a8,8,0,0,0,8-8V136A40,40,0,0,0,208,96Zm24,56H61.07a23.85,23.85,0,0,1-23-17.1L24,88h4.68l21.66,21.66A8,8,0,0,0,56,112h36.9a8,8,0,0,0,7.59-10.53L88,64h4.68l45.66,45.66A8,8,0,0,0,144,112h64a24,24,0,0,1,24,24Zm-8,48a16,16,0,1,1-16-16A16,16,0,0,1,224,200Zm-96,0a16,16,0,1,1-16-16A16,16,0,0,1,128,200Z',
+                'airplane-tilt':  'M185.33,114.21l29.14-27.42.17-.17a32,32,0,0,0-45.26-45.26c0,.06-.11.11-.17.17L141.79,70.67l-83-30.2a8,8,0,0,0-8.39,1.86l-24,24a8,8,0,0,0,1.22,12.31l63.89,42.59L76.69,136H56a8,8,0,0,0-5.65,2.34l-24,24A8,8,0,0,0,29,175.42l36.82,14.73,14.7,36.75.06.16a8,8,0,0,0,13.18,2.47l23.87-23.88A8,8,0,0,0,120,200V179.31l14.76-14.76,42.59,63.89a8,8,0,0,0,12.31,1.22l24-24a8,8,0,0,0,1.86-8.39Zm-.07,97.23-42.59-63.88A8,8,0,0,0,136.8,144c-.27,0-.53,0-.79,0a8,8,0,0,0-5.66,2.35l-24,24A8,8,0,0,0,104,176v20.69L90.93,209.76,79.43,181A8,8,0,0,0,75,176.57l-28.74-11.5L59.32,152H80a8,8,0,0,0,5.66-2.34l24-24a8,8,0,0,0-1.22-12.32L44.56,70.74l13.5-13.49,83.22,30.26a8,8,0,0,0,8.56-2L180.78,52.6A16,16,0,0,1,203.4,75.23l-32.87,30.93a8,8,0,0,0-2,8.56l30.26,83.22Z',
+                waves:            'M222.16,177.25a8,8,0,0,1-1,11.25c-17.36,14.39-32.86,19.5-47,19.5-18.58,0-34.82-8.82-49.93-17-25.35-13.76-47.24-25.64-79.07.74a8,8,0,1,1-10.22-12.31c40.17-33.28,70.32-16.92,96.93-2.48,25.35,13.75,47.24,25.63,79.07-.74A8,8,0,0,1,222.16,177.25Zm-11.27-57c-31.83,26.38-53.72,14.5-79.07.74-26.61-14.43-56.76-30.79-96.93,2.49a8,8,0,0,0,10.22,12.31c31.83-26.38,53.72-14.5,79.07-.74,15.11,8.19,31.35,17,49.93,17,14.14,0,29.64-5.11,47-19.5a8,8,0,1,0-10.22-12.31ZM45.11,79.8c31.83-26.37,53.72-14.49,79.07-.74,15.11,8.2,31.35,17,49.93,17,14.14,0,29.64-5.12,47-19.5a8,8,0,1,0-10.22-12.31c-31.83,26.38-53.72,14.5-79.07.74C105.21,50.58,75.06,34.22,34.89,67.5A8,8,0,1,0,45.11,79.8Z',
+                // ── Batch 2 ──
+                tilde:            'M222.23,130.59c-14.51,18-28.84,27.6-43.8,29.17a43,43,0,0,1-4.5.24c-19.3,0-35.39-13.1-51-25.8-14.91-12.14-29-23.61-43.7-22-10.51,1.1-21.31,8.72-33,23.28a8,8,0,0,1-12.46-10c14.51-18,28.84-27.6,43.8-29.17,21.32-2.25,38.69,11.89,55.48,25.56,14.91,12.14,29,23.62,43.7,22,10.51-1.1,21.31-8.72,33-23.28a8,8,0,1,1,12.46,10Z',
+                'calendar-star':  'M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32Zm0,176H48V48H72v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V208Zm-31.38-94.36-29.84-2.31-11.43-26.5a8,8,0,0,0-14.7,0l-11.43,26.5-29.84,2.31a8,8,0,0,0-4.47,14.14l22.52,18.59-6.86,27.71a8,8,0,0,0,11.82,8.81L128,167.82l25.61,15.07a8,8,0,0,0,11.82-8.81l-6.86-27.71,22.52-18.59a8,8,0,0,0-4.47-14.14Zm-32.11,23.6a8,8,0,0,0-2.68,8.09l3.5,14.12-13.27-7.81a8,8,0,0,0-8.12,0l-13.27,7.81,3.5-14.12a8,8,0,0,0-2.68-8.09l-11.11-9.18,14.89-1.15a8,8,0,0,0,6.73-4.8l6-13.92,6,13.92a8,8,0,0,0,6.73,4.8l14.89,1.15Z',
+                'shooting-star':  'M239.35,70.08a13.41,13.41,0,0,0-11.77-9.28l-36.94-2.92L176.43,24.22a13.51,13.51,0,0,0-24.86,0L137.36,57.88,100.42,60.8a13.39,13.39,0,0,0-7.66,23.58l28.06,23.68-8.56,35.39a13.32,13.32,0,0,0,5.1,13.91,13.51,13.51,0,0,0,15,.69L164,139l31.65,19.06a13.54,13.54,0,0,0,15-.69,13.34,13.34,0,0,0,5.09-13.91l-8.56-35.39,28.06-23.68A13.32,13.32,0,0,0,239.35,70.08ZM193.08,99a8,8,0,0,0-2.61,8l8.28,34.21L168.13,122.8a8,8,0,0,0-8.25,0l-30.62,18.43L137.54,107a8,8,0,0,0-2.62-8L108,76.26l35.52-2.81a8,8,0,0,0,6.74-4.87L164,35.91l13.79,32.67a8,8,0,0,0,6.74,4.87l35.53,2.81Zm-105,24.18L29.66,181.66a8,8,0,0,1-11.32-11.32l58.45-58.45a8,8,0,0,1,11.32,11.32Zm10.81,49.87a8,8,0,0,1,0,11.31L45.66,237.66a8,8,0,0,1-11.32-11.32l53.27-53.26A8,8,0,0,1,98.92,173.08Zm73-1a8,8,0,0,1,0,11.32l-54.28,54.28a8,8,0,0,1-11.32-11.32l54.29-54.28A8,8,0,0,1,171.94,172.06Z',
+                sparkle:          'M197.58,129.06,146,110l-19-51.62a15.92,15.92,0,0,0-29.88,0L78,110l-51.62,19a15.92,15.92,0,0,0,0,29.88L78,178l19,51.62a15.92,15.92,0,0,0,29.88,0L146,178l51.62-19a15.92,15.92,0,0,0,0-29.88ZM137,164.22a8,8,0,0,0-4.74,4.74L112,223.85,91.78,169A8,8,0,0,0,87,164.22L32.15,144,87,123.78A8,8,0,0,0,91.78,119L112,64.15,132.22,119a8,8,0,0,0,4.74,4.74L191.85,144ZM144,40a8,8,0,0,1,8-8h16V16a8,8,0,0,1,16,0V32h16a8,8,0,0,1,0,16H184V64a8,8,0,0,1-16,0V48H152A8,8,0,0,1,144,40ZM248,88a8,8,0,0,1-8,8h-8v8a8,8,0,0,1-16,0V96h-8a8,8,0,0,1,0-16h8V72a8,8,0,0,1,16,0v8h8A8,8,0,0,1,248,88Z',
+                'drop-half':      'M174,47.75a254.19,254.19,0,0,0-41.45-38.3,8,8,0,0,0-9.18,0A254.19,254.19,0,0,0,82,47.75C54.51,79.32,40,112.6,40,144a88,88,0,0,0,176,0C216,112.6,201.49,79.32,174,47.75ZM187.83,184H68.17a72,72,0,0,1-8-16H195.87A72,72,0,0,1,187.83,184ZM200,144a70.57,70.57,0,0,1-.46,8H56.46a70.57,70.57,0,0,1-.46-8q0-4,.36-8H199.64Q200,140,200,144ZM128,26c14.16,11.1,56.86,47.74,68.84,94H59.16C71.14,73.76,113.84,37.12,128,26ZM82.81,200h90.38a71.82,71.82,0,0,1-90.38,0Z',
+                umbrella:         'M240,126.63A112.44,112.44,0,0,0,51.75,53.75a111.56,111.56,0,0,0-35.7,72.88A16,16,0,0,0,32,144h88v56a32,32,0,0,0,64,0,8,8,0,0,0-16,0,16,16,0,0,1-32,0V144h88a16,16,0,0,0,16-17.37ZM32,128l0,0a96.15,96.15,0,0,1,76.2-85.89C96.48,58,81.85,86.11,80.17,128Zm64.15,0c1.39-30.77,10.53-52.81,18.3-66.24A106.44,106.44,0,0,1,128,43.16a106.31,106.31,0,0,1,13.52,18.6C154.8,84.7,159,109.28,159.82,128Zm79.65,0c-1.68-41.89-16.31-70-28-85.94A96.07,96.07,0,0,1,224,128Z',
+                'sun-dim':        'M120,40V32a8,8,0,0,1,16,0v8a8,8,0,0,1-16,0Zm72,88a64,64,0,1,1-64-64A64.07,64.07,0,0,1,192,128Zm-16,0a48,48,0,1,0-48,48A48.05,48.05,0,0,0,176,128ZM58.34,69.66A8,8,0,0,0,69.66,58.34l-8-8A8,8,0,0,0,50.34,61.66Zm0,116.68-8,8a8,8,0,0,0,11.32,11.32l8-8a8,8,0,0,0-11.32-11.32ZM192,72a8,8,0,0,0,5.66-2.34l8-8a8,8,0,0,0-11.32-11.32l-8,8A8,8,0,0,0,192,72Zm5.66,114.34a8,8,0,0,0-11.32,11.32l8,8a8,8,0,0,0,11.32-11.32ZM40,120H32a8,8,0,0,0,0,16h8a8,8,0,0,0,0-16Zm88,88a8,8,0,0,0-8,8v8a8,8,0,0,0,16,0v-8A8,8,0,0,0,128,208Zm96-88h-8a8,8,0,0,0,0,16h8a8,8,0,0,0,0-16Z',
+                moon:             'M233.54,142.23a8,8,0,0,0-8-2,88.08,88.08,0,0,1-109.8-109.8,8,8,0,0,0-10-10,104.84,104.84,0,0,0-52.91,37A104,104,0,0,0,136,224a103.09,103.09,0,0,0,62.52-20.88,104.84,104.84,0,0,0,37-52.91A8,8,0,0,0,233.54,142.23ZM188.9,190.34A88,88,0,0,1,65.66,67.11a89,89,0,0,1,31.4-26A106,106,0,0,0,96,56,104.11,104.11,0,0,0,200,160a106,106,0,0,0,14.92-1.06A89,89,0,0,1,188.9,190.34Z',
+                'cloud-moon':     'M172,72a76.45,76.45,0,0,0-12.36,1A71.93,71.93,0,0,0,104.17,9.83a8,8,0,0,0-9.59,9.58A56.05,56.05,0,0,1,40,88a56.45,56.45,0,0,1-12.59-1.42,8,8,0,0,0-9.59,9.59,72.22,72.22,0,0,0,32.29,45.06A52,52,0,0,0,92,224h80a76,76,0,0,0,0-152ZM37.37,104c.87,0,1.75,0,2.63,0a72.08,72.08,0,0,0,72-72c0-.89,0-1.78,0-2.67a55.63,55.63,0,0,1,32,48,76.28,76.28,0,0,0-43,43.4A52,52,0,0,0,62,129.59,56.22,56.22,0,0,1,37.37,104ZM172,208H92a36,36,0,1,1,4.78-71.69c-.37,2.37-.63,4.79-.77,7.23a8,8,0,0,0,16,.92,58.91,58.91,0,0,1,1.88-11.81c0-.16.09-.32.12-.48A60.06,60.06,0,1,1,172,208Z',
+                'thermometer-hot':'M128,153V48a8,8,0,0,0-16,0V153a32,32,0,1,0,16,0Zm-8,47a16,16,0,1,1,16-16A16,16,0,0,1,120,200Zm40-66V48a40,40,0,0,0-80,0v86a64,64,0,1,0,80,0Zm-40,98a48,48,0,0,1-27.42-87.4A8,8,0,0,0,96,138V48a24,24,0,0,1,48,0v90a8,8,0,0,0,3.42,6.56A48,48,0,0,1,120,232ZM177.3,80.77a8,8,0,0,1,2.33-11.07c15-9.79,26.87-4.75,35.51-1.06C223,72,227.76,74,235.63,68.89a8,8,0,0,1,8.74,13.41C237.88,86.53,232,88,226.69,88c-7,0-12.92-2.54-17.83-4.63C201,80,196.24,78,188.37,83.11A8,8,0,0,1,177.3,80.77Zm69.4,22.46a8,8,0,0,1-2.33,11.07C237.88,118.53,232,120,226.69,120c-7,0-12.92-2.54-17.83-4.63-7.87-3.36-12.62-5.38-20.49-.25a8,8,0,0,1-8.74-13.41c15-9.79,26.87-4.75,35.51-1.06,7.87,3.36,12.62,5.39,20.49.25A8,8,0,0,1,246.7,103.23Z',
+                'thermometer-cold':'M248.91,77.72l-20,6.49,12.34,17a8,8,0,1,1-12.94,9.4L216,93.61l-12.34,17a8,8,0,0,1-12.94-9.4l12.34-17-20-6.49A8,8,0,0,1,188,62.5L208,69V48a8,8,0,0,1,16,0V69l20-6.49a8,8,0,0,1,4.95,15.22ZM152,184a32,32,0,1,1-40-31V120a8,8,0,0,1,16,0v33A32.06,32.06,0,0,1,152,184Zm-16,0a16,16,0,1,0-16,16A16,16,0,0,0,136,184Zm48,0A64,64,0,1,1,80,134V48a40,40,0,0,1,80,0v86A64.08,64.08,0,0,1,184,184Zm-16,0a48.08,48.08,0,0,0-20.58-39.4A8,8,0,0,1,144,138V48a24,24,0,0,0-48,0v90a8,8,0,0,1-3.42,6.56A48,48,0,1,0,168,184Z',
+                thermometer:      'M212,56a28,28,0,1,0,28,28A28,28,0,0,0,212,56Zm0,40a12,12,0,1,1,12-12A12,12,0,0,1,212,96Zm-84,57V88a8,8,0,0,0-16,0v65a32,32,0,1,0,16,0Zm-8,47a16,16,0,1,1,16-16A16,16,0,0,1,120,200Zm40-66V48a40,40,0,0,0-80,0v86a64,64,0,1,0,80,0Zm-40,98a48,48,0,0,1-27.42-87.4A8,8,0,0,0,96,138V48a24,24,0,0,1,48,0v90a8,8,0,0,0,3.42,6.56A48,48,0,0,1,120,232Z',
+                anchor:           'M216,136a8,8,0,0,0-8,8c0,24.69-13.77,29.64-38.1,36.28-11.36,3.1-24.12,6.6-33.9,14.34V128h32a8,8,0,0,0,0-16H136V87a32,32,0,1,0-16,0v25H88a8,8,0,0,0,0,16h32v66.62c-9.78-7.74-22.54-11.24-33.9-14.34C61.77,173.64,48,168.69,48,144a8,8,0,0,0-16,0c0,38.11,27.67,45.66,49.9,51.72C106.23,202.36,120,207.31,120,232a8,8,0,0,0,16,0c0-24.69,13.77-29.64,38.1-36.28C196.33,189.66,224,182.11,224,144A8,8,0,0,0,216,136ZM112,56a16,16,0,1,1,16,16A16,16,0,0,1,112,56Z',
+                butterfly:        'M232.7,50.48C229,45.7,221.84,40,209,40c-16.85,0-38.46,11.28-57.81,30.16A140.07,140.07,0,0,0,136,87.53V56a8,8,0,0,0-16,0V87.53a140.07,140.07,0,0,0-15.15-17.37C85.49,51.28,63.88,40,47,40,34.16,40,27,45.7,23.3,50.48c-6.82,8.77-12.18,24.08-.21,71.2,6.05,23.83,19.51,33,30.63,36.42A44,44,0,0,0,128,205.27a44,44,0,0,0,74.28-47.17c11.12-3.4,24.57-12.59,30.63-36.42C239.63,95.24,244.85,66.1,232.7,50.48ZM92,208A28.12,28.12,0,0,1,88.86,152a8,8,0,1,0-1.76-15.9A43.64,43.64,0,0,0,66.36,144c-8.43.09-22-3.57-27.76-26.26C35.72,106.39,27,71.86,35.94,60.3,37.37,58.46,40.09,56,47,56c27.27,0,73,44.88,73,71.67V180A28,28,0,0,1,92,208ZM217.4,117.74c-5.77,22.69-19.33,26.34-27.77,26.26a43.6,43.6,0,0,0-20.74-7.95,8,8,0,1,0-1.76,15.9A28.11,28.11,0,1,1,136,180V127.67C136,100.88,181.69,56,209,56c6.95,0,9.66,2.46,11.1,4.3C229.05,71.86,220.28,106.39,217.4,117.74Z',
+                bird:             'M176,68a12,12,0,1,1-12-12A12,12,0,0,1,176,68Zm64,12a8,8,0,0,1-3.56,6.66L216,100.28V120A104.11,104.11,0,0,1,112,224H24a16,16,0,0,1-12.49-26l.1-.12L96,96.63V76.89C96,43.47,122.79,16.16,155.71,16H156a60,60,0,0,1,57.21,41.86l23.23,15.48A8,8,0,0,1,240,80Zm-22.42,0L201.9,69.54a8,8,0,0,1-3.31-4.64A44,44,0,0,0,156,32h-.22C131.64,32.12,112,52.25,112,76.89V99.52a8,8,0,0,1-1.85,5.13L24,208h26.9l70.94-85.12a8,8,0,1,1,12.29,10.24L71.75,208H112a88.1,88.1,0,0,0,88-88V96a8,8,0,0,1,3.56-6.66Z',
+                star:             'M239.18,97.26A16.38,16.38,0,0,0,224.92,86l-59-4.76L143.14,26.15a16.36,16.36,0,0,0-30.27,0L90.11,81.23,31.08,86a16.46,16.46,0,0,0-9.37,28.86l45,38.83L53,211.75a16.38,16.38,0,0,0,24.5,17.82L128,198.49l50.53,31.08A16.4,16.4,0,0,0,203,211.75l-13.76-58.07,45-38.83A16.43,16.43,0,0,0,239.18,97.26Zm-15.34,5.47-48.7,42a8,8,0,0,0-2.56,7.91l14.88,62.8a.37.37,0,0,1-.17.48c-.18.14-.23.11-.38,0l-54.72-33.65a8,8,0,0,0-8.38,0L69.09,215.94c-.15.09-.19.12-.38,0a.37.37,0,0,1-.17-.48l14.88-62.8a8,8,0,0,0-2.56-7.91l-48.7-42c-.12-.1-.23-.19-.13-.5s.18-.27.33-.29l63.92-5.16A8,8,0,0,0,103,91.86l24.62-59.61c.08-.17.11-.25.35-.25s.27.08.35.25L153,91.86a8,8,0,0,0,6.75,4.92l63.92,5.16c.15,0,.24,0,.33.29S224,102.63,223.84,102.73Z',
+                eyes:             'M176,32c-20.61,0-38.28,18.16-48,45.85C118.28,50.16,100.61,32,80,32c-31.4,0-56,42.17-56,96s24.6,96,56,96c20.61,0,38.28-18.16,48-45.85,9.72,27.69,27.39,45.85,48,45.85,31.4,0,56-42.17,56-96S207.4,32,176,32ZM106.92,186.39C99.43,200.12,89.62,208,80,208s-19.43-7.88-26.92-21.61a104.81,104.81,0,0,1-10.24-29.23,32,32,0,1,0,0-58.32A104.81,104.81,0,0,1,53.08,69.61C60.57,55.88,70.38,48,80,48s19.43,7.88,26.92,21.61C115.35,85.07,120,105.81,120,128S115.35,170.93,106.92,186.39ZM40,128a16,16,0,1,1,16,16A16,16,0,0,1,40,128Zm162.92,58.39C195.43,200.12,185.62,208,176,208s-19.43-7.88-26.92-21.61a104.81,104.81,0,0,1-10.24-29.23,32,32,0,1,0,0-58.32,104.81,104.81,0,0,1,10.24-29.23C156.57,55.88,166.38,48,176,48s19.43,7.88,26.92,21.61C211.35,85.07,216,105.81,216,128S211.35,170.93,202.92,186.39ZM136,128a16,16,0,1,1,16,16A16,16,0,0,1,136,128Z',
+                'calendar-dots':  'M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Zm-68-76a12,12,0,1,1-12-12A12,12,0,0,1,140,132Zm44,0a12,12,0,1,1-12-12A12,12,0,0,1,184,132ZM96,172a12,12,0,1,1-12-12A12,12,0,0,1,96,172Zm44,0a12,12,0,1,1-12-12A12,12,0,0,1,140,172Zm44,0a12,12,0,1,1-12-12A12,12,0,0,1,184,172Z',
+                'calendar-dot':   'M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Zm-64-56a16,16,0,1,1-16-16A16,16,0,0,1,144,152Z',
+                // ── Batch 3 ──
+                subway:           'M224,96V208a8,8,0,0,1-16,0V96a56.06,56.06,0,0,0-56-56H104A56.06,56.06,0,0,0,48,96V208a8,8,0,0,1-16,0V96a72.08,72.08,0,0,1,72-72h48A72.08,72.08,0,0,1,224,96Zm-40,0v72a24,24,0,0,1-19.29,23.53l2.45,4.89a8,8,0,0,1-14.32,7.16L147.06,192H108.94l-5.78,11.58a8,8,0,0,1-14.32-7.16l2.45-4.89A24,24,0,0,1,72,168V96A24,24,0,0,1,96,72h64A24,24,0,0,1,184,96ZM88,96v48h80V96a8,8,0,0,0-8-8H96A8,8,0,0,0,88,96Zm32,64v16h16V160ZM96,176h8V160H88v8A8,8,0,0,0,96,176Zm72-8v-8H152v16h8A8,8,0,0,0,168,168Z',
+                'train-simple':   'M184,24H72A32,32,0,0,0,40,56V184a32,32,0,0,0,32,32h8L65.6,235.2a8,8,0,1,0,12.8,9.6L100,216h56l21.6,28.8a8,8,0,1,0,12.8-9.6L176,216h8a32,32,0,0,0,32-32V56A32,32,0,0,0,184,24ZM72,40H184a16,16,0,0,1,16,16v64H56V56A16,16,0,0,1,72,40ZM184,200H72a16,16,0,0,1-16-16V136H200v48A16,16,0,0,1,184,200ZM96,172a12,12,0,1,1-12-12A12,12,0,0,1,96,172Zm88,0a12,12,0,1,1-12-12A12,12,0,0,1,184,172Z',
+                'train-regional': 'M223.72,117.9,201.33,35.79A16,16,0,0,0,185.89,24H70.11A16,16,0,0,0,54.67,35.79L32.28,117.9a8.08,8.08,0,0,0,0,4.2l22.39,82.11A16,16,0,0,0,70.11,216H80L65.6,235.2a8,8,0,1,0,12.8,9.6L100,216h56l21.6,28.8a8,8,0,1,0,12.8-9.6L176,216h9.89a16,16,0,0,0,15.44-11.79l22.39-82.11A8.08,8.08,0,0,0,223.72,117.9ZM70.11,40H185.89L206,113.69l-78,14.18L50,113.69Zm-19,90.14L120,142.68V200H70.11ZM185.89,200H136V142.68l68.94-12.54ZM88,88a8,8,0,0,1,8-8h64a8,8,0,0,1,0,16H96A8,8,0,0,1,88,88Z',
+                'airplane-in-flight': 'M224,216a8,8,0,0,1-8,8H72a8,8,0,1,1,0-16H216A8,8,0,0,1,224,216Zm24-80v24a8,8,0,0,1-8,8H61.07a39.75,39.75,0,0,1-38.31-28.51L8.69,92.6A16,16,0,0,1,24,72h8a8,8,0,0,1,5.65,2.34L59.32,96H81.81l-9-26.94A16,16,0,0,1,88,48h8a8,8,0,0,1,5.66,2.34L147.32,96H208A40,40,0,0,1,248,136Zm-16,0a24,24,0,0,0-24-24H144a8,8,0,0,1-5.65-2.34L92.69,64H88l12.49,37.47A8,8,0,0,1,92.91,112H56a8,8,0,0,1-5.66-2.34L28.69,88H24l14.07,46.9a23.85,23.85,0,0,0,23,17.1H232Z',
+                'air-traffic-control': 'M229.11,70.82A16,16,0,0,0,216,64H136V32h16a8,8,0,0,0,0-16H104a8,8,0,0,0,0,16h16V64H40A16,16,0,0,0,25,85.47l26.19,72a16,16,0,0,0,15,10.53H96v64a8,8,0,0,0,16,0V168h32v64a8,8,0,0,0,16,0V168h29.82a16,16,0,0,0,15-10.53l26.19-72A16,16,0,0,0,229.11,70.82ZM110.68,152,97.58,80h60.84l-13.1,72ZM40,80H81.32l13.09,72H66.18Zm149.82,72H161.59l13.09-72H216Z',
+                sailboat:         'M247.21,172.53A8,8,0,0,0,240,168H144V144h72a8,8,0,0,0,5.92-13.38L144,44.91V8a8,8,0,0,0-14.21-5l-104,128A8,8,0,0,0,32,144h96v24H16a8,8,0,0,0-6.25,13l29.6,37a15.93,15.93,0,0,0,12.49,6H204.16a15.93,15.93,0,0,0,12.49-6l29.6-37A8,8,0,0,0,247.21,172.53ZM197.92,128H144V68.69ZM48.81,128,128,30.53V128Zm155.35,80H51.84l-19.2-24H223.36Z',
+                grains:           'M208,56a87.53,87.53,0,0,0-31.85,6c-14.32-29.7-43.25-44.46-44.57-45.12a8,8,0,0,0-7.16,0c-1.33.66-30.25,15.42-44.57,45.12A87.53,87.53,0,0,0,48,56a8,8,0,0,0-8,8v80a88,88,0,0,0,176,0V64A8,8,0,0,0,208,56ZM120,215.56A72.1,72.1,0,0,1,56,144V128.44A72.1,72.1,0,0,1,120,200Zm0-66.1a88,88,0,0,0-64-37.09V72.44A72.1,72.1,0,0,1,120,144ZM94.15,69.11c9.22-19.21,26.41-31.33,33.85-35.9,7.44,4.58,24.63,16.7,33.84,35.9A88.61,88.61,0,0,0,128,107.36,88.57,88.57,0,0,0,94.15,69.11ZM200,144a72.1,72.1,0,0,1-64,71.56V200a72.1,72.1,0,0,1,64-71.56Zm0-31.63a88,88,0,0,0-64,37.09V144a72.1,72.1,0,0,1,64-71.56Z',
+                acorn:            'M232,104a56.06,56.06,0,0,0-56-56H136a24,24,0,0,1,24-24,8,8,0,0,0,0-16,40,40,0,0,0-40,40H80a56.06,56.06,0,0,0-56,56,16,16,0,0,0,8,13.83V128c0,35.53,33.12,62.12,59.74,83.49C103.66,221.07,120,234.18,120,240a8,8,0,0,0,16,0c0-5.82,16.34-18.93,28.26-28.51C190.88,190.12,224,163.53,224,128V117.83A16,16,0,0,0,232,104ZM80,64h96a40.06,40.06,0,0,1,40,40H40A40,40,0,0,1,80,64Zm74.25,135c-10.62,8.52-20,16-26.25,23.37-6.25-7.32-15.63-14.85-26.25-23.37C77.8,179.79,48,155.86,48,128v-8H208v8C208,155.86,178.2,179.79,154.25,199Z',
+                island:           'M238.25,229A8,8,0,0,1,227,230.25c-.37-.3-38.82-30.25-99-30.25S29.36,230,29,230.26a8,8,0,0,1-10-12.51c1.63-1.3,38.52-30.26,98.29-33.45A119.94,119.94,0,0,1,114,146.37c1.74-21.71,10.92-50.63,43-72.48A64.65,64.65,0,0,0,140.26,72c-19,.62-30.94,11.71-36.5,33.92A8,8,0,0,1,96,112a7.64,7.64,0,0,1-1.94-.24,8,8,0,0,1-5.82-9.7c9.25-36.95,33.11-45.42,51.5-46a81.48,81.48,0,0,1,21.68,2.45c-3.83-6.33-9.43-12.93-17.21-16.25-10-4.24-22.17-2.39-36.31,5.51a8,8,0,0,1-7.8-14c18.74-10.45,35.72-12.54,50.48-6.2,12.49,5.36,20.73,15.78,25.87,25,6.18-9.64,13.88-16.17,22.39-18.94,11.86-3.87,24.64-.72,38,9.37a8,8,0,0,1-9.64,12.76c-8.91-6.73-16.77-9.06-23.35-6.93-7.29,2.35-12.87,10-16.37,16.61A70.46,70.46,0,0,1,208,73.07c14.61,8.35,32,26.05,32,62.94a8,8,0,0,1-16,0c0-23.46-8.07-40-24-49a50.49,50.49,0,0,0-5.75-2.8,55.64,55.64,0,0,1,5.06,33.06,59.41,59.41,0,0,1-8.86,23.41,8,8,0,0,1-13.09-9.2c.74-1.09,16.33-24.38-3.26-49.37-27,15.21-41.89,37.25-44.16,65.59a104.27,104.27,0,0,0,3.83,36.44c62.65,1.81,101.52,32.33,103.2,33.66A8,8,0,0,1,238.25,229ZM24,140a28,28,0,1,1,28,28A28,28,0,0,1,24,140Zm16,0a12,12,0,1,0,12-12A12,12,0,0,0,40,140Z',
+                bicycle:          'M208,112a47.81,47.81,0,0,0-16.93,3.09L165.93,72H192a8,8,0,0,1,8,8,8,8,0,0,0,16,0,24,24,0,0,0-24-24H152a8,8,0,0,0-6.91,12l11.65,20H99.26L82.91,60A8,8,0,0,0,76,56H48a8,8,0,0,0,0,16H71.41L85.12,95.51,69.41,117.06a48.13,48.13,0,1,0,12.92,9.44l11.59-15.9L125.09,164A8,8,0,1,0,138.91,156l-30.32-52h57.48l11.19,19.17A48,48,0,1,0,208,112ZM80,160a32,32,0,1,1-20.21-29.74l-18.25,25a8,8,0,1,0,12.92,9.42l18.25-25A31.88,31.88,0,0,1,80,160Zm128,32a32,32,0,0,1-22.51-54.72L201.09,164A8,8,0,1,0,214.91,156L199.3,129.21A32,32,0,1,1,208,192Z',
+                'airplane-takeoff2': 'M176,216a8,8,0,0,1-8,8H24a8,8,0,0,1,0-16H168A8,8,0,0,1,176,216ZM247.86,93.15a8,8,0,0,1-3.76,5.39l-147.41,88a40.18,40.18,0,0,1-20.26,5.52,39.78,39.78,0,0,1-27.28-10.87l-.12-.12L13,145.8a16,16,0,0,1,4.49-26.21l3-1.47a8,8,0,0,1,6.08-.4l28.26,9.54L75,115.06,53.17,93.87A16,16,0,0,1,57.7,67.4l.32-.13,7.15-2.71a8,8,0,0,1,5.59,0L124.7,84.38,176.27,53.6a39.82,39.82,0,0,1,51.28,9.12l.12.15,18.64,23.89A8,8,0,0,1,247.86,93.15Zm-19.74-3.7-13-16.67a23.88,23.88,0,0,0-30.68-5.42l-54.8,32.72a8.06,8.06,0,0,1-6.87.64L68,80.58l-4,1.53.21.2L93.57,110.8a8,8,0,0,1-1.43,12.58L59.93,142.87a8,8,0,0,1-6.7.73l-28.67-9.67-.19.1-.37.17a.71.71,0,0,1,.13.12l36,35.26a23.85,23.85,0,0,0,28.42,3.18Z',
+                orange:           'M165.87,72.58A64.06,64.06,0,0,0,200,16a8,8,0,0,0-8-8h-8a64,64,0,0,0-56,33.06A64,64,0,0,0,72,8H64a8,8,0,0,0,0,16h8a48.08,48.08,0,0,1,47.4,40.42,88,88,0,1,0,46.47,8.16ZM183.33,24a48.09,48.09,0,0,1-46.66,40A48.09,48.09,0,0,1,183.33,24ZM128,224a72,72,0,1,1,72-72A72.08,72.08,0,0,1,128,224Zm55.89-62.68a57.5,57.5,0,0,1-46.57,46.57A8.52,8.52,0,0,1,136,208a8,8,0,0,1-1.31-15.89,41.29,41.29,0,0,0,33.43-33.43,8,8,0,0,1,15.78,2.64Z',
+                plant:            'M247.63,47.89a8,8,0,0,0-7.52-7.52c-51.76-3-93.32,12.74-111.18,42.22-11.8,19.49-11.78,43.16-.16,65.74a71.34,71.34,0,0,0-14.17,27L98.33,159c7.82-16.33,7.52-33.35-1-47.49-13.2-21.79-43.67-33.47-81.5-31.25a8,8,0,0,0-7.52,7.52c-2.23,37.83,9.46,68.3,31.25,81.5A45.82,45.82,0,0,0,63.44,176,54.58,54.58,0,0,0,87,170.33l25,25V224a8,8,0,0,0,16,0V194.51a55.61,55.61,0,0,1,12.27-35,73.91,73.91,0,0,0,33.31,8.4,60.9,60.9,0,0,0,31.83-8.86C234.89,141.21,250.67,99.65,247.63,47.89ZM47.81,155.6C32.47,146.31,23.79,124.32,24,96c28.32-.24,50.31,8.47,59.6,23.81,4.85,8,5.64,17.33,2.46,26.94L61.65,122.34a8,8,0,0,0-11.31,11.31l24.41,24.41C65.14,161.24,55.82,160.45,47.81,155.6Zm149.31-10.22c-13.4,8.11-29.15,8.73-45.15,2l53.69-53.7a8,8,0,0,0-11.31-11.31L140.65,136c-6.76-16-6.15-31.76,2-45.15,13.94-23,47-35.82,89.33-34.83C232.94,98.34,220.14,131.44,197.12,145.38Z',
+                carrot:           'M232,64H203.31l26.35-26.34a8,8,0,0,0-11.32-11.32L192,52.69V24a8,8,0,0,0-16,0V56.57a64,64,0,0,0-77.2,10.12l0,0,0,0,0,0c-40.1,39.39-70.25,133.08-73.19,142.45a16,16,0,0,0,21.26,21.26c9.37-2.94,103.18-33.13,142.47-73.21A64,64,0,0,0,199.43,80H232a8,8,0,0,0,0-16Zm-54.12,82c-8.94,9.12-21.25,17.8-34.85,25.73l-25.38-25.39a8,8,0,0,0-11.32,11.32l22.09,22.09c-40.87,21.19-86.32,35.42-87,35.63A7.93,7.93,0,0,0,40,216a7.93,7.93,0,0,0,.59-1.41c.29-.93,28-89.58,64-130.67l33.77,33.77a8,8,0,0,0,11.32-11.32L116.18,72.88A48,48,0,0,1,177.88,146Z',
+            };
+
+            // Render a 16×16 Phosphor icon inline
+            function icon(name, size) {
+                const path = ICONS[name];
+                if (!path) return '';
+                const s = size || 15;
+                return `<svg xmlns="http://www.w3.org/2000/svg" width="${s}" height="${s}" viewBox="0 0 256 256" fill="currentColor" style="display:inline-block;vertical-align:middle;flex-shrink:0;position:relative;top:-1px"><path d="${path}"/></svg>`;
+            }
+
+            // WMO code → icon name
+            function wmoIcon(code) {
+                if (code === 0)                          return 'sun';
+                if (code <= 2)                           return 'cloud-sun';
+                if (code === 3)                          return 'cloud';
+                if (code === 45 || code === 48)          return 'cloud-fog';
+                if (code >= 51 && code <= 55)            return 'drop';
+                if (code >= 61 && code <= 65)            return 'cloud-rain';
+                if (code >= 71 && code <= 77)            return 'cloud-snow';
+                if (code >= 80 && code <= 82)            return 'cloud-rain';
+                if (code === 85 || code === 86)          return 'cloud-snow';
+                if (code >= 95)                          return 'cloud-lightning';
+                return 'cloud';
+            }
+            // Temperature → icon (hot/cold/neutral)
+            function tempIcon(f) {
+                if (f == null) return 'thermometer';
+                if (f >= 85)  return 'thermometer-hot';
+                if (f <= 35)  return 'thermometer-cold';
+                return 'thermometer';
+            }
+
+            function almanacRow(label, value, sub, iconName) {
+                const ic = iconName ? icon(iconName) + ' ' : '';
+                return `<div class="almanac-row">
+                    <span class="almanac-row-label" style="display:flex;align-items:center;gap:7px;">${iconName ? `<span style="color:var(--ink-light);display:flex;align-items:center;">${icon(iconName, 15)}</span>` : ''}<span>${label}</span></span>
+                    <div style="text-align:right">
+                        <div class="almanac-row-value">${value}</div>
+                        ${sub ? `<div class="almanac-row-sub">${sub}</div>` : ''}
+                    </div>
+                </div>`;
+            }
+
             // ── Desktop keyboard hotkeys ──────────────────────────────────────────────────
             document.addEventListener("keydown", (e) => {
                 // Escape: always cancel search if active
@@ -5189,6 +7238,14 @@
                 if (e.ctrlKey || e.metaKey || e.altKey) return;
 
                 switch (e.key) {
+                    case "a":
+                    case "A":
+                        // a → Almanac
+                        e.preventDefault();
+                        if (document.getElementById("info-overlay").classList.contains("open")) closeInfo();
+                        if (document.getElementById("flagged-overlay").classList.contains("open")) closeFlagged();
+                        toggleAlmanac();
+                        break;
                     case "f":
                     case "F":
                         if (e.shiftKey) {
