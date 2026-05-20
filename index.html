@@ -147,7 +147,7 @@
                 font-weight: 400;
                 letter-spacing: 0.1em;
                 text-transform: uppercase;
-                color: var(--ink-light);
+                color: var(--ink);
             }
             .ticker-stat strong {
                 font-weight: 600;
@@ -1466,6 +1466,110 @@
                 display: block;
             }
 
+            /* ── CLOCKS SETTINGS ROW ── */
+            #clocks-config-row {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 32px;
+            }
+            #clocks-config-label {
+                font-family: var(--font-ui);
+                font-size: 9px;
+                font-weight: 400;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+                color: var(--ink-light);
+                flex-shrink: 0;
+            }
+            #clocks-config-selects {
+                display: flex;
+                gap: 6px;
+            }
+
+            /* ── CUSTOM CLOCK DROPDOWN ── */
+            .clock-dd {
+                position: relative;
+                font-family: var(--font-ui);
+                font-size: 9px;
+                font-weight: 400;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+            }
+            .clock-dd-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 44px;
+                height: 26px;
+                border: 1px solid var(--rule-heavy);
+                background: transparent;
+                color: var(--ink-mid);
+                font-family: var(--font-ui);
+                font-size: 9px;
+                font-weight: 400;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                cursor: pointer;
+                -webkit-tap-highlight-color: transparent;
+                user-select: none;
+            }
+            .clock-dd-btn.open {
+                border-color: var(--ink);
+                color: var(--ink);
+            }
+            .clock-dd-panel {
+                display: none;
+                position: fixed;
+                z-index: 9999;
+                background: var(--paper);
+                border: 1px solid var(--rule-heavy);
+                box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+                overflow-y: auto;
+                max-height: 60vh;
+                min-width: 180px;
+            }
+            .clock-dd-panel.open {
+                display: block;
+            }
+            .clock-dd-group-label {
+                display: block;
+                padding: 8px 12px 4px;
+                font-family: var(--font-ui);
+                font-size: 10px;
+                font-weight: 600;
+                letter-spacing: 0.12em;
+                text-transform: uppercase;
+                color: var(--ink);
+                border-top: 1px solid var(--rule);
+                margin-top: 2px;
+            }
+            .clock-dd-group-label:first-child {
+                border-top: none;
+                margin-top: 0;
+            }
+            .clock-dd-item {
+                display: block;
+                width: 100%;
+                padding: 7px 12px;
+                background: transparent;
+                border: none;
+                text-align: left;
+                font-family: var(--font-ui);
+                font-size: 11px;
+                font-weight: 400;
+                letter-spacing: 0.03em;
+                color: var(--ink-mid);
+                cursor: pointer;
+                -webkit-tap-highlight-color: transparent;
+                white-space: nowrap;
+            }
+            .clock-dd-item:active,
+            .clock-dd-item.selected {
+                background: var(--ink);
+                color: var(--paper);
+            }
+
             #info-btn svg,
             #info-btn-close svg {
                 display: block;
@@ -2089,12 +2193,12 @@
                         <div class="clock-item">
                             <svg
                                 class="clock-face"
-                                id="clock-nyc"
+                                id="clock-c1"
                                 viewBox="0 0 30 30"
                             >
                                 <defs>
                                     <radialGradient
-                                        id="night-grad-nyc"
+                                        id="night-grad-c1"
                                         cx="50%"
                                         cy="50%"
                                         r="50%"
@@ -2109,7 +2213,7 @@
                                         />
                                     </radialGradient>
                                     <radialGradient
-                                        id="night-grad-dark-nyc"
+                                        id="night-grad-dark-c1"
                                         cx="50%"
                                         cy="50%"
                                         r="50%"
@@ -2125,7 +2229,7 @@
                                     </radialGradient>
                                 </defs>
                                 <circle
-                                    id="face-nyc"
+                                    id="face-c1"
                                     cx="15"
                                     cy="15"
                                     r="13"
@@ -2137,15 +2241,15 @@
                                     cy="15"
                                     r="13"
                                 />
-                                <g id="ticks-nyc"></g>
+                                <g id="ticks-c1"></g>
                                 <polygon
                                     class="clock-hand-hour"
-                                    id="hr-nyc"
+                                    id="hr-c1"
                                     points="14.1,15 14.55,7.5 15.45,7.5 15.9,15"
                                 />
                                 <polygon
                                     class="clock-hand-minute"
-                                    id="min-nyc"
+                                    id="min-c1"
                                     points="14.3,15 14.55,3 15.45,3 15.7,15"
                                 />
                                 <circle
@@ -2156,21 +2260,21 @@
                                 />
                                 <polygon
                                     class="clock-hand-second"
-                                    id="sec-nyc"
+                                    id="sec-c1"
                                     points="14.7,18 14.9,3.5 15.1,3.5 15.3,18"
                                 />
                             </svg>
-                            <span class="clock-label">NYC</span>
+                            <span class="clock-label" id="label-c1">NYC</span>
                         </div>
                         <div class="clock-item">
                             <svg
                                 class="clock-face"
-                                id="clock-lon"
+                                id="clock-c2"
                                 viewBox="0 0 30 30"
                             >
                                 <defs>
                                     <radialGradient
-                                        id="night-grad-lon"
+                                        id="night-grad-c2"
                                         cx="50%"
                                         cy="50%"
                                         r="50%"
@@ -2185,7 +2289,7 @@
                                         />
                                     </radialGradient>
                                     <radialGradient
-                                        id="night-grad-dark-lon"
+                                        id="night-grad-dark-c2"
                                         cx="50%"
                                         cy="50%"
                                         r="50%"
@@ -2201,7 +2305,7 @@
                                     </radialGradient>
                                 </defs>
                                 <circle
-                                    id="face-lon"
+                                    id="face-c2"
                                     cx="15"
                                     cy="15"
                                     r="13"
@@ -2213,15 +2317,15 @@
                                     cy="15"
                                     r="13"
                                 />
-                                <g id="ticks-lon"></g>
+                                <g id="ticks-c2"></g>
                                 <polygon
                                     class="clock-hand-hour"
-                                    id="hr-lon"
+                                    id="hr-c2"
                                     points="14.1,15 14.55,7.5 15.45,7.5 15.9,15"
                                 />
                                 <polygon
                                     class="clock-hand-minute"
-                                    id="min-lon"
+                                    id="min-c2"
                                     points="14.3,15 14.55,3 15.45,3 15.7,15"
                                 />
                                 <circle
@@ -2232,21 +2336,21 @@
                                 />
                                 <polygon
                                     class="clock-hand-second"
-                                    id="sec-lon"
+                                    id="sec-c2"
                                     points="14.7,18 14.9,3.5 15.1,3.5 15.3,18"
                                 />
                             </svg>
-                            <span class="clock-label">LON</span>
+                            <span class="clock-label" id="label-c2">LON</span>
                         </div>
                         <div class="clock-item">
                             <svg
                                 class="clock-face"
-                                id="clock-bey"
+                                id="clock-c3"
                                 viewBox="0 0 30 30"
                             >
                                 <defs>
                                     <radialGradient
-                                        id="night-grad-bey"
+                                        id="night-grad-c3"
                                         cx="50%"
                                         cy="50%"
                                         r="50%"
@@ -2261,7 +2365,7 @@
                                         />
                                     </radialGradient>
                                     <radialGradient
-                                        id="night-grad-dark-bey"
+                                        id="night-grad-dark-c3"
                                         cx="50%"
                                         cy="50%"
                                         r="50%"
@@ -2277,7 +2381,7 @@
                                     </radialGradient>
                                 </defs>
                                 <circle
-                                    id="face-bey"
+                                    id="face-c3"
                                     cx="15"
                                     cy="15"
                                     r="13"
@@ -2289,15 +2393,15 @@
                                     cy="15"
                                     r="13"
                                 />
-                                <g id="ticks-bey"></g>
+                                <g id="ticks-c3"></g>
                                 <polygon
                                     class="clock-hand-hour"
-                                    id="hr-bey"
+                                    id="hr-c3"
                                     points="14.1,15 14.55,7.5 15.45,7.5 15.9,15"
                                 />
                                 <polygon
                                     class="clock-hand-minute"
-                                    id="min-bey"
+                                    id="min-c3"
                                     points="14.3,15 14.55,3 15.45,3 15.7,15"
                                 />
                                 <circle
@@ -2308,21 +2412,21 @@
                                 />
                                 <polygon
                                     class="clock-hand-second"
-                                    id="sec-bey"
+                                    id="sec-c3"
                                     points="14.7,18 14.9,3.5 15.1,3.5 15.3,18"
                                 />
                             </svg>
-                            <span class="clock-label">BEY</span>
+                            <span class="clock-label" id="label-c3">BEY</span>
                         </div>
                         <div class="clock-item">
                             <svg
                                 class="clock-face"
-                                id="clock-tyo"
+                                id="clock-c4"
                                 viewBox="0 0 30 30"
                             >
                                 <defs>
                                     <radialGradient
-                                        id="night-grad-tyo"
+                                        id="night-grad-c4"
                                         cx="50%"
                                         cy="50%"
                                         r="50%"
@@ -2337,7 +2441,7 @@
                                         />
                                     </radialGradient>
                                     <radialGradient
-                                        id="night-grad-dark-tyo"
+                                        id="night-grad-dark-c4"
                                         cx="50%"
                                         cy="50%"
                                         r="50%"
@@ -2353,7 +2457,7 @@
                                     </radialGradient>
                                 </defs>
                                 <circle
-                                    id="face-tyo"
+                                    id="face-c4"
                                     cx="15"
                                     cy="15"
                                     r="13"
@@ -2365,15 +2469,15 @@
                                     cy="15"
                                     r="13"
                                 />
-                                <g id="ticks-tyo"></g>
+                                <g id="ticks-c4"></g>
                                 <polygon
                                     class="clock-hand-hour"
-                                    id="hr-tyo"
+                                    id="hr-c4"
                                     points="14.1,15 14.55,7.5 15.45,7.5 15.9,15"
                                 />
                                 <polygon
                                     class="clock-hand-minute"
-                                    id="min-tyo"
+                                    id="min-c4"
                                     points="14.3,15 14.55,3 15.45,3 15.7,15"
                                 />
                                 <circle
@@ -2384,11 +2488,11 @@
                                 />
                                 <polygon
                                     class="clock-hand-second"
-                                    id="sec-tyo"
+                                    id="sec-c4"
                                     points="14.7,18 14.9,3.5 15.1,3.5 15.3,18"
                                 />
                             </svg>
-                            <span class="clock-label">TYO</span>
+                            <span class="clock-label" id="label-c4">TYO</span>
                         </div>
                     </div>
                     <div id="sort-group" style="display: none">
@@ -2802,6 +2906,16 @@
                                 fill="#f3cbb0" style="stroke: var(--rule-heavy); stroke-width: 1;"/>
                         </svg>
                     </button>
+                </div>
+            </div>
+            <!-- Clocks config -->
+            <div id="clocks-config-row">
+                <span id="clocks-config-label">Clocks</span>
+                <div id="clocks-config-selects">
+                    <div class="clock-dd" id="clock-dd-c1"><button class="clock-dd-btn" id="clock-dd-btn-c1">NYC</button><div class="clock-dd-panel" id="clock-dd-panel-c1"></div></div>
+                    <div class="clock-dd" id="clock-dd-c2"><button class="clock-dd-btn" id="clock-dd-btn-c2">LON</button><div class="clock-dd-panel" id="clock-dd-panel-c2"></div></div>
+                    <div class="clock-dd" id="clock-dd-c3"><button class="clock-dd-btn" id="clock-dd-btn-c3">BEY</button><div class="clock-dd-panel" id="clock-dd-panel-c3"></div></div>
+                    <div class="clock-dd" id="clock-dd-c4"><button class="clock-dd-btn" id="clock-dd-btn-c4">TYO</button><div class="clock-dd-panel" id="clock-dd-panel-c4"></div></div>
                 </div>
             </div>
             <div id="sources-toggle-row">
@@ -5092,12 +5206,281 @@
                 { passive: true },
             );
 
-            const ZONES = [
-                { id: "nyc", tz: "America/New_York" },
-                { id: "lon", tz: "Europe/London" },
-                { id: "bey", tz: "Asia/Beirut" },
-                { id: "tyo", tz: "Asia/Tokyo" },
+            // ── CLOCK CITY OPTIONS ──────────────────────────────────────────
+            const CLOCK_OPTIONS = [
+                // Americas
+                { label: "ADK", name: "Adak",             tz: "America/Adak",                         group: "Americas" },
+                { label: "ANC", name: "Anchorage",        tz: "America/Anchorage",                    group: "Americas" },
+                { label: "ATL", name: "Atlanta",          tz: "America/New_York",                     group: "Americas" },
+                { label: "BOG", name: "Bogotá",           tz: "America/Bogota",                       group: "Americas" },
+                { label: "BOS", name: "Boston",           tz: "America/New_York",                     group: "Americas" },
+                { label: "BUE", name: "Buenos Aires",     tz: "America/Argentina/Buenos_Aires",       group: "Americas" },
+                { label: "CCS", name: "Caracas",          tz: "America/Caracas",                      group: "Americas" },
+                { label: "CHI", name: "Chicago",          tz: "America/Chicago",                      group: "Americas" },
+                { label: "COR", name: "Córdoba",          tz: "America/Argentina/Cordoba",            group: "Americas" },
+                { label: "DAL", name: "Dallas",           tz: "America/Chicago",                      group: "Americas" },
+                { label: "DEN", name: "Denver",           tz: "America/Denver",                       group: "Americas" },
+                { label: "DET", name: "Detroit",          tz: "America/Detroit",                      group: "Americas" },
+                { label: "GUA", name: "Guatemala City",   tz: "America/Guatemala",                    group: "Americas" },
+                { label: "HAV", name: "Havana",           tz: "America/Havana",                       group: "Americas" },
+                { label: "HNL", name: "Honolulu",         tz: "Pacific/Honolulu",                     group: "Americas" },
+                { label: "HOU", name: "Houston",          tz: "America/Chicago",                      group: "Americas" },
+                { label: "LAX", name: "Los Angeles",      tz: "America/Los_Angeles",                  group: "Americas" },
+                { label: "LIM", name: "Lima",             tz: "America/Lima",                         group: "Americas" },
+                { label: "MDE", name: "Medellín",         tz: "America/Bogota",                       group: "Americas" },
+                { label: "MEX", name: "Mexico City",      tz: "America/Mexico_City",                  group: "Americas" },
+                { label: "MIA", name: "Miami",            tz: "America/New_York",                     group: "Americas" },
+                { label: "MGF", name: "Montevideo",       tz: "America/Montevideo",                   group: "Americas" },
+                { label: "MTL", name: "Montreal",         tz: "America/Toronto",                      group: "Americas" },
+                { label: "NYC", name: "New York",         tz: "America/New_York",                     group: "Americas" },
+                { label: "PHL", name: "Philadelphia",     tz: "America/New_York",                     group: "Americas" },
+                { label: "PHX", name: "Phoenix",          tz: "America/Phoenix",                      group: "Americas" },
+                { label: "QTO", name: "Quito",            tz: "America/Guayaquil",                    group: "Americas" },
+                { label: "SAO", name: "São Paulo",        tz: "America/Sao_Paulo",                    group: "Americas" },
+                { label: "SCL", name: "Santiago",         tz: "America/Santiago",                     group: "Americas" },
+                { label: "SDQ", name: "Santo Domingo",    tz: "America/Santo_Domingo",                group: "Americas" },
+                { label: "SEA", name: "Seattle",          tz: "America/Los_Angeles",                  group: "Americas" },
+                { label: "SFO", name: "San Francisco",    tz: "America/Los_Angeles",                  group: "Americas" },
+                { label: "SJO", name: "San José",         tz: "America/Costa_Rica",                   group: "Americas" },
+                { label: "WAS", name: "Washington DC",    tz: "America/New_York",                     group: "Americas" },
+                { label: "YVR", name: "Vancouver",        tz: "America/Vancouver",                    group: "Americas" },
+                { label: "YYZ", name: "Toronto",          tz: "America/Toronto",                      group: "Americas" },
+                // Africa
+                { label: "ABJ", name: "Abidjan",          tz: "Africa/Abidjan",                       group: "Africa" },
+                { label: "ACC", name: "Accra",            tz: "Africa/Accra",                         group: "Africa" },
+                { label: "ADD", name: "Addis Ababa",      tz: "Africa/Addis_Ababa",                   group: "Africa" },
+                { label: "ALG", name: "Algiers",          tz: "Africa/Algiers",                       group: "Africa" },
+                { label: "CAI", name: "Cairo",            tz: "Africa/Cairo",                         group: "Africa" },
+                { label: "CPT", name: "Cape Town",        tz: "Africa/Johannesburg",                  group: "Africa" },
+                { label: "CMN", name: "Casablanca",       tz: "Africa/Casablanca",                    group: "Africa" },
+                { label: "DAK", name: "Dakar",            tz: "Africa/Dakar",                         group: "Africa" },
+                { label: "DAR", name: "Dar es Salaam",    tz: "Africa/Dar_es_Salaam",                 group: "Africa" },
+                { label: "JNB", name: "Johannesburg",     tz: "Africa/Johannesburg",                  group: "Africa" },
+                { label: "KRT", name: "Khartoum",         tz: "Africa/Khartoum",                      group: "Africa" },
+                { label: "KIN", name: "Kinshasa",         tz: "Africa/Kinshasa",                      group: "Africa" },
+                { label: "LAG", name: "Lagos",            tz: "Africa/Lagos",                         group: "Africa" },
+                { label: "LUS", name: "Lusaka",           tz: "Africa/Lusaka",                        group: "Africa" },
+                { label: "NAI", name: "Nairobi",          tz: "Africa/Nairobi",                       group: "Africa" },
+                { label: "TRI", name: "Tripoli",          tz: "Africa/Tripoli",                       group: "Africa" },
+                { label: "TUN", name: "Tunis",            tz: "Africa/Tunis",                         group: "Africa" },
+                // Europe
+                { label: "ATH", name: "Athens",           tz: "Europe/Athens",                        group: "Europe" },
+                { label: "BCN", name: "Barcelona",        tz: "Europe/Madrid",                        group: "Europe" },
+                { label: "BEL", name: "Belgrade",         tz: "Europe/Belgrade",                      group: "Europe" },
+                { label: "BER", name: "Berlin",           tz: "Europe/Berlin",                        group: "Europe" },
+                { label: "BRU", name: "Brussels",         tz: "Europe/Brussels",                      group: "Europe" },
+                { label: "BUD", name: "Budapest",         tz: "Europe/Budapest",                      group: "Europe" },
+                { label: "CGN", name: "Cologne",          tz: "Europe/Berlin",                        group: "Europe" },
+                { label: "CPH", name: "Copenhagen",       tz: "Europe/Copenhagen",                    group: "Europe" },
+                { label: "DUB", name: "Dublin",           tz: "Europe/Dublin",                        group: "Europe" },
+                { label: "EDI", name: "Edinburgh",        tz: "Europe/London",                        group: "Europe" },
+                { label: "FRA", name: "Frankfurt",        tz: "Europe/Berlin",                        group: "Europe" },
+                { label: "GVA", name: "Geneva",           tz: "Europe/Zurich",                        group: "Europe" },
+                { label: "HAM", name: "Hamburg",          tz: "Europe/Berlin",                        group: "Europe" },
+                { label: "HEL", name: "Helsinki",         tz: "Europe/Helsinki",                      group: "Europe" },
+                { label: "IST", name: "Istanbul",         tz: "Europe/Istanbul",                      group: "Europe" },
+                { label: "KBP", name: "Kyiv",             tz: "Europe/Kiev",                          group: "Europe" },
+                { label: "KIV", name: "Chișinău",         tz: "Europe/Chisinau",                      group: "Europe" },
+                { label: "LIS", name: "Lisbon",           tz: "Europe/Lisbon",                        group: "Europe" },
+                { label: "LJU", name: "Ljubljana",        tz: "Europe/Ljubljana",                     group: "Europe" },
+                { label: "LON", name: "London",           tz: "Europe/London",                        group: "Europe" },
+                { label: "MAD", name: "Madrid",           tz: "Europe/Madrid",                        group: "Europe" },
+                { label: "MIL", name: "Milan",            tz: "Europe/Rome",                          group: "Europe" },
+                { label: "MSK", name: "Moscow",           tz: "Europe/Moscow",                        group: "Europe" },
+                { label: "MUC", name: "Munich",           tz: "Europe/Berlin",                        group: "Europe" },
+                { label: "NAP", name: "Naples",           tz: "Europe/Rome",                          group: "Europe" },
+                { label: "OPO", name: "Porto",            tz: "Europe/Lisbon",                        group: "Europe" },
+                { label: "OSL", name: "Oslo",             tz: "Europe/Oslo",                          group: "Europe" },
+                { label: "OTP", name: "Bucharest",        tz: "Europe/Bucharest",                     group: "Europe" },
+                { label: "PAR", name: "Paris",            tz: "Europe/Paris",                         group: "Europe" },
+                { label: "PRG", name: "Prague",           tz: "Europe/Prague",                        group: "Europe" },
+                { label: "RIX", name: "Riga",             tz: "Europe/Riga",                          group: "Europe" },
+                { label: "ROM", name: "Rome",             tz: "Europe/Rome",                          group: "Europe" },
+                { label: "SAR", name: "Sarajevo",         tz: "Europe/Sarajevo",                      group: "Europe" },
+                { label: "SOF", name: "Sofia",            tz: "Europe/Sofia",                         group: "Europe" },
+                { label: "STO", name: "Stockholm",        tz: "Europe/Stockholm",                     group: "Europe" },
+                { label: "TLL", name: "Tallinn",          tz: "Europe/Tallinn",                       group: "Europe" },
+                { label: "VIE", name: "Vienna",           tz: "Europe/Vienna",                        group: "Europe" },
+                { label: "VNO", name: "Vilnius",          tz: "Europe/Vilnius",                       group: "Europe" },
+                { label: "WAW", name: "Warsaw",           tz: "Europe/Warsaw",                        group: "Europe" },
+                { label: "ZAG", name: "Zagreb",           tz: "Europe/Zagreb",                        group: "Europe" },
+                { label: "ZRH", name: "Zurich",           tz: "Europe/Zurich",                        group: "Europe" },
+                // Middle East
+                { label: "ALP", name: "Aleppo",           tz: "Asia/Damascus",                        group: "Middle East" },
+                { label: "AMM", name: "Amman",            tz: "Asia/Amman",                           group: "Middle East" },
+                { label: "AMD", name: "Yerevan",          tz: "Asia/Yerevan",                         group: "Middle East" },
+                { label: "BAG", name: "Baghdad",          tz: "Asia/Baghdad",                         group: "Middle East" },
+                { label: "BEY", name: "Beirut",           tz: "Asia/Beirut",                          group: "Middle East" },
+                { label: "DAM", name: "Damascus",         tz: "Asia/Damascus",                        group: "Middle East" },
+                { label: "DOH", name: "Doha",             tz: "Asia/Qatar",                           group: "Middle East" },
+                { label: "DXB", name: "Dubai",            tz: "Asia/Dubai",                           group: "Middle East" },
+                { label: "ISB", name: "Islamabad",        tz: "Asia/Karachi",                         group: "Middle East" },
+                { label: "MCT", name: "Muscat",           tz: "Asia/Muscat",                          group: "Middle East" },
+                { label: "RUH", name: "Riyadh",           tz: "Asia/Riyadh",                          group: "Middle East" },
+                { label: "TBS", name: "Tbilisi",          tz: "Asia/Tbilisi",                         group: "Middle East" },
+                { label: "TEH", name: "Tehran",           tz: "Asia/Tehran",                          group: "Middle East" },
+                { label: "TLV", name: "Tel Aviv",         tz: "Asia/Jerusalem",                       group: "Middle East" },
+                // Asia
+                { label: "BKK", name: "Bangkok",          tz: "Asia/Bangkok",                         group: "Asia" },
+                { label: "BJS", name: "Beijing",          tz: "Asia/Shanghai",                        group: "Asia" },
+                { label: "BOM", name: "Mumbai",           tz: "Asia/Kolkata",                         group: "Asia" },
+                { label: "BSN", name: "Busan",            tz: "Asia/Seoul",                           group: "Asia" },
+                { label: "CCU", name: "Kolkata",          tz: "Asia/Kolkata",                         group: "Asia" },
+                { label: "CMB", name: "Colombo",          tz: "Asia/Colombo",                         group: "Asia" },
+                { label: "DEL", name: "New Delhi",        tz: "Asia/Kolkata",                         group: "Asia" },
+                { label: "DHA", name: "Dhaka",            tz: "Asia/Dhaka",                           group: "Asia" },
+                { label: "HKG", name: "Hong Kong",        tz: "Asia/Hong_Kong",                       group: "Asia" },
+                { label: "JKT", name: "Jakarta",          tz: "Asia/Jakarta",                         group: "Asia" },
+                { label: "KBL", name: "Kabul",            tz: "Asia/Kabul",                           group: "Asia" },
+                { label: "KHI", name: "Karachi",          tz: "Asia/Karachi",                         group: "Asia" },
+                { label: "KTM", name: "Kathmandu",        tz: "Asia/Kathmandu",                       group: "Asia" },
+                { label: "KUL", name: "Kuala Lumpur",     tz: "Asia/Kuala_Lumpur",                    group: "Asia" },
+                { label: "MNL", name: "Manila",           tz: "Asia/Manila",                          group: "Asia" },
+                { label: "OSA", name: "Osaka",            tz: "Asia/Tokyo",                           group: "Asia" },
+                { label: "RGN", name: "Yangon",           tz: "Asia/Rangoon",                         group: "Asia" },
+                { label: "SEL", name: "Seoul",            tz: "Asia/Seoul",                           group: "Asia" },
+                { label: "SGN", name: "Ho Chi Minh",      tz: "Asia/Ho_Chi_Minh",                     group: "Asia" },
+                { label: "SIN", name: "Singapore",        tz: "Asia/Singapore",                       group: "Asia" },
+                { label: "TAS", name: "Tashkent",         tz: "Asia/Tashkent",                        group: "Asia" },
+                { label: "TYO", name: "Tokyo",            tz: "Asia/Tokyo",                           group: "Asia" },
+                { label: "ULN", name: "Ulaanbaatar",      tz: "Asia/Ulaanbaatar",                     group: "Asia" },
+                // Pacific
+                { label: "AKL", name: "Auckland",         tz: "Pacific/Auckland",                     group: "Pacific" },
+                { label: "MEL", name: "Melbourne",        tz: "Australia/Melbourne",                  group: "Pacific" },
+                { label: "NOU", name: "Nouméa",           tz: "Pacific/Noumea",                       group: "Pacific" },
+                { label: "PER", name: "Perth",            tz: "Australia/Perth",                      group: "Pacific" },
+                { label: "PPT", name: "Papeete",          tz: "Pacific/Tahiti",                       group: "Pacific" },
+                { label: "SYD", name: "Sydney",           tz: "Australia/Sydney",                     group: "Pacific" },
+                { label: "UTC", name: "UTC",              tz: "UTC",                                  group: "Other" },
             ];
+
+            const CLOCK_GROUPS = ["Americas", "Europe", "Africa", "Middle East", "Asia", "Pacific", "Other"];
+
+            const CLOCK_DEFAULTS = [
+                { id: "c1", label: "NYC", tz: "America/New_York" },
+                { id: "c2", label: "LON", tz: "Europe/London" },
+                { id: "c3", label: "BEY", tz: "Asia/Beirut" },
+                { id: "c4", label: "TYO", tz: "Asia/Tokyo" },
+            ];
+
+            function loadClockPrefs() {
+                try {
+                    const saved = JSON.parse(localStorage.getItem("inked-clock-prefs") || "null");
+                    if (saved && Array.isArray(saved) && saved.length === 4) return saved;
+                } catch (e) {}
+                return CLOCK_DEFAULTS.map(d => ({ id: d.id, label: d.label, tz: d.tz }));
+            }
+
+            function saveClockPrefs(prefs) {
+                localStorage.setItem("inked-clock-prefs", JSON.stringify(prefs));
+            }
+
+            let clockPrefs = loadClockPrefs();
+
+            const ZONES = clockPrefs.map(p => ({ id: p.id, tz: p.tz }));
+
+            function applyClockPrefs() {
+                clockPrefs.forEach((p, i) => {
+                    ZONES[i].tz = p.tz;
+                    const labelEl = document.getElementById(`label-${p.id}`);
+                    if (labelEl) labelEl.textContent = p.label;
+                });
+            }
+
+            let _openClockDd = null;
+
+            function closeAllClockDds() {
+                CLOCK_DEFAULTS.forEach(slot => {
+                    document.getElementById(`clock-dd-btn-${slot.id}`)?.classList.remove("open");
+                    document.getElementById(`clock-dd-panel-${slot.id}`)?.classList.remove("open");
+                });
+                _openClockDd = null;
+            }
+
+            function positionClockPanel(slotId) {
+                const btn   = document.getElementById(`clock-dd-btn-${slotId}`);
+                const panel = document.getElementById(`clock-dd-panel-${slotId}`);
+                if (!btn || !panel) return;
+                const r = btn.getBoundingClientRect();
+                // Try to open below; if not enough room, open above
+                const spaceBelow = window.innerHeight - r.bottom;
+                const panelH = Math.min(window.innerHeight * 0.6, 400);
+                if (spaceBelow >= panelH || spaceBelow >= 200) {
+                    panel.style.top  = (r.bottom + 4) + "px";
+                    panel.style.bottom = "auto";
+                } else {
+                    panel.style.bottom = (window.innerHeight - r.top + 4) + "px";
+                    panel.style.top = "auto";
+                }
+                // Align right edge to button right edge, clamp to viewport
+                let left = r.right - 180;
+                if (left < 8) left = 8;
+                panel.style.left = left + "px";
+            }
+
+            function populateClockSelects() {
+                CLOCK_DEFAULTS.forEach((slot, i) => {
+                    const panel = document.getElementById(`clock-dd-panel-${slot.id}`);
+                    const btn   = document.getElementById(`clock-dd-btn-${slot.id}`);
+                    if (!panel || !btn) return;
+                    const currentLabel = clockPrefs[i].label;
+                    btn.textContent = currentLabel;
+                    let html = "";
+                    CLOCK_GROUPS.forEach(g => {
+                        const cities = CLOCK_OPTIONS.filter(o => o.group === g);
+                        if (!cities.length) return;
+                        html += `<span class="clock-dd-group-label">${g}</span>`;
+                        cities.forEach(opt => {
+                            const sel = opt.label === currentLabel ? " selected" : "";
+                            html += `<button class="clock-dd-item${sel}" data-slot="${slot.id}" data-label="${opt.label}">${opt.name} (${opt.label})</button>`;
+                        });
+                    });
+                    panel.innerHTML = html;
+                    // Scroll selected item into view when panel opens
+                    panel.addEventListener("click", e => {
+                        const item = e.target.closest(".clock-dd-item");
+                        if (!item) return;
+                        setClockZone(item.dataset.slot, item.dataset.label);
+                        closeAllClockDds();
+                    }, { once: false });
+                });
+            }
+
+            function initClockDdTriggers() {
+                CLOCK_DEFAULTS.forEach(slot => {
+                    const btn = document.getElementById(`clock-dd-btn-${slot.id}`);
+                    if (!btn) return;
+                    btn.addEventListener("click", e => {
+                        e.stopPropagation();
+                        const isOpen = btn.classList.contains("open");
+                        closeAllClockDds();
+                        if (!isOpen) {
+                            btn.classList.add("open");
+                            const panel = document.getElementById(`clock-dd-panel-${slot.id}`);
+                            panel.classList.add("open");
+                            positionClockPanel(slot.id);
+                            // Scroll selected into view
+                            const sel = panel.querySelector(".selected");
+                            if (sel) sel.scrollIntoView({ block: "nearest" });
+                            _openClockDd = slot.id;
+                        }
+                    });
+                });
+                document.addEventListener("click", e => {
+                    if (_openClockDd && !e.target.closest(".clock-dd")) closeAllClockDds();
+                });
+            }
+
+            function setClockZone(slotId, label) {
+                const opt = CLOCK_OPTIONS.find(o => o.label === label);
+                if (!opt) return;
+                const idx = clockPrefs.findIndex(p => p.id === slotId);
+                if (idx < 0) return;
+                clockPrefs[idx] = { id: slotId, label: opt.label, tz: opt.tz };
+                saveClockPrefs(clockPrefs);
+                applyClockPrefs();
+                populateClockSelects();
+            }
 
             function drawTicks() {
                 const ns = "http://www.w3.org/2000/svg";
@@ -5265,6 +5648,9 @@
             }
 
             drawTicks();
+            applyClockPrefs();
+            populateClockSelects();
+            initClockDdTriggers();
             clockLoop();
 
             // ── FLAGGED / READING LIST ────────────────────────────────────────────────────
@@ -5798,8 +6184,7 @@
             // ── Sun via Open-Meteo daily params + Moon calculated client-side ──
             async function loadSunMoon() {
                 try {
-                    const sunTZ = almanacTZ ? encodeURIComponent(almanacTZ) : 'auto';
-                    const url = `https://api.open-meteo.com/v1/forecast?latitude=${almanacLat}&longitude=${almanacLon}&daily=sunrise,sunset,daylight_duration,sunshine_duration&timezone=${sunTZ}&forecast_days=1`;
+                    const url = `https://api.open-meteo.com/v1/forecast?latitude=${almanacLat}&longitude=${almanacLon}&daily=sunrise,sunset,daylight_duration,sunshine_duration&timezone=auto&forecast_days=1`;
                     const res = await fetch(url);
                     const data = await res.json();
                     const d = data.daily;
@@ -6177,32 +6562,36 @@
                 document.getElementById('almanac-nightsky-rows').innerHTML = rows.join('');
             }
             // Returns [month(1-12), day] or a Date object for moveable feasts
-            // ── Date helpers (outer scope — used by getHolidays and loadSunMoon) ──
-            function nthDay(y, mo, dow, n) {
-                const d = new Date(y, mo - 1, 1);
-                const first = d.getDay();
-                let day = 1 + ((dow - first + 7) % 7) + (n - 1) * 7;
-                return new Date(y, mo - 1, day);
-            }
-            function lastDay(y, mo, dow) {
-                const last = new Date(y, mo, 0);
-                const diff = (last.getDay() - dow + 7) % 7;
-                return new Date(y, mo - 1, last.getDate() - diff);
-            }
-            function easter(y) {
-                const a = y % 19, b = Math.floor(y/100), c = y % 100;
-                const d = Math.floor(b/4), e = b % 4, f = Math.floor((b+8)/25);
-                const g = Math.floor((b-f+1)/3), h = (19*a+b-d-g+15) % 30;
-                const i = Math.floor(c/4), k = c % 4;
-                const l = (32+2*e+2*i-h-k) % 7;
-                const m = Math.floor((a+11*h+22*l)/451);
-                const mo = Math.floor((h+l-7*m+114)/31);
-                const dy = ((h+l-7*m+114) % 31) + 1;
-                return new Date(y, mo-1, dy);
-            }
-
             function getHolidays(year) {
                 const h = [];
+
+                // ── Helper: nth weekday of month ──
+                // e.g. nthDay(year, 1, 1, 3) = 3rd Monday of January
+                function nthDay(y, mo, dow, n) {
+                    // dow: 0=Sun,1=Mon...6=Sat
+                    const d = new Date(y, mo - 1, 1);
+                    const first = d.getDay();
+                    let day = 1 + ((dow - first + 7) % 7) + (n - 1) * 7;
+                    return new Date(y, mo - 1, day);
+                }
+                // Last weekday of month
+                function lastDay(y, mo, dow) {
+                    const last = new Date(y, mo, 0); // last day of month
+                    const diff = (last.getDay() - dow + 7) % 7;
+                    return new Date(y, mo - 1, last.getDate() - diff);
+                }
+                // Easter (Anonymous Gregorian algorithm)
+                function easter(y) {
+                    const a = y % 19, b = Math.floor(y/100), c = y % 100;
+                    const d = Math.floor(b/4), e = b % 4, f = Math.floor((b+8)/25);
+                    const g = Math.floor((b-f+1)/3), h = (19*a+b-d-g+15) % 30;
+                    const i = Math.floor(c/4), k = c % 4;
+                    const l = (32+2*e+2*i-h-k) % 7;
+                    const m = Math.floor((a+11*h+22*l)/451);
+                    const mo = Math.floor((h+l-7*m+114)/31);
+                    const dy = ((h+l-7*m+114) % 31) + 1;
+                    return new Date(y, mo-1, dy);
+                }
 
                 const fixed = [
                     // ── US Federal ──
@@ -6445,7 +6834,7 @@
                 { name: 'NJ Transit',       lat: 40.7282, lon: -74.0776, radius: 45, icon: 'train-regional', url: 'https://www.njtransit.com/alerts' },
                 { name: 'PATH',             lat: 40.7282, lon: -74.0776, radius: 25, icon: 'subway',        url: 'https://www.panynj.gov/path/en/index.html' },
                 { name: 'CTA L',            lat: 41.8827, lon: -87.6233, radius: 25, icon: 'train-simple',  url: 'https://www.transitchicago.com/travel_information/systemstatus.aspx' },
-                { name: 'CTA Bus',          lat: 41.8827, lon: -87.6233, radius: 25, icon: 'bus',           url: 'https://www.transitchicago.com/travel_information/systemstatus.aspx' },
+                { name: 'CTA Bus',          lat: 41.8827, lon: -87.6233, radius: 25, icon: 'subway',        url: 'https://www.transitchicago.com/travel_information/systemstatus.aspx' },
                 { name: 'Metra',            lat: 41.8827, lon: -87.6233, radius: 40, icon: 'train-regional', url: 'https://metra.com/service-alerts/' },
                 { name: 'MBTA Subway',      lat: 42.3601, lon: -71.0589, radius: 25, icon: 'subway',        url: 'https://www.mbta.com/alerts' },
                 { name: 'MBTA Commuter Rail',lat: 42.3601, lon: -71.0589, radius: 40, icon: 'train-regional', url: 'https://www.mbta.com/alerts' },
@@ -7185,7 +7574,6 @@
                 sailboat:         'M247.21,172.53A8,8,0,0,0,240,168H144V144h72a8,8,0,0,0,5.92-13.38L144,44.91V8a8,8,0,0,0-14.21-5l-104,128A8,8,0,0,0,32,144h96v24H16a8,8,0,0,0-6.25,13l29.6,37a15.93,15.93,0,0,0,12.49,6H204.16a15.93,15.93,0,0,0,12.49-6l29.6-37A8,8,0,0,0,247.21,172.53ZM197.92,128H144V68.69ZM48.81,128,128,30.53V128Zm155.35,80H51.84l-19.2-24H223.36Z',
                 grains:           'M208,56a87.53,87.53,0,0,0-31.85,6c-14.32-29.7-43.25-44.46-44.57-45.12a8,8,0,0,0-7.16,0c-1.33.66-30.25,15.42-44.57,45.12A87.53,87.53,0,0,0,48,56a8,8,0,0,0-8,8v80a88,88,0,0,0,176,0V64A8,8,0,0,0,208,56ZM120,215.56A72.1,72.1,0,0,1,56,144V128.44A72.1,72.1,0,0,1,120,200Zm0-66.1a88,88,0,0,0-64-37.09V72.44A72.1,72.1,0,0,1,120,144ZM94.15,69.11c9.22-19.21,26.41-31.33,33.85-35.9,7.44,4.58,24.63,16.7,33.84,35.9A88.61,88.61,0,0,0,128,107.36,88.57,88.57,0,0,0,94.15,69.11ZM200,144a72.1,72.1,0,0,1-64,71.56V200a72.1,72.1,0,0,1,64-71.56Zm0-31.63a88,88,0,0,0-64,37.09V144a72.1,72.1,0,0,1,64-71.56Z',
                 acorn:            'M232,104a56.06,56.06,0,0,0-56-56H136a24,24,0,0,1,24-24,8,8,0,0,0,0-16,40,40,0,0,0-40,40H80a56.06,56.06,0,0,0-56,56,16,16,0,0,0,8,13.83V128c0,35.53,33.12,62.12,59.74,83.49C103.66,221.07,120,234.18,120,240a8,8,0,0,0,16,0c0-5.82,16.34-18.93,28.26-28.51C190.88,190.12,224,163.53,224,128V117.83A16,16,0,0,0,232,104ZM80,64h96a40.06,40.06,0,0,1,40,40H40A40,40,0,0,1,80,64Zm74.25,135c-10.62,8.52-20,16-26.25,23.37-6.25-7.32-15.63-14.85-26.25-23.37C77.8,179.79,48,155.86,48,128v-8H208v8C208,155.86,178.2,179.79,154.25,199Z',
-                bus:              'M184,32H72A32,32,0,0,0,40,64V208a16,16,0,0,0,16,16H80a16,16,0,0,0,16-16V192h64v16a16,16,0,0,0,16,16h24a16,16,0,0,0,16-16V64A32,32,0,0,0,184,32ZM56,176V120H200v56Zm0-96H200v24H56ZM72,48H184a16,16,0,0,1,16,16H56A16,16,0,0,1,72,48Zm8,160H56V192H80Zm96,0V192h24v16Zm-72-60a12,12,0,1,1-12-12A12,12,0,0,1,104,148Zm72,0a12,12,0,1,1-12-12A12,12,0,0,1,176,148Zm72-68v24a8,8,0,0,1-16,0V80a8,8,0,0,1,16,0ZM24,80v24a8,8,0,0,1-16,0V80a8,8,0,0,1,16,0Z',
                 island:           'M238.25,229A8,8,0,0,1,227,230.25c-.37-.3-38.82-30.25-99-30.25S29.36,230,29,230.26a8,8,0,0,1-10-12.51c1.63-1.3,38.52-30.26,98.29-33.45A119.94,119.94,0,0,1,114,146.37c1.74-21.71,10.92-50.63,43-72.48A64.65,64.65,0,0,0,140.26,72c-19,.62-30.94,11.71-36.5,33.92A8,8,0,0,1,96,112a7.64,7.64,0,0,1-1.94-.24,8,8,0,0,1-5.82-9.7c9.25-36.95,33.11-45.42,51.5-46a81.48,81.48,0,0,1,21.68,2.45c-3.83-6.33-9.43-12.93-17.21-16.25-10-4.24-22.17-2.39-36.31,5.51a8,8,0,0,1-7.8-14c18.74-10.45,35.72-12.54,50.48-6.2,12.49,5.36,20.73,15.78,25.87,25,6.18-9.64,13.88-16.17,22.39-18.94,11.86-3.87,24.64-.72,38,9.37a8,8,0,0,1-9.64,12.76c-8.91-6.73-16.77-9.06-23.35-6.93-7.29,2.35-12.87,10-16.37,16.61A70.46,70.46,0,0,1,208,73.07c14.61,8.35,32,26.05,32,62.94a8,8,0,0,1-16,0c0-23.46-8.07-40-24-49a50.49,50.49,0,0,0-5.75-2.8,55.64,55.64,0,0,1,5.06,33.06,59.41,59.41,0,0,1-8.86,23.41,8,8,0,0,1-13.09-9.2c.74-1.09,16.33-24.38-3.26-49.37-27,15.21-41.89,37.25-44.16,65.59a104.27,104.27,0,0,0,3.83,36.44c62.65,1.81,101.52,32.33,103.2,33.66A8,8,0,0,1,238.25,229ZM24,140a28,28,0,1,1,28,28A28,28,0,0,1,24,140Zm16,0a12,12,0,1,0,12-12A12,12,0,0,0,40,140Z',
                 bicycle:          'M208,112a47.81,47.81,0,0,0-16.93,3.09L165.93,72H192a8,8,0,0,1,8,8,8,8,0,0,0,16,0,24,24,0,0,0-24-24H152a8,8,0,0,0-6.91,12l11.65,20H99.26L82.91,60A8,8,0,0,0,76,56H48a8,8,0,0,0,0,16H71.41L85.12,95.51,69.41,117.06a48.13,48.13,0,1,0,12.92,9.44l11.59-15.9L125.09,164A8,8,0,1,0,138.91,156l-30.32-52h57.48l11.19,19.17A48,48,0,1,0,208,112ZM80,160a32,32,0,1,1-20.21-29.74l-18.25,25a8,8,0,1,0,12.92,9.42l18.25-25A31.88,31.88,0,0,1,80,160Zm128,32a32,32,0,0,1-22.51-54.72L201.09,164A8,8,0,1,0,214.91,156L199.3,129.21A32,32,0,1,1,208,192Z',
                 'airplane-takeoff2': 'M176,216a8,8,0,0,1-8,8H24a8,8,0,0,1,0-16H168A8,8,0,0,1,176,216ZM247.86,93.15a8,8,0,0,1-3.76,5.39l-147.41,88a40.18,40.18,0,0,1-20.26,5.52,39.78,39.78,0,0,1-27.28-10.87l-.12-.12L13,145.8a16,16,0,0,1,4.49-26.21l3-1.47a8,8,0,0,1,6.08-.4l28.26,9.54L75,115.06,53.17,93.87A16,16,0,0,1,57.7,67.4l.32-.13,7.15-2.71a8,8,0,0,1,5.59,0L124.7,84.38,176.27,53.6a39.82,39.82,0,0,1,51.28,9.12l.12.15,18.64,23.89A8,8,0,0,1,247.86,93.15Zm-19.74-3.7-13-16.67a23.88,23.88,0,0,0-30.68-5.42l-54.8,32.72a8.06,8.06,0,0,1-6.87.64L68,80.58l-4,1.53.21.2L93.57,110.8a8,8,0,0,1-1.43,12.58L59.93,142.87a8,8,0,0,1-6.7.73l-28.67-9.67-.19.1-.37.17a.71.71,0,0,1,.13.12l36,35.26a23.85,23.85,0,0,0,28.42,3.18Z',
