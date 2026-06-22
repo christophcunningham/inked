@@ -3548,12 +3548,6 @@
                     home: "https://defenseone.com",
                 },
                 {
-                    id: "dailymav",
-                    name: "Daily Maverick",
-                    url: "https://dailymaverick.co.za/dmrss",
-                    home: "https://dailymaverick.co.za",
-                },
-                {
                     id: "saharareporters",
                     name: "Sahara Reporters",
                     url: "https://saharareporters.com/articles/rss-feed",
@@ -3635,17 +3629,30 @@
 
             async function fetchFeed(feed) {
                 try {
-                    const res = await fetch(API + encodeURIComponent(feed.url));
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(
+                        () => controller.abort(),
+                        7000,
+                    );
+                    let res;
+                    try {
+                        res = await fetch(API + encodeURIComponent(feed.url), {
+                            signal: controller.signal,
+                        });
+                    } finally {
+                        clearTimeout(timeoutId);
+                    }
                     const data = await res.json();
                     if (data.status !== "ok") return [];
                     const now = Date.now();
                     const tenMonthsAgo = now - 300 * 24 * 60 * 60 * 1000;
                     return (data.items || [])
                         .map((item) => {
-                            // Validate date — reject anything in the future or clearly epoch/invalid
+                            // Validate date — reject anything unparseable rather than
+                            // defaulting to now, which would falsely float stale items to the top
                             const raw = new Date(item.pubDate || "");
-                            // Accept any valid date — only reject completely unparseable dates
-                            const pubDate = !isNaN(raw) ? raw : new Date();
+                            if (isNaN(raw)) return null;
+                            const pubDate = raw;
 
                             // Reject articles older than 10 months
                             if (pubDate.getTime() < tenMonthsAgo) return null;
@@ -3770,16 +3777,18 @@
                 return fallbackTitle;
             }
 
-            async function loadFeeds() {
-                const btn = document.getElementById("refresh-btn");
-                btn.classList.add("spinning");
+            // Proxy-based sources (Google News, Bluesky) tend to be slower hops than
+            // direct RSS — fetch them in a second wave so they can't gate the initial render.
+            const SLOW_PROXY_FEEDS = FEEDS.filter(
+                (f) => f.url.includes("news.google.com") || f.url.includes("bsky.app"),
+            );
+            const FAST_DIRECT_FEEDS = FEEDS.filter(
+                (f) => !SLOW_PROXY_FEEDS.includes(f),
+            );
 
-                const results = await Promise.allSettled(FEEDS.map(fetchFeed));
-                const raw = results.flatMap((r) =>
-                    r.status === "fulfilled" ? r.value : [],
-                );
-
-                // Merge with existing articles, deduplicate by id, keep all
+            // Merge freshly-fetched articles into the existing set, re-sort, cache,
+            // and re-render. Shared by both fetch waves so each wave paints as it lands.
+            function mergeAndRender(raw, btn) {
                 const existingMap = new Map(articles.map((a) => [a.id, a]));
                 const hadNewArticles = raw.some((a) => !existingMap.has(a.id));
                 raw.forEach((a) => {
@@ -3812,8 +3821,29 @@
                     renderPhotos();
                 }
 
-                btn.classList.remove("spinning");
                 updateTickerCounts();
+            }
+
+            async function fetchWave(feeds) {
+                const results = await Promise.allSettled(feeds.map(fetchFeed));
+                return results.flatMap((r) =>
+                    r.status === "fulfilled" ? r.value : [],
+                );
+            }
+
+            async function loadFeeds() {
+                const btn = document.getElementById("refresh-btn");
+                btn.classList.add("spinning");
+
+                // Wave 1: fast direct-RSS sources — render as soon as these land
+                const fastRaw = await fetchWave(FAST_DIRECT_FEEDS);
+                mergeAndRender(fastRaw, btn);
+
+                // Wave 2: slower proxy sources — merge in without blocking the above
+                const slowRaw = await fetchWave(SLOW_PROXY_FEEDS);
+                mergeAndRender(slowRaw, btn);
+
+                btn.classList.remove("spinning");
             }
 
             let activeFilter = null; // null = all, string = isolated source id
@@ -3959,7 +3989,6 @@
                 latam21: { flag: "🌎", geo: "LATAM" },
                 hankyoreh: { flag: "🇰🇷", geo: "KR" },
                 defenseone: { flag: "🇺🇸", geo: "US" },
-                dailymav: { flag: "🇿🇦", geo: "ZA" },
                 saharareporters: { flag: "🇳🇬", geo: "NG" },
                 madamasr: { flag: "🇪🇬", geo: "EG" },
                 lorienttoday: { flag: "🇱🇧", geo: "LB" },
@@ -4076,10 +4105,6 @@
                 },
                 hankyoreh: { regions: ["asia"], themes: ["newspapers"] },
                 dawn: { regions: ["asia"], themes: ["newspapers"] },
-                dailymav: {
-                    regions: ["global"],
-                    themes: ["newspapers", "investigations"],
-                },
                 saharareporters: {
                     regions: ["global"],
                     themes: ["newspapers", "investigations"],
