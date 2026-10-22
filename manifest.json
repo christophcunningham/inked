@@ -1,0 +1,18 @@
+{
+    "name": "Inked",
+    "short_name": "Inked",
+    "description": "A chronological RSS reader. No ads, no algorithms.",
+    "start_url": "./",
+    "scope": "./",
+    "display": "standalone",
+    "background_color": "#E8E6E3",
+    "theme_color": "#E8E6E3",
+    "icons": [
+        {
+            "src": "icon.png",
+            "sizes": "252x252",
+            "type": "image/png",
+            "purpose": "any"
+        }
+    ]
+}

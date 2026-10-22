@@ -8,7 +8,7 @@ A chronological RSS reader pulling from ~68 sources across wire services, broadc
 
 Inked is a single HTML file that pulls live RSS feeds from 68 news sources and renders them as a clean chronological headline stream. Articles are cached locally for up to 3 days so content doesn't disappear as feeds roll over. Articles older than 10 months are filtered out globally.
 
-It runs entirely in the browser. There is no backend, no database, no login. A Cloudflare Worker acts as a lightweight RSS proxy to handle cross-origin fetching.
+It runs entirely in the browser. There is no backend, no database, no login. A Cloudflare Worker acts as a lightweight RSS proxy to handle cross-origin fetching. A service worker keeps the app on the device, so it opens instantly and works without a connection.
 
 ---
 
@@ -104,7 +104,11 @@ Browser (index.html)
                                     └── Return { status, items[] }
 ```
 
-**`index.html`** — The entire front-end. Self-contained, no build step, no dependencies. Fetches all feeds in parallel on load, merges with a 3-day localStorage cache, deduplicates, sorts chronologically, and renders with lazy DOM loading (20 articles at a time as you scroll).
+**`index.html`** — The entire front-end. Self-contained, no build step, no dependencies. Shows the 3-day localStorage cache immediately on open, then fetches all feeds in parallel and merges each one in as it arrives (deduplicated, sorted chronologically), rendering with lazy DOM loading (20 articles at a time as you scroll).
+
+**`sw.js`** — The service worker (not the Cloudflare Worker). It keeps the app, fonts, recently viewed images and the last Almanac data on the device. Served from this repo like `index.html`, so it deploys with a normal push.
+
+**`manifest.json`** — Web app manifest, so Android/Chrome can install Inked as a standalone app.
 
 **`inked-worker.js`** — The Cloudflare Worker source code, included here for reference. This file is **not served from this repository** — it must be deployed separately via the Cloudflare Workers dashboard (see below). Cloudflare runs it on their infrastructure independently of this repo.
 
@@ -134,6 +138,16 @@ Browser (index.html)
 **Sources page (Info)** — Full list of all sources with article counts, country flags, and geographic codes. Toggle individual sources on or off to exclude them from the feed and filter bar — preference is saved in localStorage. Use the **Select All / Deselect All** button to bulk toggle. Filter the list by theme using the footer chips: **Wire · World · US Politics · Newspapers · Investigations · Tech & Science · Business · War**.
 
 **Flagged** — Save articles for later by swiping right (mobile) or using the hover flag button (desktop). Access via the flag icon in the footer. Swipe left on a flagged article to remove it.
+
+**Fast startup** — Saved articles appear as soon as the app opens; fresh ones stream in source by source, so one slow feed never holds up the rest. If you've scrolled down while new articles arrive, the list stays put and a **↑ N new articles** button appears instead — tap it (or scroll back to the top) to see them.
+
+**Offline** — Once Inked has been opened online, it opens and works with no connection:
+
+- The feed shows your saved articles (up to 3 days), and the header reads **offline** instead of **live**.
+- `••` full-text articles can still be read in place — tapping the headline expands it. Tapping any other link explains it needs a connection and offers **Flag for later**.
+- The Images tab shows the most recently viewed photos (up to 200).
+- The Almanac shows the last saved weather, sun times and tides (sun and tides stay accurate for a week). Moon, night sky, holidays, migration and land are calculated on the device anyway. Severe weather alerts and airport delays are not shown from old data.
+- When the connection returns, the feed refreshes automatically.
 
 **Search** — Filter the feed by keyword across headlines and full-text articles. Tap the search icon or press `S` on desktop.
 
@@ -173,9 +187,11 @@ Open `index.html` and update the Worker URL near the top of the script block:
 const WORKER_URL = 'https://inked-worker.yourname.workers.dev';
 ```
 
+Also update the matching `<link rel="preconnect" href="…workers.dev">` in `<head>`, which opens the connection to the Worker early.
+
 ### 3. Deploy to Cloudflare Pages
 
-- Push `index.html`, `inked-worker.js`, and `README.md` to a GitHub repository
+- Push `index.html`, `sw.js`, `manifest.json`, `icon.png`, `favicon.ico`, `inked-worker.js`, and `README.md` to a GitHub repository
 - Connect the repo to Cloudflare Pages (Workers & Pages → Create → Connect to Git)
 - No build command needed — it's a static file
 - Cloudflare will deploy to `your-project.pages.dev`
@@ -242,7 +258,21 @@ Articles are stored in `localStorage` for up to 3 days (2MB cap). This means:
 - Articles older than 10 months are filtered out globally regardless of cache
 - Cache is per-browser and per-device; clearing browser data will reset it
 
-Source on/off preferences are stored separately in `localStorage` under `inked_disabled_sources` and persist across sessions. Almanac location is stored under `inked_almanac_location`. Temperature unit preference is stored under `inked_almanac_temp_unit`. Page color theme is stored under `inked_color_theme`.
+Source on/off preferences are stored separately in `localStorage` under `inked_disabled_sources` and persist across sessions. Almanac location is stored under `inked_almanac_location`. Temperature unit preference is stored under `inked_almanac_temp_unit`. Page color theme is stored under `inked_color_theme`. The time of the last successful refresh is stored under `inked_last_fetch`, and the last week of tide predictions under `inked_almanac_tides`.
+
+### Service worker caches
+
+`sw.js` keeps three caches (visible in browser dev tools under Application → Cache Storage):
+
+| Cache | Contents | Strategy |
+|---|---|---|
+| `inked-shell` | `index.html`, `manifest.json`, icons | Served from the device instantly; a fresh copy is fetched in the background |
+| `inked-runtime` | Google Fonts, Open-Meteo weather/sun, NOAA tides | Fonts: kept after first use. Almanac data: network first, saved copy when offline or slow (4s) |
+| `inked-images` | Photos viewed in the Images tab | Kept after first view, newest 200 |
+
+Feed requests to the Cloudflare Worker are not cached by the service worker — the app's own localStorage cache handles articles.
+
+**Updates:** because the app is served from the device first, the first open after you deploy a new version still shows the previous one, with a **Reload** prompt at the bottom. Reloading (or the next launch) picks up the new version.
 
 ---
 

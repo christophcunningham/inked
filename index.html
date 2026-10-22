@@ -14,9 +14,26 @@
         <link rel="icon" href="favicon.ico" type="ico" />
         <meta name="theme-color" content="#E8E6E3" />
         <title>Inked</title>
+        <script>
+            // Apply the saved colour theme before first paint so dark mode doesn't flash
+            // light. Kept above the stylesheets: a script after one waits for it to load.
+            try {
+                var savedTheme = localStorage.getItem("inked_color_theme");
+                if (savedTheme && savedTheme !== "light")
+                    document.documentElement.setAttribute("data-color-theme", savedTheme);
+            } catch (e) {}
+        </script>
+        <link rel="manifest" href="manifest.json" />
+        <!-- Open connections early: the feed proxy and fonts are needed straight away -->
+        <link rel="preconnect" href="https://inked-worker.ccunninghamr.workers.dev" crossorigin />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <!-- Fonts (previously a CSS @import). The service worker keeps a copy after the first visit. -->
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Geist:wght@300;400;500;600;700;900&display=swap"
+        />
         <style>
-            @import url("https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Geist:wght@300;400;500;600;700;900&display=swap");
-
             /*
   FONT NOTE: --font-body is designed for Rotis Serif (Monotype).
   If you own a license:
@@ -2133,6 +2150,86 @@
             #tab-bar.dark #almanac-btn { color: rgba(255,255,255,0.45); }
             html[data-color-theme="dark"] #tab-bar.dark #almanac-btn { color: var(--ink-mid); }
 
+            /* ── OFFLINE & NOTICES ── */
+            html.offline .ticker-pulse-dot {
+                background: var(--ink-light);
+                animation: none;
+                opacity: 0.8;
+            }
+            #almanac-offline-note {
+                display: none;
+                font-family: var(--font-ui);
+                font-size: 9px;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                color: var(--ink-mid);
+                border: 1px solid var(--rule);
+                padding: 8px 10px;
+                margin: -8px 0 20px;
+            }
+            #toast,
+            #new-pill {
+                position: fixed;
+                left: 50%;
+                bottom: calc(68px + var(--safe-bottom) + 14px);
+                transform: translate(-50%, 10px);
+                z-index: 260;
+                max-width: calc(100% - 2 * var(--pad));
+                font-family: var(--font-ui);
+                font-size: 9px;
+                font-weight: 500;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+                color: var(--paper);
+                background: var(--ink);
+                border: none;
+                border-radius: 0;
+                padding: 9px 16px;
+                box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+                opacity: 0;
+                pointer-events: none;
+                transition:
+                    opacity 0.2s ease,
+                    transform 0.2s ease,
+                    bottom 0.2s ease;
+                -webkit-tap-highlight-color: transparent;
+            }
+            #toast {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                width: max-content;
+                line-height: 1.4;
+            }
+            #toast button {
+                font: inherit;
+                letter-spacing: inherit;
+                text-transform: inherit;
+                font-weight: 700;
+                color: inherit;
+                background: none;
+                border: none;
+                padding: 0;
+                text-decoration: underline;
+                text-underline-offset: 3px;
+                cursor: pointer;
+                flex-shrink: 0;
+            }
+            #new-pill {
+                cursor: pointer;
+                white-space: nowrap;
+            }
+            #toast.visible,
+            #new-pill.visible {
+                opacity: 1;
+                transform: translate(-50%, 0);
+                pointer-events: auto;
+            }
+            /* If both show at once, stack the pill above the toast */
+            #toast.visible ~ #new-pill.visible {
+                bottom: calc(68px + var(--safe-bottom) + 58px);
+            }
+
             /* ── RESPONSIVE ── */
             @media (min-width: 640px) {
                 :root {
@@ -2578,7 +2675,7 @@
                 <div class="ticker-sep"></div>
                 <div class="ticker-live">
                     <div class="ticker-pulse-dot"></div>
-                    <span>live</span>
+                    <span id="ticker-live-label">live</span>
                 </div>
             </div>
             <div id="source-bar-wrap">
@@ -2603,6 +2700,10 @@
             </div>
             <div id="feed-list"></div>
         </main>
+
+        <!-- Notices: toast for status messages, pill for articles that arrived while scrolled down -->
+        <div id="toast" role="status" aria-live="polite"></div>
+        <button id="new-pill" onclick="showNewArticles()"></button>
 
         <div id="tab-bar">
             <!-- Feed/Images mode -->
@@ -2701,7 +2802,7 @@
                     <button
                         class="bar-btn"
                         id="refresh-btn"
-                        onclick="loadFeeds()"
+                        onclick="refreshNow()"
                         aria-label="Refresh"
                     >
                         <svg
@@ -3082,6 +3183,7 @@
                 </button>
             </div>
             <div id="almanac-location-display"></div>
+            <div id="almanac-offline-note">Offline · showing the last saved conditions</div>
 
             <!-- Date / Time -->
             <div id="almanac-datetime">
@@ -3592,11 +3694,55 @@
             ];
 
             // ── Replace this URL with your deployed Worker URL ──────────────────────────
+            // (also update the matching <link rel="preconnect"> in <head>)
             const WORKER_URL = "https://inked-worker.ccunninghamr.workers.dev";
             // ─────────────────────────────────────────────────────────────────────────────
 
             const API = WORKER_URL + "?url=";
 
+            // ── Article Cache (localStorage) ─────────────────────────────────────────────
+            // Declared before `articles` below — loadCache() runs at startup and needs these.
+            const CACHE_KEY = "inked_articles";
+            const LAST_FETCH_KEY = "inked_last_fetch"; // time of last successful refresh
+            const MAX_AGE_MS = 3 * 24 * 60 * 60 * 1000; // 3 days
+            const MAX_BYTES = 2 * 1024 * 1024; // 2MB
+
+            function saveCache(arts) {
+                // `arts` is sorted newest first. Serialise each article once and stop
+                // adding when the size cap is reached, so the oldest are dropped.
+                const cutoff = Date.now() - MAX_AGE_MS;
+                const parts = [];
+                let size = 2;
+                for (const a of arts) {
+                    if (a.pubDate < cutoff) continue;
+                    const s = JSON.stringify({ ...a, pubDate: a.pubDate.getTime() });
+                    if (size + s.length + 1 > MAX_BYTES) break;
+                    parts.push(s);
+                    size += s.length + 1;
+                }
+                // If storage is full (other keys use it too), keep halving until it fits
+                while (parts.length) {
+                    try {
+                        localStorage.setItem(CACHE_KEY, "[" + parts.join(",") + "]");
+                        return;
+                    } catch (e) {
+                        parts.length = Math.floor(parts.length / 2);
+                    }
+                }
+            }
+
+            function loadCache() {
+                try {
+                    const raw = localStorage.getItem(CACHE_KEY);
+                    if (!raw) return [];
+                    const cutoff = Date.now() - MAX_AGE_MS;
+                    return JSON.parse(raw)
+                        .map((a) => ({ ...a, pubDate: new Date(a.pubDate) }))
+                        .filter((a) => a.pubDate >= cutoff);
+                } catch (e) {
+                    return [];
+                }
+            }
             let articles = JSON.parse("[]"); // will be populated from cache + fetch
             let lastUpdated = null;
 
@@ -3627,7 +3773,7 @@
                 "savageminds",
             ]);
 
-            async function fetchFeed(feed) {
+            async function fetchFeed(feed, stats) {
                 try {
                     const controller = new AbortController();
                     const timeoutId = setTimeout(
@@ -3643,6 +3789,7 @@
                         clearTimeout(timeoutId);
                     }
                     const data = await res.json();
+                    if (stats) stats.reached++; // the proxy answered, so we're online
                     if (data.status !== "ok") return [];
                     const now = Date.now();
                     const tenMonthsAgo = now - 300 * 24 * 60 * 60 * 1000;
@@ -3778,7 +3925,7 @@
             }
 
             // Proxy-based sources (Google News, Bluesky) tend to be slower hops than
-            // direct RSS — fetch them in a second wave so they can't gate the initial render.
+            // direct RSS — their requests are queued after the direct feeds.
             const SLOW_PROXY_FEEDS = FEEDS.filter(
                 (f) => f.url.includes("news.google.com") || f.url.includes("bsky.app"),
             );
@@ -3786,36 +3933,98 @@
                 (f) => !SLOW_PROXY_FEEDS.includes(f),
             );
 
-            // Merge freshly-fetched articles into the existing set, re-sort, cache,
-            // and re-render. Shared by both fetch waves so each wave paints as it lands.
-            function mergeAndRender(raw, btn) {
+            // ── Streaming refresh ─────────────────────────────────────────────────────
+            // Every feed is requested at once and merged the moment it lands, so one
+            // slow source never holds up the rest. Arrivals are batched into a single
+            // repaint at most every FLUSH_MS.
+            const FLUSH_MS = 500;
+            let refreshInFlight = null;
+            let pendingRaw = [];
+            let flushTimer = null;
+            let lastFlushAt = 0;
+            let cacheDirty = false;
+            let unseenCount = 0; // fresh articles held back while the reader is scrolled down
+
+            function queueArticles(items) {
+                if (!items.length) return;
+                pendingRaw.push(...items);
+                if (flushTimer) return;
+                const nothingShown = !articles.length;
+                const wait = nothingShown
+                    ? 50 // first paint: just long enough to catch near-simultaneous arrivals
+                    : Math.max(0, FLUSH_MS - (Date.now() - lastFlushAt));
+                flushTimer = setTimeout(flushArticles, wait);
+            }
+
+            function flushArticles() {
+                clearTimeout(flushTimer);
+                flushTimer = null;
+                if (!pendingRaw.length) return;
+                const raw = pendingRaw;
+                pendingRaw = [];
+                lastFlushAt = Date.now();
+                mergeAndRender(raw);
+            }
+
+            function persistArticles() {
+                if (!cacheDirty) return;
+                cacheDirty = false;
+                saveCache(articles);
+            }
+
+            // Re-rendering the list while someone is reading further down would yank
+            // the page out from under them, so in that case new articles wait behind
+            // the "new" pill instead.
+            function shouldHoldBack() {
+                return (
+                    activeTab === "feed" &&
+                    !searchQuery &&
+                    window.scrollY > 150 &&
+                    !!document.querySelector("#feed-list .article")
+                );
+            }
+
+            // Merge freshly-fetched articles into the existing set, re-sort and re-render.
+            function mergeAndRender(raw) {
                 const existingMap = new Map(articles.map((a) => [a.id, a]));
-                const hadNewArticles = raw.some((a) => !existingMap.has(a.id));
+                const added = [];
                 raw.forEach((a) => {
-                    if (!existingMap.has(a.id)) existingMap.set(a.id, a);
+                    if (!existingMap.has(a.id)) {
+                        existingMap.set(a.id, a);
+                        added.push(a);
+                    }
                 });
+                const firstPaint = !document.querySelector("#feed-list .article");
+                lastUpdated = new Date();
+                if (!added.length && !firstPaint) return;
 
                 articles = [...existingMap.values()].sort(
                     (a, b) => b.pubDate - a.pubDate,
                 );
+                cacheDirty = true;
 
-                saveCache(articles);
-                lastUpdated = new Date();
                 buildSourceBar();
                 buildInfoPanel();
 
                 document.getElementById("status").style.display = "none";
                 document.getElementById("tab-bar").style.display = "block";
 
-                // Always refresh the feed list
-                document.getElementById("feed-list").innerHTML = "";
-                render();
+                if (!firstPaint && shouldHoldBack()) {
+                    unseenCount += added.filter(
+                        (a) =>
+                            isEnabled(a.sourceId) &&
+                            (activeFilter === null || a.sourceId === activeFilter),
+                    ).length;
+                    updateNewPill();
+                } else {
+                    render();
+                }
 
                 // Only rebuild photo grid if new images arrived AND user isn't mid-browse
                 // (i.e. not scrolled into the grid yet)
                 if (
                     activeTab === "images" &&
-                    hadNewArticles &&
+                    added.length &&
                     document.getElementById("images-view").scrollTop < 100
                 ) {
                     renderPhotos();
@@ -3824,26 +4033,61 @@
                 updateTickerCounts();
             }
 
-            async function fetchWave(feeds) {
-                const results = await Promise.allSettled(feeds.map(fetchFeed));
-                return results.flatMap((r) =>
-                    r.status === "fulfilled" ? r.value : [],
-                );
+            function updateNewPill() {
+                const pill = document.getElementById("new-pill");
+                if (!pill) return;
+                if (unseenCount > 0) {
+                    pill.textContent =
+                        "↑ " + unseenCount + " new article" + (unseenCount === 1 ? "" : "s");
+                    pill.classList.add("visible");
+                } else {
+                    pill.classList.remove("visible");
+                }
             }
 
-            async function loadFeeds() {
+            function showNewArticles() {
+                window.scrollTo({ top: 0 });
+                render();
+            }
+
+            // Refresh button: same as loadFeeds, but says so when there's no connection
+            function refreshNow() {
+                if (navigator.onLine === false) {
+                    setConnectionState(false);
+                    showToast("Offline · can't refresh until you reconnect");
+                    return;
+                }
+                loadFeeds();
+            }
+
+            function loadFeeds() {
+                if (refreshInFlight) return refreshInFlight;
+                if (navigator.onLine === false) {
+                    setConnectionState(false);
+                    return Promise.resolve();
+                }
                 const btn = document.getElementById("refresh-btn");
                 btn.classList.add("spinning");
-
-                // Wave 1: fast direct-RSS sources — render as soon as these land
-                const fastRaw = await fetchWave(FAST_DIRECT_FEEDS);
-                mergeAndRender(fastRaw, btn);
-
-                // Wave 2: slower proxy sources — merge in without blocking the above
-                const slowRaw = await fetchWave(SLOW_PROXY_FEEDS);
-                mergeAndRender(slowRaw, btn);
-
-                btn.classList.remove("spinning");
+                const stats = { reached: 0 };
+                const feeds = [...FAST_DIRECT_FEEDS, ...SLOW_PROXY_FEEDS];
+                refreshInFlight = Promise.allSettled(
+                    feeds.map((f) => fetchFeed(f, stats).then(queueArticles)),
+                ).then(() => {
+                    try {
+                        flushArticles();
+                        persistArticles();
+                        if (stats.reached > 0) {
+                            try {
+                                localStorage.setItem(LAST_FETCH_KEY, String(Date.now()));
+                            } catch (e) {}
+                        }
+                        setConnectionState(stats.reached > 0);
+                    } finally {
+                        btn.classList.remove("spinning");
+                        refreshInFlight = null;
+                    }
+                });
+                return refreshInFlight;
             }
 
             let activeFilter = null; // null = all, string = isolated source id
@@ -4703,47 +4947,6 @@
                 return outer;
             }
 
-            // ── Article Cache (localStorage) ─────────────────────────────────────────────
-            const CACHE_KEY = "inked_articles";
-            const MAX_AGE_MS = 3 * 24 * 60 * 60 * 1000; // 3 days
-            const MAX_BYTES = 2 * 1024 * 1024; // 2MB
-
-            function saveCache(arts) {
-                try {
-                    const cutoff = Date.now() - MAX_AGE_MS;
-                    const fresh = arts.filter((a) => a.pubDate >= cutoff);
-                    let json = JSON.stringify(
-                        fresh.map((a) => ({
-                            ...a,
-                            pubDate: a.pubDate.getTime(), // store as timestamp
-                        })),
-                    );
-                    // Trim oldest if over size limit
-                    while (json.length > MAX_BYTES && fresh.length > 0) {
-                        fresh.pop();
-                        json = JSON.stringify(
-                            fresh.map((a) => ({
-                                ...a,
-                                pubDate: a.pubDate.getTime(),
-                            })),
-                        );
-                    }
-                    localStorage.setItem(CACHE_KEY, json);
-                } catch (e) {}
-            }
-
-            function loadCache() {
-                try {
-                    const raw = localStorage.getItem(CACHE_KEY);
-                    if (!raw) return [];
-                    const cutoff = Date.now() - MAX_AGE_MS;
-                    return JSON.parse(raw)
-                        .map((a) => ({ ...a, pubDate: new Date(a.pubDate) }))
-                        .filter((a) => a.pubDate >= cutoff);
-                } catch (e) {
-                    return [];
-                }
-            }
             const BATCH = 20; // articles rendered per batch
             let renderQueue = [];
             let sentinel = null;
@@ -4792,7 +4995,17 @@
                 renderBatch();
             }
 
+            // One shared formatter — building one per article was the slowest part of render()
+            const DAY_FMT = new Intl.DateTimeFormat("en-GB", {
+                weekday: "long",
+                day: "numeric",
+                month: "long",
+            });
+
             function render() {
+                // A full render shows everything, so nothing is waiting behind the pill
+                unseenCount = 0;
+                updateNewPill();
                 if (searchQuery) {
                     renderSearch(searchQuery);
                     return;
@@ -4816,19 +5029,14 @@
 
                 if (activeFilter === null) {
                     // All sources — chronological river with date dividers
-                    let lastDay = null;
+                    let lastKey = null;
                     const items = [];
                     visible.forEach((a) => {
-                        const day = a.pubDate
-                            .toLocaleDateString("en-GB", {
-                                weekday: "long",
-                                day: "numeric",
-                                month: "long",
-                            })
-                            .toUpperCase();
-                        if (day !== lastDay) {
-                            items.push({ type: "divider", day });
-                            lastDay = day;
+                        const d = a.pubDate;
+                        const key = d.getFullYear() * 400 + d.getMonth() * 32 + d.getDate();
+                        if (key !== lastKey) {
+                            items.push({ type: "divider", day: DAY_FMT.format(d).toUpperCase() });
+                            lastKey = key;
                         }
                         items.push({ type: "article", data: a });
                     });
@@ -5142,19 +5350,151 @@
                     loadFeedsThrottled();
             });
 
-            // Show cached articles immediately, then fetch fresh
-            if (articles.length > 0) {
-                buildSourceBar();
-                buildInfoPanel();
-                document.getElementById("status").style.display = "none";
-                document.getElementById("tab-bar").style.display = "block";
-                render();
-                updateTickerCounts();
+            // ── Connection state & offline support ───────────────────────────────────
+            const STATUS_LOADING_HTML = document.getElementById("status").innerHTML;
+            let isOffline = false;
+            let toastTimer = null;
+
+            function showToast(message, action) {
+                const el = document.getElementById("toast");
+                el.textContent = "";
+                const text = document.createElement("span");
+                text.textContent = message;
+                el.appendChild(text);
+                if (action) {
+                    const btn = document.createElement("button");
+                    btn.textContent = action.label;
+                    btn.onclick = () => {
+                        hideToast();
+                        action.run();
+                    };
+                    el.appendChild(btn);
+                }
+                el.classList.add("visible");
+                clearTimeout(toastTimer);
+                toastTimer = setTimeout(hideToast, action ? 8000 : 4000);
             }
 
-            loadFeeds();
-            buildInfoPanel();
-            setInterval(loadFeeds, 15 * 60 * 1000);
+            function hideToast() {
+                document.getElementById("toast").classList.remove("visible");
+            }
+
+            function lastFetchAge() {
+                try {
+                    const t = Number(localStorage.getItem(LAST_FETCH_KEY));
+                    return t ? formatAge(new Date(t)) : null;
+                } catch (e) {
+                    return null;
+                }
+            }
+
+            // online = true once any feed answers; false when none do or the device is offline
+            function setConnectionState(online) {
+                const wasOffline = isOffline;
+                isOffline = !online;
+                document.documentElement.classList.toggle("offline", isOffline);
+                document.getElementById("ticker-live-label").textContent = isOffline
+                    ? "offline"
+                    : "live";
+
+                const status = document.getElementById("status");
+                if (isOffline && !articles.length) {
+                    status.textContent = "Offline — your feed will load once you're back online";
+                    status.style.display = "block";
+                } else if (!isOffline && !articles.length) {
+                    status.innerHTML = STATUS_LOADING_HTML;
+                }
+
+                if (isOffline && !wasOffline && articles.length) {
+                    const age = lastFetchAge();
+                    showToast("Offline · showing articles saved " + (age || "earlier"));
+                }
+            }
+
+            window.addEventListener("offline", () => setConnectionState(false));
+            window.addEventListener("online", () => {
+                lastLoad = Date.now();
+                if (!articles.length) document.getElementById("status").innerHTML = STATUS_LOADING_HTML;
+                loadFeeds();
+                if (document.getElementById("almanac-overlay").classList.contains("open"))
+                    loadAlmanacData();
+            });
+
+            // Offline, outbound links can't load. Expand the article in place when its
+            // text is saved; otherwise say so and offer to flag it for later.
+            document.addEventListener(
+                "click",
+                (e) => {
+                    if (navigator.onLine !== false) return;
+                    const link = e.target.closest && e.target.closest('a[href^="http"]');
+                    if (!link) return;
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const article = link.closest(".article");
+                    const expand = article && article.querySelector(".article-expand");
+                    if (expand && link.classList.contains("article-link")) {
+                        if (expand.textContent === "Read") expand.click();
+                        return;
+                    }
+                    const flagBtn = article && article.querySelector(".article-hover-flag");
+                    if (flagBtn && !flagBtn.classList.contains("flagged")) {
+                        showToast("Offline · this article needs a connection", {
+                            label: "Flag for later",
+                            run: () => flagBtn.click(),
+                        });
+                    } else {
+                        showToast("Offline · this link needs a connection");
+                    }
+                },
+                true,
+            );
+
+            // Fresh articles are saved when a refresh finishes; also save if the app
+            // is backgrounded mid-refresh so nothing that already arrived is lost.
+            document.addEventListener("visibilitychange", () => {
+                if (document.visibilityState === "hidden") {
+                    flushArticles();
+                    persistArticles();
+                }
+            });
+
+            // Scrolling back to the top shows anything that was held behind the pill
+            window.addEventListener(
+                "scroll",
+                () => {
+                    if (unseenCount > 0 && window.scrollY < 60) render();
+                },
+                { passive: true },
+            );
+
+            // Service worker: keeps the app, fonts, recent images and almanac data
+            // on the device so Inked opens instantly and works without a connection.
+            if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+                navigator.serviceWorker.addEventListener("message", (e) => {
+                    if (e.data && e.data.type === "inked-updated") {
+                        showToast("A new version of Inked is ready", {
+                            label: "Reload",
+                            run: () => location.reload(),
+                        });
+                    }
+                });
+                window.addEventListener("load", () => {
+                    navigator.serviceWorker.register("sw.js").catch(() => {});
+                });
+            }
+
+            // Ask the browser not to clear saved data under storage pressure. Only when
+            // installed to the home screen, where it's granted without a prompt.
+            if (
+                navigator.storage &&
+                navigator.storage.persist &&
+                (window.matchMedia("(display-mode: standalone)").matches ||
+                    navigator.standalone === true)
+            ) {
+                navigator.storage.persist().catch(() => {});
+            }
+
+            // (Startup — showing saved articles, then refreshing — runs at the end of this script.)
 
             function scrollSourceBar(dir) {
                 document
@@ -5535,92 +5875,115 @@
                 });
             }
 
-            function updateClock() {
-                const now = new Date();
-                const ms = now.getMilliseconds();
-                const weekday = now.toLocaleDateString("en-US", { weekday: "long" }).toUpperCase();
-                const date = now.toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                    }).toUpperCase();
-                const time = now.toLocaleTimeString("en-US", {
+            // The clocks redraw every frame for a smooth second hand. Building Intl
+            // formatters is slow, so they're made once and the text / night-mode work
+            // runs only when the second changes; each frame just moves the hands.
+            const DATELINE_FMT = {
+                weekday: new Intl.DateTimeFormat("en-US", { weekday: "long" }),
+                date: new Intl.DateTimeFormat("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                }),
+                time: new Intl.DateTimeFormat("en-US", {
                     hour: "2-digit",
                     minute: "2-digit",
-                });
-                const weekdayEl = document.getElementById("dateline-weekday");
-                const dateEl = document.getElementById("dateline-date");
-                const timeEl = document.getElementById("dateline-time");
-                if (weekdayEl) weekdayEl.textContent = weekday;
-                if (dateEl) dateEl.textContent = date;
-                if (timeEl) timeEl.textContent = time;
+                }),
+            };
+            const zoneFormatters = new Map();
+            function zoneFormatter(tz) {
+                let f = zoneFormatters.get(tz);
+                if (!f) {
+                    f = new Intl.DateTimeFormat("en-US", {
+                        timeZone: tz,
+                        hour: "numeric",
+                        minute: "numeric",
+                        second: "numeric",
+                        hour12: false,
+                    });
+                    zoneFormatters.set(tz, f);
+                }
+                return f;
+            }
+            const zoneState = {}; // slot id → { tz, h, m, s } for the current second
+            let clockSecond = -1;
+
+            // Lets theme changes repaint the clock faces straight away
+            function updateClocks() {
+                clockSecond = -1;
+                updateClock();
+            }
+
+            function updateClock() {
+                const nowMs = Date.now();
+                const second = Math.floor(nowMs / 1000);
+                const ms = nowMs - second * 1000;
+                const newSecond = second !== clockSecond;
+
+                if (newSecond) {
+                    clockSecond = second;
+                    const now = new Date(nowMs);
+                    const weekdayEl = document.getElementById("dateline-weekday");
+                    const dateEl = document.getElementById("dateline-date");
+                    const timeEl = document.getElementById("dateline-time");
+                    if (weekdayEl) weekdayEl.textContent = DATELINE_FMT.weekday.format(now).toUpperCase();
+                    if (dateEl) dateEl.textContent = DATELINE_FMT.date.format(now).toUpperCase();
+                    if (timeEl) timeEl.textContent = DATELINE_FMT.time.format(now);
+                }
 
                 ZONES.forEach(({ id, tz }) => {
                     try {
-                        const parts = new Intl.DateTimeFormat("en-US", {
-                            timeZone: tz,
-                            hour: "numeric",
-                            minute: "numeric",
-                            second: "numeric",
-                            hour12: false,
-                        }).formatToParts(now);
-                        const h =
-                            parseInt(
-                                parts.find((p) => p.type === "hour").value,
-                            ) % 12;
-                        const m = parseInt(
-                            parts.find((p) => p.type === "minute").value,
-                        );
-                        const s = parseInt(
-                            parts.find((p) => p.type === "second").value,
-                        );
-                        // Smooth perpetual motion using milliseconds
-                        const secDeg = (s + ms / 1000) * 6;
-                        const minDeg = (m + (s + ms / 1000) / 60) * 6;
-                        const hrDeg = (h + (m + (s + ms / 1000) / 60) / 60) * 30;
-                        const hr = document.getElementById(`hr-${id}`);
-                        const min = document.getElementById(`min-${id}`);
+                        let z = zoneState[id];
+                        if (newSecond || !z || z.tz !== tz) {
+                            const parts = zoneFormatter(tz).formatToParts(new Date(second * 1000));
+                            const get = (type) => parseInt(parts.find((p) => p.type === type).value);
+                            z = zoneState[id] = { tz, h: get("hour") % 24, m: get("minute"), s: get("second") };
+                            updateClockFace(id, z.h);
+                        }
+                        // Smooth perpetual motion using milliseconds. The hour and minute
+                        // hands move a fraction of a degree per second, so they only need
+                        // updating once a second; the second hand sweeps every frame.
+                        const secDeg = (z.s + ms / 1000) * 6;
+                        if (z.fresh !== false) {
+                            z.fresh = false;
+                            const minDeg = (z.m + z.s / 60) * 6;
+                            const hrDeg = ((z.h % 12) + (z.m + z.s / 60) / 60) * 30;
+                            const hr = document.getElementById(`hr-${id}`);
+                            const min = document.getElementById(`min-${id}`);
+                            if (hr)
+                                hr.setAttribute("transform", `rotate(${hrDeg})`);
+                            if (min)
+                                min.setAttribute("transform", `rotate(${minDeg})`);
+                        }
                         const sec = document.getElementById(`sec-${id}`);
-                        if (hr)
-                            hr.setAttribute("transform", `rotate(${hrDeg})`);
-                        if (min)
-                            min.setAttribute("transform", `rotate(${minDeg})`);
                         if (sec)
                             sec.setAttribute("transform", `rotate(${secDeg})`);
-
-                        // Night mode: dim clock between 20:00 and 06:00 local time
-                        const localH = parseInt(
-                            new Intl.DateTimeFormat("en-US", {
-                                timeZone: tz,
-                                hour: "numeric",
-                                hour12: false,
-                            }).format(now),
-                        );
-                        const isNight = localH >= 20 || localH < 6;
-                        const clockItem = document
-                            .getElementById(`clock-${id}`)
-                            ?.closest(".clock-item");
-                        if (clockItem) {
-                            clockItem.classList.toggle("night", isNight);
-                            const isDarkTheme = document.documentElement.getAttribute("data-color-theme") === "dark";
-                            const isWarmTheme = document.documentElement.getAttribute("data-color-theme") === "warm";
-                            const isAltTheme = isDarkTheme || isWarmTheme;
-                            clockItem.classList.toggle("day-dark", isAltTheme && !isNight);
-                            clockItem.classList.toggle("night-dark", isAltTheme && isNight);
-                            clockItem.classList.toggle("night-light", !isAltTheme && isNight);
-                        }
-                        const faceEl = document.getElementById(`face-${id}`);
-                        if (faceEl) {
-                            const isDarkTheme = document.documentElement.getAttribute("data-color-theme") === "dark";
-                            const isWarmTheme = document.documentElement.getAttribute("data-color-theme") === "warm";
-                            if (isDarkTheme || isWarmTheme) {
-                                faceEl.setAttribute("fill", isNight ? `url(#night-grad-dark-${id})` : "#e8e6e3");
-                            } else {
-                                faceEl.setAttribute("fill", isNight ? `url(#night-grad-${id})` : "transparent");
-                            }
-                        }
                     } catch (e) {}
                 });
+            }
+
+            // Night mode: dim clock between 20:00 and 06:00 local time
+            function updateClockFace(id, localH) {
+                const isNight = localH >= 20 || localH < 6;
+                const theme = document.documentElement.getAttribute("data-color-theme");
+                const isAltTheme = theme === "dark" || theme === "warm";
+                const clockItem = document
+                    .getElementById(`clock-${id}`)
+                    ?.closest(".clock-item");
+                if (clockItem) {
+                    clockItem.classList.toggle("night", isNight);
+                    clockItem.classList.toggle("day-dark", isAltTheme && !isNight);
+                    clockItem.classList.toggle("night-dark", isAltTheme && isNight);
+                    clockItem.classList.toggle("night-light", !isAltTheme && isNight);
+                }
+                const faceEl = document.getElementById(`face-${id}`);
+                if (faceEl) {
+                    if (isAltTheme) {
+                        faceEl.setAttribute("fill", isNight ? `url(#night-grad-dark-${id})` : "#e8e6e3");
+                    } else {
+                        faceEl.setAttribute("fill", isNight ? `url(#night-grad-${id})` : "transparent");
+                    }
+                }
             }
 
             function clockLoop() {
@@ -6179,6 +6542,8 @@
             // ── Main data loader ──
             async function loadAlmanacData() {
                 if (!almanacLat || !almanacLon) return;
+                document.getElementById('almanac-offline-note').style.display =
+                    navigator.onLine === false ? 'block' : 'none';
                 setAlmanacSectionLoading();
                 await Promise.allSettled([
                     loadSunMoon(),
@@ -6206,15 +6571,27 @@
                 document.getElementById('almanac-section-nws').style.display = 'none';
             }
 
+            // Index of today's entry in an Open-Meteo daily forecast, using the
+            // location's own UTC offset. -1 if the data no longer covers today.
+            function almanacTodayIndex(data) {
+                const local = new Date(Date.now() + (data.utc_offset_seconds || 0) * 1000)
+                    .toISOString()
+                    .slice(0, 10);
+                return ((data.daily && data.daily.time) || []).indexOf(local);
+            }
+
             // ── Sun via Open-Meteo daily params + Moon calculated client-side ──
             async function loadSunMoon() {
                 try {
-                    const url = `https://api.open-meteo.com/v1/forecast?latitude=${almanacLat}&longitude=${almanacLon}&daily=sunrise,sunset,daylight_duration,sunshine_duration&timezone=auto&forecast_days=1`;
+                    const url = `https://api.open-meteo.com/v1/forecast?latitude=${almanacLat}&longitude=${almanacLon}&daily=sunrise,sunset,daylight_duration,sunshine_duration&timezone=auto&forecast_days=7`;
                     const res = await fetch(url);
                     const data = await res.json();
                     const d = data.daily;
 
                     if (!d || !d.sunrise) throw new Error('no data');
+                    // A week is fetched so a saved copy stays right offline; use today's entry
+                    const i = almanacTodayIndex(data);
+                    if (i < 0) throw new Error('stale');
 
                     // Format time from Open-Meteo ISO string "2026-05-10T05:47" (local, no offset)
                     const fmtTime = iso => {
@@ -6243,7 +6620,7 @@
 
                     // Solar noon = midpoint between sunrise and sunset (string arithmetic)
                     const solarNoon = (() => {
-                        const sr = d.sunrise?.[0], ss = d.sunset?.[0];
+                        const sr = d.sunrise?.[i], ss = d.sunset?.[i];
                         if (!sr || !ss) return '—';
                         const [srH, srM] = sr.split('T')[1].split(':').map(Number);
                         const [ssH, ssM] = ss.split('T')[1].split(':').map(Number);
@@ -6255,14 +6632,14 @@
                         return `${h12}:${String(nm).padStart(2,'0')} ${ampm}`;
                     })();
 
-                    const sunrise    = fmtTime(d.sunrise?.[0]);
-                    const sunset     = fmtTime(d.sunset?.[0]);
-                    const dawn       = addMins(d.sunrise?.[0], -30);
-                    const dusk       = addMins(d.sunset?.[0],   30);
-                    const goldenHour = addMins(d.sunset?.[0],  -60);
+                    const sunrise    = fmtTime(d.sunrise?.[i]);
+                    const sunset     = fmtTime(d.sunset?.[i]);
+                    const dawn       = addMins(d.sunrise?.[i], -30);
+                    const dusk       = addMins(d.sunset?.[i],   30);
+                    const goldenHour = addMins(d.sunset?.[i],  -60);
 
                     // Day length from daylight_duration (seconds)
-                    const dlSec = d.daylight_duration?.[0] || 0;
+                    const dlSec = d.daylight_duration?.[i] || 0;
                     const dlH = Math.floor(dlSec / 3600);
                     const dlM = Math.floor((dlSec % 3600) / 60);
                     const dayLen = dlH + 'h ' + dlM + 'm';
@@ -6586,19 +6963,21 @@
 
                 document.getElementById('almanac-nightsky-rows').innerHTML = rows.join('');
             }
+            // ── Helper: nth weekday of month ──
+            // e.g. nthDay(year, 1, 1, 3) = 3rd Monday of January.
+            // Top level because the Sun section's DST row uses it as well as holidays.
+            function nthDay(y, mo, dow, n) {
+                // dow: 0=Sun,1=Mon...6=Sat
+                const d = new Date(y, mo - 1, 1);
+                const first = d.getDay();
+                let day = 1 + ((dow - first + 7) % 7) + (n - 1) * 7;
+                return new Date(y, mo - 1, day);
+            }
+
             // Returns [month(1-12), day] or a Date object for moveable feasts
             function getHolidays(year) {
                 const h = [];
 
-                // ── Helper: nth weekday of month ──
-                // e.g. nthDay(year, 1, 1, 3) = 3rd Monday of January
-                function nthDay(y, mo, dow, n) {
-                    // dow: 0=Sun,1=Mon...6=Sat
-                    const d = new Date(y, mo - 1, 1);
-                    const first = d.getDay();
-                    let day = 1 + ((dow - first + 7) % 7) + (n - 1) * 7;
-                    return new Date(y, mo - 1, day);
-                }
                 // Last weekday of month
                 function lastDay(y, mo, dow) {
                     const last = new Date(y, mo, 0); // last day of month
@@ -6763,11 +7142,13 @@
             }
             async function loadWeather() {
                 try {
-                    const url = `https://api.open-meteo.com/v1/forecast?latitude=${almanacLat}&longitude=${almanacLon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,relative_humidity_2m,precipitation,uv_index&daily=precipitation_sum,temperature_2m_max,temperature_2m_min,uv_index_max&wind_speed_unit=mph&temperature_unit=fahrenheit&timezone=auto&forecast_days=1`;
+                    const url = `https://api.open-meteo.com/v1/forecast?latitude=${almanacLat}&longitude=${almanacLon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,relative_humidity_2m,precipitation,uv_index&daily=precipitation_sum,temperature_2m_max,temperature_2m_min,uv_index_max&wind_speed_unit=mph&temperature_unit=fahrenheit&timezone=auto&forecast_days=7`;
                     const res = await fetch(url);
                     const data = await res.json();
                     const c = data.current;
                     const d = data.daily;
+                    const i = almanacTodayIndex(data); // today's entry in the week's forecast
+                    if (i < 0) throw new Error('stale');
 
                     const desc = wmoDescription(c.weather_code);
                     const uvLabel = uvCategory(c.uv_index);
@@ -6782,7 +7163,7 @@
                         const histData = await histRes.json();
                         if (histData.daily && histData.daily.precipitation_sum) {
                             const avg = histData.daily.precipitation_sum.reduce((a,b) => a + (b||0), 0) / histData.daily.precipitation_sum.length;
-                            const monthlyTotal = (d.precipitation_sum[0] || 0);
+                            const monthlyTotal = (d.precipitation_sum[i] || 0);
                             if (avg > 0) precipNote = monthlyTotal >= avg ? 'Above avg' : 'Below avg';
                         }
                     } catch(e) {}
@@ -6790,7 +7171,7 @@
                     document.getElementById('almanac-weather-rows').innerHTML = `
                         ${almanacRow('Conditions', desc, '', wmoIcon(c.weather_code))}
                         ${almanacRow('Temperature', toDisplayTemp(c.temperature_2m), 'Feels like ' + toDisplayTemp(c.apparent_temperature), tempIcon(c.temperature_2m))}
-                        ${almanacRow('High / Low', toDisplayTemp(d.temperature_2m_max[0]) + ' / ' + toDisplayTemp(d.temperature_2m_min[0]), '', 'sun-horizon')}
+                        ${almanacRow('High / Low', toDisplayTemp(d.temperature_2m_max[i]) + ' / ' + toDisplayTemp(d.temperature_2m_min[i]), '', 'sun-horizon')}
                         ${almanacRow('Humidity', c.relative_humidity_2m + '%', '', 'drop-half')}
                         ${almanacRow('Wind', Math.round(c.wind_speed_10m) + ' mph ' + windDir, '', 'wind')}
                         ${almanacRow('Precipitation', precip + ' in' + (precipNote ? '' : ''), precipNote, 'umbrella')}
@@ -7063,17 +7444,19 @@
 
                     // Fetch FAA delay data — single call returns all current US delays
                     let delayMap = {};
+                    let faaReached = false;
                     try {
                         const res = await fetch('https://nasstatus.faa.gov/api/airport-delays');
                         const data = await res.json();
                         // Response: { AirportStatusList: [ { ARPT: 'EWR', Delays: [ { type, reason, minDelay, maxDelay } ] } ] }
+                        faaReached = true;
                         if (data.AirportStatusList) {
                             data.AirportStatusList.forEach(ap => {
                                 delayMap[ap.ARPT] = ap.Delays || [];
                             });
                         }
                     } catch(e) {
-                        // If FAA API fails, show airports as normal
+                        // FAA unreachable — rows below say "Unavailable" rather than "Normal"
                     }
 
                     const rows = unique.map(a => {
@@ -7081,7 +7464,7 @@
                         const dist = Math.round(haversine(almanacLat, almanacLon, a.lat, a.lon));
 
                         if (!delays.length) {
-                            return almanacRow(a.iata, 'Normal', a.city + ' · ' + dist + ' mi', 'airplane-takeoff2');
+                            return almanacRow(a.iata, faaReached ? 'Normal' : 'Unavailable', a.city + ' · ' + dist + ' mi', 'airplane-takeoff2');
                         }
 
                         // Summarise delays
@@ -7187,6 +7570,21 @@
                 }
             }
 
+            const TIDES_KEY = 'inked_almanac_tides';
+
+            // Today's date (YYYY-MM-DD) at the almanac location, falling back to the device's
+            function almanacLocalDate() {
+                const opts = { year: 'numeric', month: '2-digit', day: '2-digit' };
+                let parts;
+                try {
+                    parts = new Intl.DateTimeFormat('en-US', { ...opts, timeZone: almanacTZ || undefined }).formatToParts(new Date());
+                } catch (e) {
+                    parts = new Intl.DateTimeFormat('en-US', opts).formatToParts(new Date());
+                }
+                const get = (type) => parts.find((p) => p.type === type).value;
+                return `${get('year')}-${get('month')}-${get('day')}`;
+            }
+
             async function loadTides() {
                 try {
                     // Find nearest NOAA station
@@ -7206,17 +7604,34 @@
                     // Show tides section
                     document.getElementById('almanac-section-tides').style.display = '';
 
-                    const today = new Date().toISOString().split('T')[0].replace(/-/g,'');
-                    const tidesUrl = `https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?date=today&product=predictions&datum=mllw&interval=hilo&format=json&units=english&time_zone=lst_ldt&station=${closest.id}`;
-                    const tRes = await fetch(tidesUrl);
-                    const tData = await tRes.json();
+                    // Fetch a week of predictions and keep them on the device so
+                    // today's tides still show offline
+                    const today = almanacLocalDate();
+                    let predictions = null;
+                    try {
+                        const tidesUrl = `https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?begin_date=${today.replace(/-/g,'')}&range=168&product=predictions&datum=mllw&interval=hilo&format=json&units=english&time_zone=lst_ldt&station=${closest.id}`;
+                        const tRes = await fetch(tidesUrl);
+                        const tData = await tRes.json();
+                        if (tData.predictions && tData.predictions.length) {
+                            predictions = tData.predictions;
+                            try {
+                                localStorage.setItem(TIDES_KEY, JSON.stringify({ station: closest.id, predictions }));
+                            } catch (e) {}
+                        }
+                    } catch (e) {
+                        try {
+                            const saved = JSON.parse(localStorage.getItem(TIDES_KEY) || 'null');
+                            if (saved && saved.station === closest.id) predictions = saved.predictions;
+                        } catch (e2) {}
+                    }
+                    const todays = (predictions || []).filter(p => (p.t || '').startsWith(today));
 
-                    if (!tData.predictions || !tData.predictions.length) {
+                    if (!todays.length) {
                         document.getElementById('almanac-tides-rows').innerHTML = '<div class="almanac-error">Tide predictions unavailable</div>';
                         return;
                     }
 
-                    const rows = tData.predictions.map(p => {
+                    const rows = todays.map(p => {
                         const type = p.type === 'H' ? 'High' : 'Low';
                         const time = p.t.split(' ')[1];
                         const height = parseFloat(p.v).toFixed(1) + ' ft';
@@ -7758,6 +8173,23 @@
                     onViewportResize,
                 );
             }
+
+            // ── Startup ──────────────────────────────────────────────────────────────
+            // Kept last so every setting above (flags, clocks, filters…) is ready
+            // before the saved feed is drawn.
+            // Show cached articles immediately, then fetch fresh
+            if (articles.length > 0) {
+                buildSourceBar();
+                buildInfoPanel();
+                document.getElementById("status").style.display = "none";
+                document.getElementById("tab-bar").style.display = "block";
+                render();
+                updateTickerCounts();
+            }
+
+            loadFeeds();
+            buildInfoPanel();
+            setInterval(loadFeeds, 15 * 60 * 1000);
         </script>
     </body>
 </html>
